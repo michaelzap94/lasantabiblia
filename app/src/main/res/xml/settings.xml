@@ -7,9 +7,10 @@
         app:fragment="com.michaelzap94.santabiblia.fragments.settings.InnerPreferencesFragment"
         />
     <Preference
-        app:key="home_fragment"
-        app:title="@string/preferences"
-        app:icon="@drawable/ic_home"
+        app:key="Bible_exist"
+        app:title="@string/bible_exist"
+        app:icon="@drawable/ic_library_books"
+        app:useSimpleSummaryProvider="true"
         />
     <PreferenceCategory
         app:key="sync"
