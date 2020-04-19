@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+    <Preference
+        app:key="preferences_fragment"
+        app:title="@string/preferences"
+        app:icon="@drawable/ic_settings"
+        app:fragment="com.michaelzap94.santabiblia.fragments.settings.InnerPreferencesFragment"
+        />
+    <Preference
+        app:key="home_fragment"
+        app:title="@string/preferences"
+        app:icon="@drawable/ic_home"
+        />
+    <PreferenceCategory
+        app:key="sync"
+        app:title="Sync username">
+        <SwitchPreferenceCompat
+            app:key="enable_sync"
+            app:title="Enable username change"/>
+        <EditTextPreference
+            app:key="username"
+            app:title="Username"
+            app:useSimpleSummaryProvider="true"
+            app:dependency="enable_sync"/>
+    </PreferenceCategory>
+</androidx.preference.PreferenceScreen>

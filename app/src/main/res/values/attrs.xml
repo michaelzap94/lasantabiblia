@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="color_favorito" format="reference" />
+    <attr name="color_fondo" format="reference" />
+    <attr name="color_letra" format="reference" />
+</resources>
