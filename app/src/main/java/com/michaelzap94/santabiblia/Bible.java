@@ -97,7 +97,7 @@ public class Bible extends BaseActivityTopDrawer {
         }
         this.viewPager = (ViewPager) findViewById(R.id.pager_view_chapters);
         this.viewPager.setOffscreenPageLimit(1);
-        this.adapter = new VersesPagerAdapter(getSupportFragmentManager(), this.book_number, this.chapter_number, 8, this.totalChapters);
+        this.adapter = new VersesPagerAdapter(getSupportFragmentManager(), this.book_number, this.chapter_number, this.verse_number, this.totalChapters);
         viewPager.setAdapter(this.adapter);
 //        this.tabLayout = (TabLayout) findViewById(R.id.tabs_chapters);
 //        this.tabLayout.setupWithViewPager(this.viewPager);
