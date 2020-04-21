@@ -36,13 +36,13 @@ public class BooksFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         switch (getArguments().getInt(TAB_NAME_CHAPTERS)){
-            case 1:
+            case 0:
                 bookArrayList = BookHelper.getLibrosAT();
                 break;
-            case 2:
+            case 1:
                 bookArrayList = BookHelper.getLibrosNT();
                 break;
-            case 3:
+            case 2:
                 bookArrayList = new ArrayList();
                 break;
             default:

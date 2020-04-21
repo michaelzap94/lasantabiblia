@@ -26,7 +26,7 @@ public class BooksPagerAdapter extends FragmentPagerAdapter {
         // it will be called as many times as specified in the getCount
         // getItem is called to instantiate the fragment for the given page.
         // Return a PlaceholderFragment (defined as a static inner class below).
-        return BooksFragment.newInstance(position + 1);
+        return BooksFragment.newInstance(position);
     }
 
     @Nullable
