@@ -4,8 +4,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
-
+import android.os.Build;
+import android.text.Html;
 import com.michaelzap94.santabiblia.models.Verse;
 
 import java.util.ArrayList;
@@ -51,14 +51,20 @@ public class BibleDBHelper {
             if (innerCursor.moveToFirst()) {
                 rowCount = innerCursor.getCount();
                 for (i = 0; i < rowCount; i++) {
-//                    int bookCol = innerCursor.getColumnIndex(BibleContracts.VersesContract.COL_BOOK_ID);//NOT NEEDED AS BEING PASSED
-//                    int chapterCol = innerCursor.getColumnIndex(BibleContracts.VersesContract.COL_CHAPTER);//NOT NEEDED AS BEING PASSED
                     int verseCol = innerCursor.getColumnIndex(BibleContracts.VersesContract.COL_VERSE);
                     int textCol = innerCursor.getColumnIndex(BibleContracts.VersesContract.COL_TEXT);
-//                    int id = innerCursor.getInt(bookCol);
                     int verse = innerCursor.getInt(verseCol);
                     String text = innerCursor.getString(textCol);
-                    list.add(new Verse(book_id, chapter_number, verse, text.trim(), 0));
+                    String textParsed;
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        textParsed = Html.fromHtml(text, Html.FROM_HTML_MODE_COMPACT).toString();
+                    } else {
+                        textParsed = Html.fromHtml(text).toString();
+                    }
+
+                    String finalText = chapter_number + ". "+textParsed.trim();
+                    list.add(new Verse(book_id, chapter_number, verse, finalText, 0));
                     innerCursor.moveToNext();
                 }
             }

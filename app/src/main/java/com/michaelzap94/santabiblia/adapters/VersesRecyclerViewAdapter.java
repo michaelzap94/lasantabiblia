@@ -1,5 +1,7 @@
 package com.michaelzap94.santabiblia.adapters;
 
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -62,6 +64,24 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
         }
 
         void bind(Verse verse) {
+//            SpannableString ss = new SpannableString("Android is a Software stack");
+//            ClickableSpan clickableSpan = new ClickableSpan() {
+//                @Override
+//                public void onClick(View textView) {
+//                    startActivity(new Intent(MyActivity.this, NextActivity.class));
+//                }
+//                @Override
+//                public void updateDrawState(TextPaint ds) {
+//                    super.updateDrawState(ds);
+//                    ds.setUnderlineText(false);
+//                }
+//            };
+//            ss.setSpan(clickableSpan, 22, 27, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+//
+//            TextView textView = (TextView) findViewById(R.id.hello);
+//            textView.setText(ss);
+//            textView.setMovementMethod(LinkMovementMethod.getInstance());
+//            textView.setHighlightColor(Color.TRANSPARENT);
             //Bind data to layout elements
             txtView_title.setText(verse.getText());
 

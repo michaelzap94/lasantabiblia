@@ -1,5 +1,6 @@
 package com.michaelzap94.santabiblia;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -7,14 +8,28 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.GridView;
+import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
+import com.michaelzap94.santabiblia.dialogs.GridAdapter;
 import com.michaelzap94.santabiblia.fragments.ui.tabVerses.VersesFragment;
 import com.michaelzap94.santabiblia.models.Book;
 import com.michaelzap94.santabiblia.utilities.BookHelper;
 import com.michaelzap94.santabiblia.utilities.CommonMethods;
+
+import java.io.File;
+import java.util.ArrayList;
 
 public class Bible extends BaseActivityTopDrawer {
 
@@ -46,11 +61,12 @@ public class Bible extends BaseActivityTopDrawer {
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return (CharSequence) ("   Capitulo    " + (position+1));
+            return (CharSequence) ("Capitulo" + (position+1));
         }
 
         @Override
         public Fragment getItem(int position) {
+            getSupportActionBar().setSubtitle("Capitulo "+position);
             return VersesFragment.newInstance(book_number, position + 1, 0);
         }
 
@@ -61,6 +77,7 @@ public class Bible extends BaseActivityTopDrawer {
     }
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState, R.layout.activity_bible);
+        Log.d(TAG, "onCreate: CLICK ");
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -78,8 +95,8 @@ public class Bible extends BaseActivityTopDrawer {
         this.viewPager.setOffscreenPageLimit(1);
         this.adapter = new VersesPagerAdapter(getSupportFragmentManager(), this.book_number, this.totalChapters);
         viewPager.setAdapter(this.adapter);
-        this.tabLayout = (TabLayout) findViewById(R.id.tabs_chapters);
-        this.tabLayout.setupWithViewPager(this.viewPager);
+//        this.tabLayout = (TabLayout) findViewById(R.id.tabs_chapters);
+//        this.tabLayout.setupWithViewPager(this.viewPager);
 
 //        if (savedInstanceState != null) {
 //            this.viewPager.onRestoreInstanceState(savedInstanceState.getParcelable("vp"));
@@ -87,9 +104,49 @@ public class Bible extends BaseActivityTopDrawer {
 //            this.viewPager.setCurrentItem(this.capitulo - 1);
 //        }
 
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openDialog2();
+            }
+        });
+
         CommonMethods.bottomBarActionHandler((BottomNavigationView) findViewById(R.id.bottom_navigation), R.id.bnav_bible, Bible.this);
     }
 
+    public void openDialog2() {
+        LayoutInflater inflater = this.getLayoutInflater();
+        // Dialog layout
+        View v = inflater.inflate(R.layout.dialog_chapters_grid, null);
+        // Get gridView from dialog_choice
+        GridView gV = (GridView) v.findViewById(R.id.gridView);
+        // GridAdapter (Pass context and files list)
+        GridAdapter adapter = new GridAdapter(this, this.totalChapters);
+
+//        gV.setOnItemClickListener((parent, view, position, id) -> {
+//            Log.d(TAG, "before onItemClick: button clicked " + position + ""+ id);
+//            switch(view.getId()){
+//                case R.id.dialog_chapter_button:
+//                    Log.d(TAG, "onItemClick: button clicked " + position + ""+ id);
+//                    break;
+//            }
+//        });
+        // Set adapter
+        gV.setAdapter(adapter);
+        final AlertDialog.Builder builder2 = new AlertDialog.Builder(this);
+        builder2.setTitle(this.bookName+ "\n" + this.totalChapters + " Capitulos");
+        //builder2.setCustomTitle(getLayoutInflater().inflate(R.layout.btn_share,null));
+        builder2.setView(v);
+        builder2.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        builder2.setCancelable(true);
+        builder2.create().show();
+    }
 //
 //    private VersesPagerAdapter setupViewPager(VersesPagerAdapter vpa) {
 //        Log.d(TAG, "setupViewPager: " + " " + this.book_number + " " + this.totalChapters);

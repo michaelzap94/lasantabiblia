@@ -85,6 +85,8 @@ public abstract class BaseActivityTopDrawer extends AppCompatActivity {
     }
 
     public static void onChapterClickedFromDrawer(Context ct, int position) {
+        Log.d(TAG, "onBindViewHolder: CLICK RECEIVED "+position);
+
         Book book = (Book) BookHelper.getLibrosAT().get(position);
         Intent myIntent = new Intent(ct, Bible.class);
         myIntent.setFlags(FLAG_ACTIVITY_CLEAR_TOP);

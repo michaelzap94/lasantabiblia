@@ -38,12 +38,12 @@
             android:layout_alignParentLeft="true"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            <com.google.android.material.tabs.TabLayout
-                android:id="@+id/tabs_chapters"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                app:tabMode="scrollable"
-                app:tabGravity="fill"/>
+<!--            <com.google.android.material.tabs.TabLayout-->
+<!--                android:id="@+id/tabs_chapters"-->
+<!--                android:layout_width="fill_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                app:tabMode="scrollable"-->
+<!--                app:tabGravity="fill"/>-->
 
         </androidx.viewpager.widget.ViewPager>
 
