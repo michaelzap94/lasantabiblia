@@ -63,7 +63,7 @@ public class BibleDBHelper {
                         textParsed = Html.fromHtml(text).toString();
                     }
 
-                    String finalText = chapter_number + ". "+textParsed.trim();
+                    String finalText = verse + ". "+textParsed.trim();
                     list.add(new Verse(book_id, chapter_number, verse, finalText, 0));
                     innerCursor.moveToNext();
                 }
