@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -101,6 +102,7 @@ public class VersesFragment extends Fragment {
             Log.d(TAG, "observerViewModel: VersesFragment GOT DATA" + verseArrayList.size() + "in fragment: " + this.chapter_number);
             //WHEN data is created  pass data and set it in the recyclerview VIEW
             rvAdapter.updateVersesRecyclerView(verseArrayList);
+
             if (VersesFragment.this.verse_number != 0) {
                 VersesFragment.this.rvView.scrollToPosition(VersesFragment.this.verse_number - 1);
             }

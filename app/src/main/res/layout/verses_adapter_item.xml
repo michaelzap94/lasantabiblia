@@ -4,7 +4,7 @@
     android:layout_marginLeft="5dp"
     android:layout_marginRight="3dp"
     android:layout_marginTop="0dp"
-    android:layout_marginBottom="0dp"
+    android:layout_marginBottom="5dp"
     android:layout_gravity="center"
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android">
@@ -15,7 +15,8 @@
         android:layout_marginTop="5dp"
         android:gravity="center"
         android:textStyle="bold"
-        android:textSize="16sp"  />
+        android:textSize="16sp"
+        android:visibility="gone"/>
     <TextView
         android:id="@+id/txtView_verse"
         android:layout_width="match_parent"

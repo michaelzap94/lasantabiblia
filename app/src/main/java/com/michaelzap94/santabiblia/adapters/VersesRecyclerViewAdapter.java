@@ -87,6 +87,7 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
             //Bind data to layout elements
             if(verse.getTextTitle() != null){
                 txtView_title.setText(verse.getTextTitle());
+                txtView_title.setVisibility(View.VISIBLE);
             }
             txtView_verse.setText(verse.getText());
 
