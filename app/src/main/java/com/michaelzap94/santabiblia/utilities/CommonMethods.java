@@ -20,11 +20,14 @@ import com.michaelzap94.santabiblia.MainActivity;
 import com.michaelzap94.santabiblia.R;
 import com.michaelzap94.santabiblia.Search;
 import com.michaelzap94.santabiblia.Settings;
+import com.michaelzap94.santabiblia.models.Book;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 import static android.content.Context.MODE_PRIVATE;
+import static android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP;
+import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
 
 public class CommonMethods {
     public static final String MY_PREFS_NAME = "MyPrefsFile";
@@ -74,23 +77,29 @@ public class CommonMethods {
                 if(itemId == menuItem.getItemId()) return true;
                 switch (menuItem.getItemId()){
                     case R.id.bnav_home:
-                        activity.startActivity(new Intent(activity, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
+                        activity.startActivity(new Intent(activity, MainActivity.class).addFlags(FLAG_ACTIVITY_REORDER_TO_FRONT));
                         activity.overridePendingTransition(0,0);
                         return true;
                     case R.id.bnav_dashboard:
-                        activity.startActivity(new Intent(activity, Dashboard.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
+                        activity.startActivity(new Intent(activity, Dashboard.class).addFlags(FLAG_ACTIVITY_REORDER_TO_FRONT));
                         activity.overridePendingTransition(0,0);
                         return true;
                     case R.id.bnav_bible:
-                        activity.startActivity(new Intent(activity, Bible.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
+                        Intent myIntent = new Intent(activity, Bible.class);
+                        myIntent.setFlags(FLAG_ACTIVITY_REORDER_TO_FRONT);
+                        myIntent.putExtra("book", 19);
+                        myIntent.putExtra("chapter", 1);
+                        myIntent.putExtra("verse", 0);
+                        activity.startActivity(myIntent);
+                        //activity.startActivity(new Intent(activity, Bible.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
                         activity.overridePendingTransition(0,0);
                         return true;
                     case R.id.bnav_search:
-                        activity.startActivity(new Intent(activity, Search.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
+                        activity.startActivity(new Intent(activity, Search.class).addFlags(FLAG_ACTIVITY_REORDER_TO_FRONT));
                         activity.overridePendingTransition(0,0);
                         return true;
                     case R.id.bnav_settings:
-                        activity.startActivity(new Intent(activity, Settings.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
+                        activity.startActivity(new Intent(activity, Settings.class).addFlags(FLAG_ACTIVITY_REORDER_TO_FRONT));
                         activity.overridePendingTransition(0,0);
                         return true;
                     default: return false;

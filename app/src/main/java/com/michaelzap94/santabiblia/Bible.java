@@ -67,7 +67,7 @@ public class Bible extends BaseActivityTopDrawer {
             this.book_number = extras.getInt("book");
             this.chapter_number = extras.getInt("chapter");
             this.verse_number = extras.getInt("verse");
-            Book libro = BookHelper.getBook(19);
+            Book libro = BookHelper.getBook(this.book_number);
             if (libro != null) {
                 this.bookName = libro.getName();
                 this.totalChapters = libro.getNumCap();
@@ -76,7 +76,7 @@ public class Bible extends BaseActivityTopDrawer {
         }
         this.viewPager = (ViewPager) findViewById(R.id.pager_view_chapters);
         this.viewPager.setOffscreenPageLimit(1);
-        this.adapter = new VersesPagerAdapter(getSupportFragmentManager(), 230, this.totalChapters);
+        this.adapter = new VersesPagerAdapter(getSupportFragmentManager(), this.book_number, this.totalChapters);
         viewPager.setAdapter(this.adapter);
         this.tabLayout = (TabLayout) findViewById(R.id.tabs_chapters);
         this.tabLayout.setupWithViewPager(this.viewPager);

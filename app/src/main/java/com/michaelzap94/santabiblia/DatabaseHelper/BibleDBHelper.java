@@ -14,8 +14,8 @@ public class BibleDBHelper {
 
     private static final String TAG = "BibleDBHelper";
 
-    public static final String DB_NAME_BIBLE_CONTENT = "RVR60.SQLite3";
-    public static final String DB_NAME_BIBLE_COMMENTARIES = "RVR60.commentaries.SQLite3";
+    public static final String DB_NAME_BIBLE_CONTENT = "RVR60.db";
+    public static final String DB_NAME_BIBLE_COMMENTARIES = "RVR60commentaries.db";
     public static final int DB_VERSION = 1;
     private Context myContext;
     String DB_PATH = null;
@@ -47,7 +47,7 @@ public class BibleDBHelper {
 
         ArrayList<Verse> list = new ArrayList();
         try {
-            innerCursor = openDataBaseNoHelper(DB_NAME_BIBLE_CONTENT).rawQuery("SELECT  verse , chapter, text FROM verses WHERE book_number = ? AND chapter = ? ORDER BY verse", new String[] {String.valueOf(book_id), String.valueOf(chapter_number)});
+            innerCursor = openDataBaseNoHelper(DB_NAME_BIBLE_CONTENT).rawQuery("SELECT  verse , text FROM verses WHERE book_number = ? AND chapter = ? ORDER BY verse", new String[] {String.valueOf(book_id), String.valueOf(chapter_number)});
             if (innerCursor.moveToFirst()) {
                 rowCount = innerCursor.getCount();
                 for (i = 0; i < rowCount; i++) {
