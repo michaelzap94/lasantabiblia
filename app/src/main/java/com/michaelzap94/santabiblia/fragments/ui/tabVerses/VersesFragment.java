@@ -8,10 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.michaelzap94.santabiblia.BaseActivityTopDrawer;
 import com.michaelzap94.santabiblia.R;
 import com.michaelzap94.santabiblia.adapters.VersesRecyclerViewAdapter;
 import com.michaelzap94.santabiblia.models.Verse;
@@ -25,6 +28,7 @@ public class VersesFragment extends Fragment {
     View root;
     private int book_id;
     private int chapter_number;
+    private int verse_number;
 
     private ArrayList<Verse> list = new ArrayList();
     private RecyclerView rvView;
@@ -33,13 +37,13 @@ public class VersesFragment extends Fragment {
     // this data will not be shown until you setAdapter to the RecyclerView view in the Layout
     private VersesRecyclerViewAdapter rvAdapter;
 
-    public static VersesFragment newInstance(int libro, int capitulo, int versiculo) {
-        Log.d(TAG, "VersesFragment: newInstance" + + libro + " " + capitulo);
+    public static VersesFragment newInstance(int book, int chapter, int verse) {
+        Log.d(TAG, "VersesFragment: newInstance" + + book + " " + chapter);
         VersesFragment f = new VersesFragment();
         Bundle args = new Bundle();
-        args.putInt("book", libro);
-        args.putInt("chapter", capitulo);
-        args.putInt("verse", versiculo);
+        args.putInt("book", book);
+        args.putInt("chapter", chapter);
+        args.putInt("verse", verse);
         f.setArguments(args);
         return f;
     }
@@ -49,6 +53,7 @@ public class VersesFragment extends Fragment {
         super.onCreate(savedInstanceState);
         this.book_id = getArguments().getInt("book");
         this.chapter_number = getArguments().getInt("chapter");
+        this.verse_number = getArguments().getInt("verse");
         Log.d(TAG, "onCreate: VersesFragment " + chapter_number);
         rvAdapter = new VersesRecyclerViewAdapter(new ArrayList<>());
 
@@ -83,8 +88,16 @@ public class VersesFragment extends Fragment {
 
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (getActivity() instanceof BaseActivityTopDrawer) {
+            ((BaseActivityTopDrawer) getActivity()).getSupportActionBar().setSubtitle("Capitulo "+this.chapter_number);
+        }
+    }
+
     private void observerViewModel() {
-        viewModel.getUserMutableLiveData().observe(this, (verseArrayList) -> {
+        viewModel.getUserMutableLiveData().observe(getViewLifecycleOwner(), (verseArrayList) -> {
             Log.d(TAG, "observerViewModel: VersesFragment GOT DATA" + verseArrayList.size() + "in fragment: " + this.chapter_number);
             //WHEN data is created  pass data and set it in the recyclerview VIEW
             rvAdapter.updateVersesRecyclerView(verseArrayList);

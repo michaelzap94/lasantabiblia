@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
@@ -47,11 +48,15 @@ public class Bible extends BaseActivityTopDrawer {
     public class VersesPagerAdapter extends FragmentStatePagerAdapter {
         private int book_number;
         private int totalChapters;
+        private int chapter_number;
+        private int verse_number;
 
-        public VersesPagerAdapter(FragmentManager fa, int book_number, int totalChapters) {
+        public VersesPagerAdapter(FragmentManager fa, int book_number, int chapter_number, int verse_number, int totalChapters) {
             super(fa, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
             this.book_number = book_number;
             this.totalChapters = totalChapters;
+            this.chapter_number = chapter_number;
+            this.verse_number = verse_number;
         }
 
         @Override
@@ -66,8 +71,7 @@ public class Bible extends BaseActivityTopDrawer {
 
         @Override
         public Fragment getItem(int position) {
-            getSupportActionBar().setSubtitle("Capitulo "+position);
-            return VersesFragment.newInstance(book_number, position + 1, 0);
+            return VersesFragment.newInstance(this.book_number, position + 1, this.verse_number);
         }
 
         @Override
@@ -93,16 +97,16 @@ public class Bible extends BaseActivityTopDrawer {
         }
         this.viewPager = (ViewPager) findViewById(R.id.pager_view_chapters);
         this.viewPager.setOffscreenPageLimit(1);
-        this.adapter = new VersesPagerAdapter(getSupportFragmentManager(), this.book_number, this.totalChapters);
+        this.adapter = new VersesPagerAdapter(getSupportFragmentManager(), this.book_number, this.chapter_number, this.verse_number, this.totalChapters);
         viewPager.setAdapter(this.adapter);
 //        this.tabLayout = (TabLayout) findViewById(R.id.tabs_chapters);
 //        this.tabLayout.setupWithViewPager(this.viewPager);
 
-//        if (savedInstanceState != null) {
-//            this.viewPager.onRestoreInstanceState(savedInstanceState.getParcelable("vp"));
-//        } else {
-//            this.viewPager.setCurrentItem(this.capitulo - 1);
-//        }
+        if (savedInstanceState != null) {
+            //this.viewPager.onRestoreInstanceState(savedInstanceState.getParcelable("vp"));
+        } else {
+            this.viewPager.setCurrentItem(this.chapter_number - 1);
+        }
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -122,31 +126,23 @@ public class Bible extends BaseActivityTopDrawer {
         // Get gridView from dialog_choice
         GridView gV = (GridView) v.findViewById(R.id.gridView);
         // GridAdapter (Pass context and files list)
-        GridAdapter adapter = new GridAdapter(this, this.totalChapters);
-
-//        gV.setOnItemClickListener((parent, view, position, id) -> {
-//            Log.d(TAG, "before onItemClick: button clicked " + position + ""+ id);
-//            switch(view.getId()){
-//                case R.id.dialog_chapter_button:
-//                    Log.d(TAG, "onItemClick: button clicked " + position + ""+ id);
-//                    break;
-//            }
-//        });
-        // Set adapter
-        gV.setAdapter(adapter);
-        final AlertDialog.Builder builder2 = new AlertDialog.Builder(this);
+        final AlertDialog.Builder builder2 = new AlertDialog.Builder(Bible.this);
         builder2.setTitle(this.bookName+ "\n" + this.totalChapters + " Capitulos");
         //builder2.setCustomTitle(getLayoutInflater().inflate(R.layout.btn_share,null));
         builder2.setView(v);
         builder2.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
+                dialog.cancel();
             }
         });
         builder2.setCancelable(true);
-        builder2.create().show();
+        final Dialog dialog = builder2.create();
+        GridAdapter adapter = new GridAdapter(this, this.viewPager, dialog, this.totalChapters);
+        gV.setAdapter(adapter);
+        dialog.show();
     }
+
 //
 //    private VersesPagerAdapter setupViewPager(VersesPagerAdapter vpa) {
 //        Log.d(TAG, "setupViewPager: " + " " + this.book_number + " " + this.totalChapters);
