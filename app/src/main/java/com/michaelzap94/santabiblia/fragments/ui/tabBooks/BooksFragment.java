@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.michaelzap94.santabiblia.R;
@@ -64,6 +65,7 @@ public class BooksFragment extends Fragment {
         this.rvView = (RecyclerView) root.findViewById(R.id.book_list_recycler_view);
         rvView.setLayoutManager(new LinearLayoutManager(getActivity()));
         rvView.setAdapter(rvAdapter);//attach the RecyclerView adapter to the RecyclerView View
+        rvView.addItemDecoration(new DividerItemDecoration(rvView.getContext(), DividerItemDecoration.VERTICAL));
 
         return root;
     }
