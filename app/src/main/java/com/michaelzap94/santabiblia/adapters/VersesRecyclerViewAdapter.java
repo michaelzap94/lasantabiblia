@@ -57,10 +57,12 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
 
     class VersesViewHolder extends RecyclerView.ViewHolder {
         TextView txtView_title;
+        TextView txtView_verse;
 
         public VersesViewHolder(@NonNull View itemView) {
             super(itemView);
             txtView_title = itemView.findViewById(R.id.txtView_title);
+            txtView_verse = itemView.findViewById(R.id.txtView_verse);
         }
 
         void bind(Verse verse) {
@@ -83,7 +85,10 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
 //            textView.setMovementMethod(LinkMovementMethod.getInstance());
 //            textView.setHighlightColor(Color.TRANSPARENT);
             //Bind data to layout elements
-            txtView_title.setText(verse.getText());
+            if(verse.getTextTitle() != null){
+                txtView_title.setText(verse.getTextTitle());
+            }
+            txtView_verse.setText(verse.getText());
 
         }
     }

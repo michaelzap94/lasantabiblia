@@ -19,7 +19,7 @@ public class BibleContracts {
         public static final String TABLE_NAME = "books";
         public static final String COL_BOOK_ID = "book_number";
         public static final String COL_CHAPTER = "chapter";
-        public static final String COL_VERSE = "verse";
+        public static final String COL_STORY_AT_VERSE = "story_at_verse";
         public static final String COL_ORDER_IF_SEVERAL = "order_if_several";
         public static final String COL_TITLE = "title";
     }

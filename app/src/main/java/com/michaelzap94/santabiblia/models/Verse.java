@@ -30,14 +30,16 @@ public class Verse implements Parcelable {
     protected int chapter_number;
     protected int verse;
     protected String text;
+    protected String textTitle;
 
 
-    public Verse(int book_id, int chapter_number, int verse, String text, int is_fav) {
+    public Verse(int book_id, int chapter_number, int verse, String text, String textTitle, int is_fav) {
         //this.id = id;
         this.book_id = book_id;
         this.chapter_number = chapter_number;
         this.verse = verse;
         this.text = text;
+        this.textTitle = textTitle;
         this.is_fav = is_fav;
     }
 
@@ -73,6 +75,14 @@ public class Verse implements Parcelable {
 
     public String getText() {
         return this.text;
+    }
+
+    public String getTextTitle() {
+        return this.textTitle;
+    }
+
+    public void setTextTitle(String textTitle){
+        this.textTitle = textTitle;
     }
 
     public SpannableString getEscrituraSpanneada(Context ctx, boolean underline, boolean higtlight) {

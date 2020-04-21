@@ -9,6 +9,8 @@ import android.text.Html;
 import com.michaelzap94.santabiblia.models.Verse;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class BibleDBHelper {
 
@@ -40,31 +42,61 @@ public class BibleDBHelper {
           //this.DB_PATH = "/data/data/" + context.getPackageName() + "/" + "databases/";
     }
 
+
     public ArrayList<Verse> getVerses(int book_id, int chapter_number) {
         Cursor innerCursor;
         int rowCount;
         int i;
+        Map<Integer,Boolean> history = new HashMap<>();
 
         ArrayList<Verse> list = new ArrayList();
         try {
-            innerCursor = openDataBaseNoHelper(DB_NAME_BIBLE_CONTENT).rawQuery("SELECT  verse , text FROM verses WHERE book_number = ? AND chapter = ? ORDER BY verse", new String[] {String.valueOf(book_id), String.valueOf(chapter_number)});
+            String query = "SELECT verses.verse , verses.text, stories.title, stories.verse AS story_at_verse, order_if_several FROM verses LEFT JOIN stories" +
+                            " ON verses.book_number =  stories.book_number AND verses.chapter =  stories.chapter AND verses.verse = stories.verse " +
+                    " WHERE verses.book_number = ? AND verses.chapter = ? ORDER BY verses.book_number, verses.chapter, verses.verse, stories.verse";
+            innerCursor = openDataBaseNoHelper(DB_NAME_BIBLE_CONTENT).rawQuery(query, new String[] {String.valueOf(book_id), String.valueOf(chapter_number)});
             if (innerCursor.moveToFirst()) {
                 rowCount = innerCursor.getCount();
                 for (i = 0; i < rowCount; i++) {
                     int verseCol = innerCursor.getColumnIndex(BibleContracts.VersesContract.COL_VERSE);
                     int textCol = innerCursor.getColumnIndex(BibleContracts.VersesContract.COL_TEXT);
+                    int textTitleCol = innerCursor.getColumnIndex(BibleContracts.StoriesContract.COL_TITLE);
+                    //int titleAtVerseCol = innerCursor.getColumnIndex(BibleContracts.StoriesContract.COL_STORY_AT_VERSE);
+                    //int orderIfSeveralTitlesCol = innerCursor.getColumnIndex(BibleContracts.StoriesContract.COL_ORDER_IF_SEVERAL);
+
+
                     int verse = innerCursor.getInt(verseCol);
                     String text = innerCursor.getString(textCol);
+                    String textTitle = null;
+                    //int titleAtVerse;
+                    int orderIfSeveralTitles;
+                    if(!innerCursor.isNull(textTitleCol)){
+                        textTitle = innerCursor.getString(textTitleCol);
+                        //titleAtVerse = innerCursor.getInt(titleAtVerseCol);
+                        //orderIfSeveralTitles = innerCursor.getInt(orderIfSeveralTitlesCol);
+                    }
+
+                    String textToBeParsed = "<b>" + verse + "</b>" + ". " + text.trim();
                     String textParsed;
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        textParsed = Html.fromHtml(text, Html.FROM_HTML_MODE_COMPACT).toString();
+                        textParsed = Html.fromHtml(textToBeParsed, Html.FROM_HTML_MODE_COMPACT).toString();
                     } else {
-                        textParsed = Html.fromHtml(text).toString();
+                        textParsed = Html.fromHtml(textToBeParsed).toString();
+                    }
+                    String finalText = textParsed;
+
+                    //If a Verse is in the array already and we see the same verse again, it's because there are 2+ titles
+                    if(!history.containsKey(verse)){
+                        list.add(new Verse(book_id, chapter_number, verse, finalText, textTitle, 0));
+                        history.put(verse, true);
+                    } else {
+                        Verse existingVerse = list.get(verse - 1);
+                        String newTextTitle = existingVerse.getTextTitle() + "\n" + textTitle;
+                        existingVerse.setTextTitle(newTextTitle);
                     }
 
-                    String finalText = verse + ". "+textParsed.trim();
-                    list.add(new Verse(book_id, chapter_number, verse, finalText, 0));
+
                     innerCursor.moveToNext();
                 }
             }
@@ -73,6 +105,40 @@ public class BibleDBHelper {
         }
         return list;
     }
+
+//    public ArrayList<Verse> getVersesSimple(int book_id, int chapter_number) {
+//        Cursor innerCursor;
+//        int rowCount;
+//        int i;
+//
+//        ArrayList<Verse> list = new ArrayList();
+//        try {
+//            innerCursor = openDataBaseNoHelper(DB_NAME_BIBLE_CONTENT).rawQuery("SELECT  verse , text FROM verses WHERE book_number = ? AND chapter = ? ORDER BY verse", new String[] {String.valueOf(book_id), String.valueOf(chapter_number)});
+//            if (innerCursor.moveToFirst()) {
+//                rowCount = innerCursor.getCount();
+//                for (i = 0; i < rowCount; i++) {
+//                    int verseCol = innerCursor.getColumnIndex(BibleContracts.VersesContract.COL_VERSE);
+//                    int textCol = innerCursor.getColumnIndex(BibleContracts.VersesContract.COL_TEXT);
+//                    int verse = innerCursor.getInt(verseCol);
+//                    String text = innerCursor.getString(textCol);
+//                    String textParsed;
+//
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//                        textParsed = Html.fromHtml(text, Html.FROM_HTML_MODE_COMPACT).toString();
+//                    } else {
+//                        textParsed = Html.fromHtml(text).toString();
+//                    }
+//
+//                    String finalText = verse + ". "+textParsed.trim();
+//                    list.add(new Verse(book_id, chapter_number, verse, finalText, 0));
+//                    innerCursor.moveToNext();
+//                }
+//            }
+//            innerCursor.close();
+//        } catch (Exception e) {
+//        }
+//        return list;
+//    }
 
     public SQLiteDatabase openDataBaseNoHelper(String db_name) throws SQLException {
         String myPath = this.myContext.getDatabasePath(db_name).getPath();
