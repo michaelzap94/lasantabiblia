@@ -54,6 +54,7 @@ public abstract class BaseActivityTopDrawer extends AppCompatActivity {
         BooksPagerAdapter sectionsPagerAdapter = new BooksPagerAdapter(this, getSupportFragmentManager());
         // add the SectionsPagerAdapter to the viewPager
         viewPagerBooks.setAdapter(sectionsPagerAdapter);
+        viewPagerBooks.setCurrentItem(1);//select NT
         //add the viewPager to the tab layout
         tabsBooks.setupWithViewPager(viewPagerBooks);
 
@@ -108,6 +109,13 @@ public abstract class BaseActivityTopDrawer extends AppCompatActivity {
             drawer.closeDrawer(GravityCompat.START);
         }
         return super.dispatchTouchEvent(ev);
+    }
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        }
     }
 
 //    @Override
