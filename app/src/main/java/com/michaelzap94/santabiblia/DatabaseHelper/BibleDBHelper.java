@@ -4,9 +4,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
-import com.michaelzap94.santabiblia.objects.Verse;
+import com.michaelzap94.santabiblia.models.Verse;
 
 import java.util.ArrayList;
 
@@ -17,7 +17,7 @@ public class BibleDBHelper {
     public static final String DB_NAME_BIBLE_CONTENT = "RVR60.SQLite3";
     public static final String DB_NAME_BIBLE_COMMENTARIES = "RVR60.commentaries.SQLite3";
     public static final int DB_VERSION = 1;
-    private final Context myContext;
+    private Context myContext;
     String DB_PATH = null;
     String DB_NAME = null;
     private SQLiteDatabase myDataBase;
@@ -35,7 +35,6 @@ public class BibleDBHelper {
         return dbHelperInner;
     }
 
-
     public BibleDBHelper(Context context) {
           this.myContext = context;
           //this.DB_PATH = "/data/data/" + context.getPackageName() + "/" + "databases/";
@@ -48,8 +47,7 @@ public class BibleDBHelper {
 
         ArrayList<Verse> list = new ArrayList();
         try {
-
-            innerCursor = openDataBaseNoHelper(DB_NAME_BIBLE_CONTENT).rawQuery("SELECT  verse AS _id, chapter, text FROM verses WHERE book_number = ? AND chapter = ? ORDER BY verse", new String[] {String.valueOf(book_id), String.valueOf(chapter_number)});
+            innerCursor = openDataBaseNoHelper(DB_NAME_BIBLE_CONTENT).rawQuery("SELECT  verse , chapter, text FROM verses WHERE book_number = ? AND chapter = ? ORDER BY verse", new String[] {String.valueOf(book_id), String.valueOf(chapter_number)});
             if (innerCursor.moveToFirst()) {
                 rowCount = innerCursor.getCount();
                 for (i = 0; i < rowCount; i++) {
@@ -74,7 +72,6 @@ public class BibleDBHelper {
         String myPath = this.myContext.getDatabasePath(db_name).getPath();
         return SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
     }
-
 
     public Cursor query(String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy, String limit) {
         return myDataBase.query(table, columns, selection, selectionArgs, groupBy, having, orderBy, limit);

@@ -15,13 +15,14 @@ import com.michaelzap94.santabiblia.utilities.CommonMethods;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivityTopDrawer  {
     public static final String MY_PREFS_NAME = "MyPrefsFile";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        super.onCreate(savedInstanceState, R.layout.activity_main_base);
+//        super.onCreate(savedInstanceState);
+//        setContentView(R.layout.activity_main);
         CommonMethods.checkDatabaseExistLoad(MainActivity.this);
 
         CommonMethods.bottomBarActionHandler((BottomNavigationView) findViewById(R.id.bottom_navigation), R.id.bnav_home, MainActivity.this);

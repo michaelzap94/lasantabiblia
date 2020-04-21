@@ -11,9 +11,9 @@
         android:theme="@style/AppTheme">
         <activity android:name=".Settings"></activity>
         <activity android:name=".Dashboard" />
-        <activity android:name=".Bible" />
+        <activity android:name=".Bible" android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name=".Search" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity" android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

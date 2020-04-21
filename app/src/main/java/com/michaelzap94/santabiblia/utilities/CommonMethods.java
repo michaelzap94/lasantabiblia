@@ -75,23 +75,23 @@ public class CommonMethods {
                 switch (menuItem.getItemId()){
                     case R.id.bnav_home:
                         activity.startActivity(new Intent(activity, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
-                        //activity.overridePendingTransition(0,0);
+                        activity.overridePendingTransition(0,0);
                         return true;
                     case R.id.bnav_dashboard:
                         activity.startActivity(new Intent(activity, Dashboard.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
-                        //activity.overridePendingTransition(0,0);
+                        activity.overridePendingTransition(0,0);
                         return true;
                     case R.id.bnav_bible:
                         activity.startActivity(new Intent(activity, Bible.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
-                        //activity.overridePendingTransition(0,0);
+                        activity.overridePendingTransition(0,0);
                         return true;
                     case R.id.bnav_search:
                         activity.startActivity(new Intent(activity, Search.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
-                        //activity.overridePendingTransition(0,0);
+                        activity.overridePendingTransition(0,0);
                         return true;
                     case R.id.bnav_settings:
                         activity.startActivity(new Intent(activity, Settings.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
-                        //activity.overridePendingTransition(0,0);
+                        activity.overridePendingTransition(0,0);
                         return true;
                     default: return false;
                 }
