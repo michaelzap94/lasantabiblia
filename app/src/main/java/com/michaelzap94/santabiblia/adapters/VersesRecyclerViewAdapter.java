@@ -99,7 +99,7 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
 
             Log.d(TAG, "bind: " + stringTextVerse);
 
-            if(stringTextVerse.indexOf("†") > -1){
+            if(stringTextVerse.indexOf("[") > -1 && stringTextVerse.indexOf("]") > -1){
                 SpannableString ss = new SpannableString(spannedTextVerse);
 
                 int start = stringTextVerse.indexOf("[");

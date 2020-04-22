@@ -69,7 +69,7 @@ public class BibleDBHelper {
 
 
                     int verse = innerCursor.getInt(verseCol);
-                    String text = innerCursor.getString(textCol);
+                    String text = innerCursor.getString(textCol).trim();
                     String textTitle = null;
                     //int titleAtVerse;
                     int orderIfSeveralTitles;
@@ -79,15 +79,20 @@ public class BibleDBHelper {
                         //orderIfSeveralTitles = innerCursor.getInt(orderIfSeveralTitlesCol);
                     }
 
-                    String textToBeParsed = "<b>" + verse + "</b>" + ". " + text.trim();
-                    Spanned textSpanned;
+                    String textToBeParsed;
 
+                    if(text.contains("<n>[") && text.contains("]</n>")) {
+                        textToBeParsed = text.replace("<n>[","<br><b><i>(").replace("]</n>",")</i></b>");
+                    } else {
+                        textToBeParsed = "<b>" + verse + "</b>" + ". " + text;
+                    }
+
+                    Spanned textSpanned;
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                         textSpanned = Html.fromHtml(textToBeParsed, Html.FROM_HTML_MODE_COMPACT);
                     } else {
                         textSpanned = Html.fromHtml(textToBeParsed);
                     }
-
                     //If a Verse is in the array already and we see the same verse again, it's because there are 2+ titles
                     if(!history.containsKey(verse)){
                         list.add(new Verse(book_number, chapter_number, verse, textSpanned, textTitle, 0));
