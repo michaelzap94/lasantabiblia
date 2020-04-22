@@ -9,10 +9,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Settings"></activity>
-        <activity android:name=".Dashboard" />
+        <activity android:name=".Settings" android:label="@string/settings"></activity>
+        <activity android:name=".Dashboard" android:label="@string/dashboard"/>
         <activity android:name=".Bible" android:theme="@style/AppTheme.NoActionBar"/>
-        <activity android:name=".Search" />
+        <activity android:name=".Search" android:label="@string/search"/>
         <activity android:name=".MainActivity" android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

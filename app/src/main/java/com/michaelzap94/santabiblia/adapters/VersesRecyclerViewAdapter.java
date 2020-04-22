@@ -121,7 +121,7 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
                                     int start = s.getSpanStart(this);
                                     int end = s.getSpanEnd(this);
                                     Log.d(TAG, "onClick " +verse.getBookNumber() + " " + s.subSequence(start, end));
-                                    openDialogConc(verse.getBookNumber(), s.subSequence(start, end).toString());
+                                    openDialogReferences(verse.getBookNumber(), s.subSequence(start, end).toString());
                                 }
                             }
                         }
@@ -157,26 +157,51 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
         }
     }
 
-    public void openDialogConc(int bookNumber, String elementClicked) {
+    public void openDialogReferences(int bookNumber, String elementClicked) {
 
         String[] arrToshow = BibleDBHelper.getInstance(ctx).getConcordance(bookNumber, elementClicked);
+
+//        ArrayList<CharSequence> spannedArray = new ArrayList<>();
+//
+//        for (int i = 0; i < arrToshow.length; i++) {
+//            spannedArray.add(Html.fromHtml(arrToshow[i]));
+//        }
+
         // setup the alert builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+        builder.setTitle("Concordancia:");
+
+
+
+        // add a list
+        //String[] animals = {textToShow};
+        builder.setItems( arrToshow, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int position) {
+                Log.d(TAG, "onClick: position dialog: " + position);
+
+            }
+        });
+
+        // create and show the alert dialog
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public void openDialogVersesSpecific(int bookNumber, String elementClicked) {
+
+        String[] arrToshow = BibleDBHelper.getInstance(ctx).getConcordance(bookNumber, elementClicked);
+
         AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
         builder.setTitle("Concordancia:");
 
         // add a list
         //String[] animals = {textToShow};
-        builder.setItems(arrToshow, new DialogInterface.OnClickListener() {
+        builder.setItems( arrToshow, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int position) {
                 Log.d(TAG, "onClick: position dialog: " + position);
-//                switch (position) {
-//                    case 0: // horse
-//                    case 1: // cow
-//                    case 2: // camel
-//                    case 3: // sheep
-//                    case 4: // goat
-//                }
+
             }
         });
 

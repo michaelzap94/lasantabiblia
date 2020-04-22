@@ -8,4 +8,17 @@
     <string name="chapter_labels">ETIQUETAS</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="search_card_conc_title">Concordance</string>
+    <string name="search_card_conc_desc">Find the concordances</string>
+    <string name="cardimage">Image</string>
+    <string name="search">Search</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="settings">Settings</string>
+    <string name="search_card_dict_title">Dictionary</string>
+    <string name="search_card_dict_desc">Find the words you don\'t know</string>
+    <string name="search_card_label_title">Your Labels</string>
+    <string name="search_card_label_desc">Find text in the titles of your labels</string>
+    <string name="search_card_text_title">Bible search</string>
+    <string name="search_card_text_desc">Search text in the Bible</string>
+    <string name="search_textview">You can search for...</string>
 </resources>

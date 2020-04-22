@@ -134,8 +134,8 @@ public class BibleDBHelper {
                     int textCol = innerCursor.getColumnIndex(BibleContracts.CommentariesContract.COL_TEXT);
                     int chapter  = innerCursor.getInt(chapterCol);
                     int verse = innerCursor.getInt(verseCol);
-                    String text = innerCursor.getString(textCol);
-                    arrToReturn = text.split(">;|\\.;");
+                    String text = Html.fromHtml(innerCursor.getString(textCol)).toString();
+                    arrToReturn = text.split(";");//|\.;
                     //listString.add(text);
 //                    String textToBeParsed = "<b>" + verse + "</b>" + ". " + text.trim();
 //                    Spanned textSpanned;
