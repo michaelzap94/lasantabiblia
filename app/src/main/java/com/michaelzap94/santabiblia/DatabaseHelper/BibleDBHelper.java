@@ -6,6 +6,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.text.Html;
+import android.text.Spanned;
 
 import com.michaelzap94.santabiblia.models.Concordance;
 import com.michaelzap94.santabiblia.models.Verse;
@@ -54,7 +55,7 @@ public class BibleDBHelper {
         ArrayList<Verse> list = new ArrayList();
         try {
             String query = "SELECT verses.verse , verses.text, stories.title, stories.verse AS story_at_verse, order_if_several FROM verses LEFT JOIN stories" +
-                            " ON verses.book_number =  stories.book_number AND verses.chapter =  stories.chapter AND verses.verse = stories.verse " +
+                    " ON verses.book_number =  stories.book_number AND verses.chapter =  stories.chapter AND verses.verse = stories.verse " +
                     " WHERE verses.book_number = ? AND verses.chapter = ? ORDER BY verses.book_number, verses.chapter, verses.verse, stories.verse";
             innerCursor = openDataBaseNoHelper(DB_NAME_BIBLE_CONTENT).rawQuery(query, new String[] {String.valueOf(book_id), String.valueOf(chapter_number)});
             if (innerCursor.moveToFirst()) {
@@ -79,18 +80,17 @@ public class BibleDBHelper {
                     }
 
                     String textToBeParsed = "<b>" + verse + "</b>" + ". " + text.trim();
-//                    String textParsed;
+                    Spanned textSpanned;
 
-//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-//                        textParsed = Html.fromHtml(textToBeParsed, Html.FROM_HTML_MODE_COMPACT).toString();
-//                    } else {
-//                        textParsed = Html.fromHtml(textToBeParsed).toString();
-//                    }
-                    String finalText = textToBeParsed;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        textSpanned = Html.fromHtml(textToBeParsed, Html.FROM_HTML_MODE_COMPACT);
+                    } else {
+                        textSpanned = Html.fromHtml(textToBeParsed);
+                    }
 
                     //If a Verse is in the array already and we see the same verse again, it's because there are 2+ titles
                     if(!history.containsKey(verse)){
-                        list.add(new Verse(book_id, chapter_number, verse, finalText, textTitle, 0));
+                        list.add(new Verse(book_id, chapter_number, verse, textSpanned, textTitle, 0));
                         history.put(verse, true);
                     } else {
                         Verse existingVerse = list.get(verse - 1);
@@ -109,8 +109,67 @@ public class BibleDBHelper {
 
     public ArrayList<Concordance> getConcordance(int book_id, String marker){
         ArrayList<Concordance> list = new ArrayList();
-        return list;
 
+
+//        Cursor innerCursor;
+//        int rowCount;
+//        int i;
+//        Map<Integer,Boolean> history = new HashMap<>();
+//
+//        ArrayList<Verse> list = new ArrayList();
+//        try {
+//            String query = "SELECT verses.verse , verses.text, stories.title, stories.verse AS story_at_verse, order_if_several FROM verses LEFT JOIN stories" +
+//                    " ON verses.book_number =  stories.book_number AND verses.chapter =  stories.chapter AND verses.verse = stories.verse " +
+//                    " WHERE verses.book_number = ? AND verses.chapter = ? ORDER BY verses.book_number, verses.chapter, verses.verse, stories.verse";
+//            innerCursor = openDataBaseNoHelper(DB_NAME_BIBLE_CONTENT).rawQuery(query, new String[] {String.valueOf(book_id), String.valueOf(chapter_number)});
+//            if (innerCursor.moveToFirst()) {
+//                rowCount = innerCursor.getCount();
+//                for (i = 0; i < rowCount; i++) {
+//                    int verseCol = innerCursor.getColumnIndex(BibleContracts.VersesContract.COL_VERSE);
+//                    int textCol = innerCursor.getColumnIndex(BibleContracts.VersesContract.COL_TEXT);
+//                    int textTitleCol = innerCursor.getColumnIndex(BibleContracts.StoriesContract.COL_TITLE);
+//                    //int titleAtVerseCol = innerCursor.getColumnIndex(BibleContracts.StoriesContract.COL_STORY_AT_VERSE);
+//                    //int orderIfSeveralTitlesCol = innerCursor.getColumnIndex(BibleContracts.StoriesContract.COL_ORDER_IF_SEVERAL);
+//
+//
+//                    int verse = innerCursor.getInt(verseCol);
+//                    String text = innerCursor.getString(textCol);
+//                    String textTitle = null;
+//                    //int titleAtVerse;
+//                    int orderIfSeveralTitles;
+//                    if(!innerCursor.isNull(textTitleCol)){
+//                        textTitle = innerCursor.getString(textTitleCol);
+//                        //titleAtVerse = innerCursor.getInt(titleAtVerseCol);
+//                        //orderIfSeveralTitles = innerCursor.getInt(orderIfSeveralTitlesCol);
+//                    }
+//
+//                    String textToBeParsed = "<b>" + verse + "</b>" + ". " + text.trim();
+//                    Spanned textSpanned;
+//
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//                        textSpanned = Html.fromHtml(textToBeParsed, Html.FROM_HTML_MODE_COMPACT);
+//                    } else {
+//                        textSpanned = Html.fromHtml(textToBeParsed);
+//                    }
+//
+//                    //If a Verse is in the array already and we see the same verse again, it's because there are 2+ titles
+//                    if(!history.containsKey(verse)){
+//                        list.add(new Verse(book_id, chapter_number, verse, textSpanned, textTitle, 0));
+//                        history.put(verse, true);
+//                    } else {
+//                        Verse existingVerse = list.get(verse - 1);
+//                        String newTextTitle = existingVerse.getTextTitle() + "\n" + textTitle;
+//                        existingVerse.setTextTitle(newTextTitle);
+//                    }
+//
+//                    innerCursor.moveToNext();
+//                }
+//            }
+//            innerCursor.close();
+//        } catch (Exception e) {
+//        }
+
+        return list;
     }
 
 //    public ArrayList<Verse> getVersesSimple(int book_id, int chapter_number) {

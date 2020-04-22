@@ -63,12 +63,17 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
 
     @Override
     public void onBindViewHolder(@NonNull VersesRecyclerViewAdapter.VersesViewHolder holder, int position) {
-        Verse verse = verseArrayList.get(position);
-        //VersesRecyclerViewAdapter.VersesViewHolder viewHolder = (VersesRecyclerViewAdapter.VersesViewHolder) holder;
-        //viewHolder.txtView_title.setText(verse.getText());
-        holder.bind(verse);
+//        Log.d(TAG, "onBindViewHolder: position "+position);
+//        Log.d(TAG, "holder: position "+holder.getAdapterPosition());
+//        //Verse verse = verseArrayList.get(holder.getAdapterPosition());
+//        //VersesRecyclerViewAdapter.VersesViewHolder viewHolder = (VersesRecyclerViewAdapter.VersesViewHolder) holder;
+//        //viewHolder.txtView_title.setText(verse.getText());
+        holder.bind();
     }
-
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
     @Override
     public int getItemCount() {
         return verseArrayList.size();
@@ -84,16 +89,13 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
             txtView_verse = itemView.findViewById(R.id.txtView_verse);
         }
 
-        void bind(Verse verse) {
-            String textWithHTML = verse.getText();
-            Spanned spannedTextVerse;
+        void bind() {
+            //Log.d(TAG, "bind: position "+ getAdapterPosition());
+            Verse verse = verseArrayList.get(getAdapterPosition());
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                spannedTextVerse = Html.fromHtml(textWithHTML, Html.FROM_HTML_MODE_COMPACT);
-            } else {
-                spannedTextVerse = Html.fromHtml(textWithHTML);
-            }
-            if(textWithHTML.indexOf("[") > -1 && textWithHTML.indexOf("†]") > -1){
+            Spanned spannedTextVerse = verse.getTextSpanned();
+
+            if(spannedTextVerse.toString().indexOf("[") > -1 && spannedTextVerse.toString().indexOf("†]") > -1){
                 SpannableString ss = new SpannableString(spannedTextVerse);
                 ClickableSpan clickableSpan = new ClickableSpan() {
                     @Override
@@ -124,6 +126,9 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
             } else {
                 txtView_verse.setText(spannedTextVerse);
             }
+
+            //Log.d(TAG, "position: verse.getTextTitle()" + getAdapterPosition() + " null: " +  ((boolean) (null == verse.getTextTitle())));
+
 
             //Bind data to layout elements
             if(verse.getTextTitle() != null){
