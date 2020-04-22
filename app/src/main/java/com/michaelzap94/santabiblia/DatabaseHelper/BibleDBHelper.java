@@ -6,6 +6,8 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.text.Html;
+
+import com.michaelzap94.santabiblia.models.Concordance;
 import com.michaelzap94.santabiblia.models.Verse;
 
 import java.util.ArrayList;
@@ -77,13 +79,13 @@ public class BibleDBHelper {
                     }
 
                     String textToBeParsed = "<b>" + verse + "</b>" + ". " + text.trim();
-                    String textParsed;
+//                    String textParsed;
 
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        textParsed = Html.fromHtml(textToBeParsed, Html.FROM_HTML_MODE_COMPACT).toString();
-                    } else {
-                        textParsed = Html.fromHtml(textToBeParsed).toString();
-                    }
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//                        textParsed = Html.fromHtml(textToBeParsed, Html.FROM_HTML_MODE_COMPACT).toString();
+//                    } else {
+//                        textParsed = Html.fromHtml(textToBeParsed).toString();
+//                    }
                     String finalText = textToBeParsed;
 
                     //If a Verse is in the array already and we see the same verse again, it's because there are 2+ titles
@@ -96,7 +98,6 @@ public class BibleDBHelper {
                         existingVerse.setTextTitle(newTextTitle);
                     }
 
-
                     innerCursor.moveToNext();
                 }
             }
@@ -104,6 +105,12 @@ public class BibleDBHelper {
         } catch (Exception e) {
         }
         return list;
+    }
+
+    public ArrayList<Concordance> getConcordance(int book_id, String marker){
+        ArrayList<Concordance> list = new ArrayList();
+        return list;
+
     }
 
 //    public ArrayList<Verse> getVersesSimple(int book_id, int chapter_number) {

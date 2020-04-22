@@ -1,5 +1,8 @@
 package com.michaelzap94.santabiblia.adapters;
 
+import android.app.Activity;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
@@ -9,17 +12,23 @@ import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.michaelzap94.santabiblia.Bible;
 import com.michaelzap94.santabiblia.R;
+import com.michaelzap94.santabiblia.dialogs.GridAdapter;
 import com.michaelzap94.santabiblia.models.Verse;
 
 import java.util.ArrayList;
@@ -28,9 +37,11 @@ import java.util.List;
 public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecyclerViewAdapter.VersesViewHolder> {
     private static final String TAG = "VersesRecyclerViewAdapt";
     ArrayList<Verse> verseArrayList;
+    private Activity ctx;
 
-    public VersesRecyclerViewAdapter(ArrayList<Verse> verseArrayList) {
+    public VersesRecyclerViewAdapter(Activity ctx, ArrayList<Verse> verseArrayList) {
         this.verseArrayList = verseArrayList;
+        this.ctx = ctx;
         Log.d(TAG, "VersesFragment: REcyclerview: INIT: "+ verseArrayList.size());
     }
 
@@ -87,9 +98,16 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
                 ClickableSpan clickableSpan = new ClickableSpan() {
                     @Override
                     public void onClick(View textView) {
-//                        startActivity(new Intent(MyActivity.this, NextActivity.class));
-                        //Toast.makeText(context, text, duration).show();
-                        Log.d(TAG, "onClick: ITEM ");
+                        if(textView instanceof TextView){
+                            TextView tv = (TextView) textView;
+                            if(tv.getText() instanceof Spanned) {
+                                Spanned s = (Spanned) tv.getText();
+                                int start = s.getSpanStart(this);
+                                int end = s.getSpanEnd(this);
+                                Log.d(TAG, "onClick " +verse.getBookId() + " " + s.subSequence(start, end));
+                                openDialogConc(verse.getBookId(), s.subSequence(start, end).toString());
+                            }
+                        }
                     }
                     @Override
                     public void updateDrawState(TextPaint ds) {
@@ -115,4 +133,33 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
 
         }
     }
+
+    public void openDialogConc(int bookId, String elementClicked) {
+
+
+        DisplayMetrics metrics = ctx.getResources().getDisplayMetrics();
+
+        int DeviceTotalWidth = metrics.widthPixels;
+        int DeviceTotalHeight = metrics.heightPixels;
+
+        final Dialog dialog = new Dialog(ctx);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_chapters_grid);
+        dialog.getWindow().setLayout(DeviceTotalWidth ,DeviceTotalHeight);
+        dialog.show();
+    }
+
+//    public void openDialogConc(View textView) {
+//        Log.d(TAG, "openDialogConc: " + textView);
+//        DisplayMetrics metrics = ctx.getResources().getDisplayMetrics();
+//
+//        int DeviceTotalWidth = metrics.widthPixels;
+//        int DeviceTotalHeight = metrics.heightPixels;
+//
+//        final Dialog dialog = new Dialog(ctx);
+//        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//        dialog.setContentView(R.layout.dialog_chapters_grid);
+//        dialog.getWindow().setLayout(DeviceTotalWidth ,DeviceTotalHeight);
+//        dialog.show();
+//    }
 }

@@ -65,9 +65,9 @@ public class Verse implements Parcelable {
         dest.writeInt(this.is_fav);
     }
 
-    //public int getId() {
-//        return this.id;
-//    }
+    public int getBookId() {
+        return this.book_id;
+    }
 
     public int getVerse() {
         return this.verse;
