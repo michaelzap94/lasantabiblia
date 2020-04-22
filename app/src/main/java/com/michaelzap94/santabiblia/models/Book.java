@@ -6,16 +6,33 @@ public class Book {
     private int id;
     private String name;
     private int numcap;
+    private int tag;
+    private String shortName;
 
-    public Book(int id, String name, int numcap) {
+    public Book(int id, int tag, String name, int numcap) {
         this.id = id;
+        this.tag = tag;
         this.name = name;
         this.numcap = numcap;
+    }
+
+    public Book(int id, int tag, String name, String shortName, int numcap) {
+        this.id = id;
+        this.tag = tag;
+        this.name = name;
+        this.shortName = shortName;
+        this.numcap = numcap;
+    }
+
+    public String getShortName() {
+        return this.shortName;
     }
 
     public int getId() {
         return this.id;
     }
+
+    public int getTag() { return  this.tag; }
 
     public String getName() {
         return this.name;
