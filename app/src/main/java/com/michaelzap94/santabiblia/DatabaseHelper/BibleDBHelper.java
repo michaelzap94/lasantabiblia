@@ -84,7 +84,7 @@ public class BibleDBHelper {
                     } else {
                         textParsed = Html.fromHtml(textToBeParsed).toString();
                     }
-                    String finalText = textParsed;
+                    String finalText = textToBeParsed;
 
                     //If a Verse is in the array already and we see the same verse again, it's because there are 2+ titles
                     if(!history.containsKey(verse)){

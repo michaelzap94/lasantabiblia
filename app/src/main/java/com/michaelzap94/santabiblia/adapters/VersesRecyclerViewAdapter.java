@@ -1,12 +1,20 @@
 package com.michaelzap94.santabiblia.adapters;
 
+import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
+import android.text.Html;
 import android.text.SpannableString;
 import android.text.Spanned;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -66,30 +74,44 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
         }
 
         void bind(Verse verse) {
-//            SpannableString ss = new SpannableString("Android is a Software stack");
-//            ClickableSpan clickableSpan = new ClickableSpan() {
-//                @Override
-//                public void onClick(View textView) {
-//                    startActivity(new Intent(MyActivity.this, NextActivity.class));
-//                }
-//                @Override
-//                public void updateDrawState(TextPaint ds) {
-//                    super.updateDrawState(ds);
-//                    ds.setUnderlineText(false);
-//                }
-//            };
-//            ss.setSpan(clickableSpan, 22, 27, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-//
-//            TextView textView = (TextView) findViewById(R.id.hello);
-//            textView.setText(ss);
-//            textView.setMovementMethod(LinkMovementMethod.getInstance());
-//            textView.setHighlightColor(Color.TRANSPARENT);
+            String textWithHTML = verse.getText();
+            Spanned spannedTextVerse;
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                spannedTextVerse = Html.fromHtml(textWithHTML, Html.FROM_HTML_MODE_COMPACT);
+            } else {
+                spannedTextVerse = Html.fromHtml(textWithHTML);
+            }
+            if(textWithHTML.indexOf("[") > -1 && textWithHTML.indexOf("†]") > -1){
+                SpannableString ss = new SpannableString(spannedTextVerse);
+                ClickableSpan clickableSpan = new ClickableSpan() {
+                    @Override
+                    public void onClick(View textView) {
+//                        startActivity(new Intent(MyActivity.this, NextActivity.class));
+                        //Toast.makeText(context, text, duration).show();
+                        Log.d(TAG, "onClick: ITEM ");
+                    }
+                    @Override
+                    public void updateDrawState(TextPaint ds) {
+                        super.updateDrawState(ds);
+                        ds.setUnderlineText(false);
+                    }
+                };
+                ss.setSpan(clickableSpan, spannedTextVerse.toString().indexOf("["), spannedTextVerse.toString().indexOf("]") + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                txtView_verse.setText(ss, TextView.BufferType.SPANNABLE);
+                txtView_verse.setMovementMethod(LinkMovementMethod.getInstance());
+                txtView_verse.setHighlightColor(Color.TRANSPARENT);
+
+            } else {
+                txtView_verse.setText(spannedTextVerse);
+            }
+
             //Bind data to layout elements
             if(verse.getTextTitle() != null){
                 txtView_title.setText(verse.getTextTitle());
                 txtView_title.setVisibility(View.VISIBLE);
             }
-            txtView_verse.setText(verse.getText());
 
         }
     }
