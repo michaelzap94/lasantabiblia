@@ -97,6 +97,8 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
             Spanned spannedTextVerse = verse.getTextSpanned();
             String stringTextVerse = spannedTextVerse.toString();
 
+            Log.d(TAG, "bind: " + stringTextVerse);
+
             if(stringTextVerse.indexOf("†") > -1){
                 SpannableString ss = new SpannableString(spannedTextVerse);
 
@@ -118,8 +120,8 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
                                     Spanned s = (Spanned) tv.getText();
                                     int start = s.getSpanStart(this);
                                     int end = s.getSpanEnd(this);
-                                    Log.d(TAG, "onClick " +verse.getBookId() + " " + s.subSequence(start, end));
-                                    openDialogConc(verse.getBookId(), s.subSequence(start, end).toString());
+                                    Log.d(TAG, "onClick " +verse.getBookNumber() + " " + s.subSequence(start, end));
+                                    openDialogConc(verse.getBookNumber(), s.subSequence(start, end).toString());
                                 }
                             }
                         }
@@ -155,9 +157,9 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
         }
     }
 
-    public void openDialogConc(int bookId, String elementClicked) {
+    public void openDialogConc(int bookNumber, String elementClicked) {
 
-        String[] arrToshow = BibleDBHelper.getInstance(ctx).getConcordance(bookId, elementClicked);
+        String[] arrToshow = BibleDBHelper.getInstance(ctx).getConcordance(bookNumber, elementClicked);
         // setup the alert builder
         AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
         builder.setTitle("Concordancia:");

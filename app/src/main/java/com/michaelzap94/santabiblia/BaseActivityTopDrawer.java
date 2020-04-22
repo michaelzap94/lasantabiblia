@@ -90,7 +90,7 @@ public abstract class BaseActivityTopDrawer extends AppCompatActivity {
         Book book = (Book) BookHelper.getBook(position);
         Intent myIntent = new Intent(ct, Bible.class);
         myIntent.setFlags(FLAG_ACTIVITY_CLEAR_TOP);
-        myIntent.putExtra("book", book.getId());
+        myIntent.putExtra("book", book.getBookNumber());
         myIntent.putExtra("chapter", 1);
         myIntent.putExtra("verse", 0);
         ct.startActivity(myIntent);

@@ -29,7 +29,7 @@ public class Verse implements Parcelable {
     public static final int NO_FAVORITO = 0;
     //protected int id;
     protected int is_fav;
-    protected int book_id;
+    protected int book_number;
     protected int chapter_number;
     protected int verse;
     protected String text;
@@ -37,8 +37,8 @@ public class Verse implements Parcelable {
     protected Spanned textSpanned;
 
 
-    public Verse(int book_id, int chapter_number, int verse, Spanned text, String textTitle, int is_fav) {
-        this.book_id = book_id;
+    public Verse(int book_number, int chapter_number, int verse, Spanned text, String textTitle, int is_fav) {
+        this.book_number = book_number;
         this.chapter_number = chapter_number;
         this.verse = verse;
         //this.text = text;
@@ -48,7 +48,7 @@ public class Verse implements Parcelable {
     }
 
     public Verse(Parcel in) {
-        this.book_id = in.readInt();
+        this.book_number = in.readInt();
         this.chapter_number = in.readInt();
         this.verse = in.readInt();
         this.text = in.readString();
@@ -61,15 +61,15 @@ public class Verse implements Parcelable {
 
     public void writeToParcel(Parcel dest, int flags) {
         //dest.writeInt(this.id);
-        dest.writeInt(this.book_id);
+        dest.writeInt(this.book_number);
         dest.writeInt(this.chapter_number);
         dest.writeInt(this.verse);
         dest.writeString(this.text);
         dest.writeInt(this.is_fav);
     }
 
-    public int getBookId() {
-        return this.book_id;
+    public int getBookNumber() {
+        return this.book_number;
     }
 
     public int getVerse() {

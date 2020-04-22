@@ -46,7 +46,7 @@ public class BibleDBHelper {
     }
 
 
-    public ArrayList<Verse> getVerses(int book_id, int chapter_number) {
+    public ArrayList<Verse> getVerses(int book_number, int chapter_number) {
         Cursor innerCursor;
         int rowCount;
         int i;
@@ -57,7 +57,7 @@ public class BibleDBHelper {
             String query = "SELECT verses.verse , verses.text, stories.title, stories.verse AS story_at_verse, order_if_several FROM verses LEFT JOIN stories" +
                     " ON verses.book_number =  stories.book_number AND verses.chapter =  stories.chapter AND verses.verse = stories.verse " +
                     " WHERE verses.book_number = ? AND verses.chapter = ? ORDER BY verses.book_number, verses.chapter, verses.verse, stories.verse";
-            innerCursor = openDataBaseNoHelper(DB_NAME_BIBLE_CONTENT).rawQuery(query, new String[] {String.valueOf(book_id), String.valueOf(chapter_number)});
+            innerCursor = openDataBaseNoHelper(DB_NAME_BIBLE_CONTENT).rawQuery(query, new String[] {String.valueOf(book_number), String.valueOf(chapter_number)});
             if (innerCursor.moveToFirst()) {
                 rowCount = innerCursor.getCount();
                 for (i = 0; i < rowCount; i++) {
@@ -90,7 +90,7 @@ public class BibleDBHelper {
 
                     //If a Verse is in the array already and we see the same verse again, it's because there are 2+ titles
                     if(!history.containsKey(verse)){
-                        list.add(new Verse(book_id, chapter_number, verse, textSpanned, textTitle, 0));
+                        list.add(new Verse(book_number, chapter_number, verse, textSpanned, textTitle, 0));
                         history.put(verse, true);
                     } else {
                         Verse existingVerse = list.get(verse - 1);
@@ -107,7 +107,7 @@ public class BibleDBHelper {
         return list;
     }
 
-    public String[] getConcordance(int book_id, String marker){
+    public String[] getConcordance(int book_number, String marker){
         //ArrayList<Concordance> list = new ArrayList();
         //String toReturn = "No element could be found";
         ArrayList<String> listString = new ArrayList<>();
@@ -120,7 +120,7 @@ public class BibleDBHelper {
         try {
             String query = "SELECT chapter_number_from, verse_number_from, text  FROM commentaries " +
                     " WHERE book_number = ? AND marker = ? ORDER BY marker";
-            innerCursor = openDataBaseNoHelper(DB_NAME_BIBLE_CONTENT).rawQuery(query, new String[] {String.valueOf(book_id), String.valueOf(marker)});
+            innerCursor = openDataBaseNoHelper(DB_NAME_BIBLE_CONTENT).rawQuery(query, new String[] {String.valueOf(book_number), String.valueOf(marker)});
             if (innerCursor.moveToFirst()) {
                 rowCount = innerCursor.getCount();
                 for (i = 0; i < rowCount; i++) {

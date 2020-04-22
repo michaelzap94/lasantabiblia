@@ -27,7 +27,7 @@ public class VersesFragment extends Fragment {
     private static final String TAG = "VersesFragment";
     public static final String TAB_VERSES_NUMBER = "tab_verses_number";
     View root;
-    private int book_id;
+    private int book_number;
     private int chapter_number;
     private int verse_number;
 
@@ -52,7 +52,7 @@ public class VersesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.book_id = getArguments().getInt("book");
+        this.book_number = getArguments().getInt("book");
         this.chapter_number = getArguments().getInt("chapter");
         this.verse_number = getArguments().getInt("verse");
         Log.d(TAG, "onCreate: VersesFragment " + chapter_number);
@@ -63,7 +63,7 @@ public class VersesFragment extends Fragment {
         //ViewModel will help us show the exact same data, and resume the application from when the user left last time.
         viewModel = new ViewModelProvider(this).get(VersesViewModel.class);
         //Use when we need to reload data
-        viewModel.fetchData(this.book_id, this.chapter_number);//refresh -> load data
+        viewModel.fetchData(this.book_number, this.chapter_number);//refresh -> load data
         //viewModel.getUserMutableLiveData().observe(context, verseListUpdateObserver);
         //observerViewModel();
     }

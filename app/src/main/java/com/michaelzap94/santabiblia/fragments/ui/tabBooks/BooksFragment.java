@@ -38,10 +38,10 @@ public class BooksFragment extends Fragment {
         super.onCreate(savedInstanceState);
         switch (getArguments().getInt(TAB_NAME_CHAPTERS)){
             case 0:
-                bookArrayList = BookHelper.getLibrosAT();
+                bookArrayList = BookHelper.getbooksOT();
                 break;
             case 1:
-                bookArrayList = BookHelper.getLibrosNT();
+                bookArrayList = BookHelper.getbooksNT();
                 break;
             case 2:
                 bookArrayList = new ArrayList();

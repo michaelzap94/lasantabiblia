@@ -87,7 +87,7 @@ public class CommonMethods {
                     case R.id.bnav_bible:
                         Intent myIntent = new Intent(activity, Bible.class);
                         myIntent.setFlags(FLAG_ACTIVITY_REORDER_TO_FRONT);
-                        myIntent.putExtra("book", 19);
+                        myIntent.putExtra("book", 430);
                         myIntent.putExtra("chapter", 1);
                         myIntent.putExtra("verse", 0);
                         activity.startActivity(myIntent);
