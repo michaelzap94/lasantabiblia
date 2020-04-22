@@ -27,6 +27,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.michaelzap94.santabiblia.Bible;
+import com.michaelzap94.santabiblia.DatabaseHelper.BibleDBHelper;
 import com.michaelzap94.santabiblia.R;
 import com.michaelzap94.santabiblia.dialogs.GridAdapter;
 import com.michaelzap94.santabiblia.models.Verse;
@@ -156,16 +157,29 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
 
     public void openDialogConc(int bookId, String elementClicked) {
 
+        String[] arrToshow = BibleDBHelper.getInstance(ctx).getConcordance(bookId, elementClicked);
+        // setup the alert builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+        builder.setTitle("Concordancia:");
 
-        DisplayMetrics metrics = ctx.getResources().getDisplayMetrics();
+        // add a list
+        //String[] animals = {textToShow};
+        builder.setItems(arrToshow, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int position) {
+                Log.d(TAG, "onClick: position dialog: " + position);
+//                switch (position) {
+//                    case 0: // horse
+//                    case 1: // cow
+//                    case 2: // camel
+//                    case 3: // sheep
+//                    case 4: // goat
+//                }
+            }
+        });
 
-        int DeviceTotalWidth = metrics.widthPixels;
-        int DeviceTotalHeight = metrics.heightPixels - 200;
-
-        final Dialog dialog = new Dialog(ctx);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.dialog_chapters_grid);
-        dialog.getWindow().setLayout(DeviceTotalWidth ,DeviceTotalHeight);
+        // create and show the alert dialog
+        AlertDialog dialog = builder.create();
         dialog.show();
     }
 

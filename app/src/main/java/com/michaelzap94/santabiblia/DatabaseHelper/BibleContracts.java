@@ -23,6 +23,13 @@ public class BibleContracts {
         public static final String COL_ORDER_IF_SEVERAL = "order_if_several";
         public static final String COL_TITLE = "title";
     }
+    public static final class CommentariesContract implements BaseColumns{
+        public static final String COL_BOOK_ID = "book_number";
+        public static final String COL_CHAPTER_FROM = "chapter_number_from";
+        public static final String COL_VERSE_FROM = "verse_number_from";
+        public static final String COL_TEXT = "text";
+        public static final String COL_MARKER = "marker";
+    }
     public static final class VersesContract implements BaseColumns{
         public static final String TABLE_NAME = "books";
         public static final String COL_BOOK_ID = "book_number";
