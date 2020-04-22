@@ -94,34 +94,49 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
             Verse verse = verseArrayList.get(getAdapterPosition());
 
             Spanned spannedTextVerse = verse.getTextSpanned();
+            String stringTextVerse = spannedTextVerse.toString();
 
-            if(spannedTextVerse.toString().indexOf("[") > -1 && spannedTextVerse.toString().indexOf("†]") > -1){
+            if(stringTextVerse.indexOf("†") > -1){
                 SpannableString ss = new SpannableString(spannedTextVerse);
-                ClickableSpan clickableSpan = new ClickableSpan() {
-                    @Override
-                    public void onClick(View textView) {
-                        if(textView instanceof TextView){
-                            TextView tv = (TextView) textView;
-                            if(tv.getText() instanceof Spanned) {
-                                Spanned s = (Spanned) tv.getText();
-                                int start = s.getSpanStart(this);
-                                int end = s.getSpanEnd(this);
-                                Log.d(TAG, "onClick " +verse.getBookId() + " " + s.subSequence(start, end));
-                                openDialogConc(verse.getBookId(), s.subSequence(start, end).toString());
+
+                int start = stringTextVerse.indexOf("[");
+                int end = stringTextVerse.indexOf("]");
+                //int index = stringTextVerse.indexOf("†");
+
+                while (start >= 0 && end >= 0) {
+                    Log.d(TAG, "start: " + start + "char: " + stringTextVerse.charAt(start));
+                    Log.d(TAG, "end: " + end + "char: " + stringTextVerse.charAt(end));
+                    //Log.d(TAG, "index: " + index + "char: " + stringTextVerse.charAt(index));
+
+                    ClickableSpan clickableSpan = new ClickableSpan() {
+                        @Override
+                        public void onClick(View textView) {
+                            if(textView instanceof TextView){
+                                TextView tv = (TextView) textView;
+                                if(tv.getText() instanceof Spanned) {
+                                    Spanned s = (Spanned) tv.getText();
+                                    int start = s.getSpanStart(this);
+                                    int end = s.getSpanEnd(this);
+                                    Log.d(TAG, "onClick " +verse.getBookId() + " " + s.subSequence(start, end));
+                                    openDialogConc(verse.getBookId(), s.subSequence(start, end).toString());
+                                }
                             }
                         }
-                    }
-                    @Override
-                    public void updateDrawState(TextPaint ds) {
-                        super.updateDrawState(ds);
-                        ds.setUnderlineText(false);
-                    }
-                };
-                ss.setSpan(clickableSpan, spannedTextVerse.toString().indexOf("["), spannedTextVerse.toString().indexOf("]") + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        @Override
+                        public void updateDrawState(TextPaint ds) {
+                            super.updateDrawState(ds);
+                            ds.setUnderlineText(false);
+                        }
+                    };
+                    ss.setSpan(clickableSpan, start, end + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    txtView_verse.setMovementMethod(LinkMovementMethod.getInstance());
+                    txtView_verse.setHighlightColor(Color.TRANSPARENT);
 
+                    start = stringTextVerse.indexOf("[", start + 1);
+                    end = stringTextVerse.indexOf("]", end + 1);
+                    //index = stringTextVerse.indexOf("†", index + 1);
+                }
                 txtView_verse.setText(ss, TextView.BufferType.SPANNABLE);
-                txtView_verse.setMovementMethod(LinkMovementMethod.getInstance());
-                txtView_verse.setHighlightColor(Color.TRANSPARENT);
 
             } else {
                 txtView_verse.setText(spannedTextVerse);
@@ -145,7 +160,7 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
         DisplayMetrics metrics = ctx.getResources().getDisplayMetrics();
 
         int DeviceTotalWidth = metrics.widthPixels;
-        int DeviceTotalHeight = metrics.heightPixels;
+        int DeviceTotalHeight = metrics.heightPixels - 200;
 
         final Dialog dialog = new Dialog(ctx);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
