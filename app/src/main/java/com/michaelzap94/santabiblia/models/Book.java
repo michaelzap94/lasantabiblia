@@ -6,19 +6,19 @@ public class Book {
     private int id;
     private String name;
     private int numcap;
-    private int tag;
+    private int book_number;
     private String shortName;
 
-    public Book(int id, int tag, String name, int numcap) {
+    public Book(int id, int book_number, String name, int numcap) {
         this.id = id;
-        this.tag = tag;
+        this.book_number = book_number;
         this.name = name;
         this.numcap = numcap;
     }
 
-    public Book(int id, int tag, String name, String shortName, int numcap) {
+    public Book(int id, int book_number, String name, String shortName, int numcap) {
         this.id = id;
-        this.tag = tag;
+        this.book_number = book_number;
         this.name = name;
         this.shortName = shortName;
         this.numcap = numcap;
@@ -32,7 +32,7 @@ public class Book {
         return this.id;
     }
 
-    public int getTag() { return  this.tag; }
+    public int getBookNumber() { return  this.book_number; }
 
     public String getName() {
         return this.name;
