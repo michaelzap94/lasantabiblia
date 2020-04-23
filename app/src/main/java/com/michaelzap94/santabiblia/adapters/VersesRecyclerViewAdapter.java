@@ -166,10 +166,10 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
 
         }
     }
-    public void openDialogVerses2(HashMap<String, ArrayList<Verse>> versesFromCommentaries){
-        VersesInsideDialog vid = new VersesInsideDialog(versesFromCommentaries);
+    public void openDialogVerses2(String title, HashMap<String, ArrayList<Verse>> versesFromCommentaries){
+        VersesInsideDialog vid = new VersesInsideDialog(title, versesFromCommentaries);
+        vid.setStyle(DialogFragment.STYLE_NORMAL, R.style.CustomDialog);
         vid.show(((AppCompatActivity) ctx).getSupportFragmentManager(),"anything");
-
     }
 
 
@@ -190,15 +190,7 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
                         Log.d(TAG, "onClick: position dialog: " + position);
                         HashMap<String, ArrayList<Verse>> versesFromCommentaries = BibleDBHelper.getInstance(ctx).getVersesFromCommentaries(arrReturned[position]);
                         Log.d(TAG,"Created hashmap size: " + versesFromCommentaries.size());
-                        // Using Hashmap.forEach()
-//                        for (Map.Entry mapElement : versesFromCommentaries.entrySet()) {
-//                            String title = (String) mapElement.getKey();
-//                            ArrayList<Verse> verse = (ArrayList<Verse>) mapElement.getValue();
-//                            Log.d(TAG,title + " : " + verse.get(0).getTextSpanned().toString());
-//                            Log.d(TAG, "SIZE: " + verse.size());
-//                        }
-
-                        openDialogVerses2(versesFromCommentaries);
+                        openDialogVerses2(arrToShow[position], versesFromCommentaries);
 
                     }
                 }).show();

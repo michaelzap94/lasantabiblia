@@ -26,9 +26,11 @@ public class VersesInsideDialog extends DialogFragment {
     HashMap<String, ArrayList<Verse>> verseArrayList;
     RecyclerView rv;
     DialogRecyclerView adapter;
+    String title;
 
-    public VersesInsideDialog(HashMap<String, ArrayList<Verse>> verseArrayList){
+    public VersesInsideDialog(String title, HashMap<String, ArrayList<Verse>> verseArrayList){
         this.verseArrayList = verseArrayList;
+        this.title = title;
     }
 
     @Nullable
@@ -44,7 +46,7 @@ public class VersesInsideDialog extends DialogFragment {
         rv.setAdapter(adapter);
         rv.setLayoutManager(new LinearLayoutManager(this.getContext()));
 
-        getDialog().setTitle("My Dialog Title");
+        getDialog().setTitle(this.title);
 
         return rootView;
     }
