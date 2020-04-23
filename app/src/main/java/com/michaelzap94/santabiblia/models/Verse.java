@@ -47,6 +47,15 @@ public class Verse implements Parcelable {
         this.is_fav = is_fav;
     }
 
+    public Verse(int book_number, int chapter_number, int verse, Spanned text, int is_fav) {
+        this.book_number = book_number;
+        this.chapter_number = chapter_number;
+        this.verse = verse;
+        //this.text = text;
+        this.textSpanned = text;
+        this.is_fav = is_fav;
+    }
+
     public Verse(Parcel in) {
         this.book_number = in.readInt();
         this.chapter_number = in.readInt();

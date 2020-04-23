@@ -2,6 +2,7 @@ package com.michaelzap94.santabiblia.adapters;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -14,6 +15,7 @@ import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +23,7 @@ import android.view.Window;
 import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
@@ -33,7 +35,9 @@ import com.michaelzap94.santabiblia.dialogs.GridAdapter;
 import com.michaelzap94.santabiblia.models.Verse;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecyclerViewAdapter.VersesViewHolder> {
     private static final String TAG = "VersesRecyclerViewAdapt";
@@ -121,7 +125,7 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
                                     int start = s.getSpanStart(this);
                                     int end = s.getSpanEnd(this);
                                     Log.d(TAG, "onClick " +verse.getBookNumber() + " " + s.subSequence(start, end));
-                                    openDialogReferences(verse.getBookNumber(), s.subSequence(start, end).toString());
+                                    openDialogReferencesMaterial(verse.getBookNumber(), s.subSequence(start, end).toString());
                                 }
                             }
                         }
@@ -144,10 +148,7 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
             } else {
                 txtView_verse.setText(spannedTextVerse);
             }
-
             //Log.d(TAG, "position: verse.getTextTitle()" + getAdapterPosition() + " null: " +  ((boolean) (null == verse.getTextTitle())));
-
-
             //Bind data to layout elements
             if(verse.getTextTitle() != null){
                 txtView_title.setText(verse.getTextTitle());
@@ -157,29 +158,45 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
         }
     }
 
-    public void openDialogReferences(int bookNumber, String elementClicked) {
-
+    public void openDialogReferencesMaterial(int bookNumber, String elementClicked){
         String[] arrToshow = BibleDBHelper.getInstance(ctx).getConcordance(bookNumber, elementClicked);
+        Context context = new ContextThemeWrapper(ctx, R.style.AppTheme2);
+        new MaterialAlertDialogBuilder(context)
+                .setTitle("Referencias:")
+                .setItems(arrToshow,  new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int position) {
+                        Log.d(TAG, "onClick: position dialog: " + position);
+                        HashMap<String, ArrayList<Verse>> versesFromCommentaries = BibleDBHelper.getInstance(ctx).getVersesFromCommentaries(arrToshow[position]);
+                        Log.d(TAG,"Created hashmap size: " + versesFromCommentaries.size());
+                        // Using Hashmap.forEach()
+                        for (Map.Entry mapElement : versesFromCommentaries.entrySet()) {
+                            String title = (String) mapElement.getKey();
+                            ArrayList<Verse> verse = (ArrayList<Verse>) mapElement.getValue();
+                            Log.d(TAG,title + " : " + verse.get(0).getTextSpanned().toString());
+                            Log.d(TAG, "SIZE: " + verse.size());
+                        }
+                    }
+                }).show();
+    }
 
-//        ArrayList<CharSequence> spannedArray = new ArrayList<>();
-//
-//        for (int i = 0; i < arrToshow.length; i++) {
-//            spannedArray.add(Html.fromHtml(arrToshow[i]));
-//        }
-
-        // setup the alert builder
+    public void openDialogReferences(int bookNumber, String elementClicked) {
+        String[] arrToshow = BibleDBHelper.getInstance(ctx).getConcordance(bookNumber, elementClicked);
         AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
         builder.setTitle("Concordancia:");
-
-
-
-        // add a list
-        //String[] animals = {textToShow};
         builder.setItems( arrToshow, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int position) {
                 Log.d(TAG, "onClick: position dialog: " + position);
-
+                HashMap<String, ArrayList<Verse>> versesFromCommentaries = BibleDBHelper.getInstance(ctx).getVersesFromCommentaries(arrToshow[position]);
+                Log.d(TAG,"Created hashmap size: " + versesFromCommentaries.size());
+                // Using Hashmap.forEach()
+                for (Map.Entry mapElement : versesFromCommentaries.entrySet()) {
+                    String title = (String) mapElement.getKey();
+                    ArrayList<Verse> verse = (ArrayList<Verse>) mapElement.getValue();
+                    Log.d(TAG,title + " : " + verse.get(0).getTextSpanned().toString());
+                    Log.d(TAG, "SIZE: " + verse.size());
+                }
             }
         });
 
