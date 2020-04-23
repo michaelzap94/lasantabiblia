@@ -26,12 +26,19 @@ import android.widget.Toast;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.michaelzap94.santabiblia.Bible;
 import com.michaelzap94.santabiblia.DatabaseHelper.BibleDBHelper;
 import com.michaelzap94.santabiblia.R;
 import com.michaelzap94.santabiblia.dialogs.GridAdapter;
+import com.michaelzap94.santabiblia.fragments.dialogs.VersesInsideDialog;
 import com.michaelzap94.santabiblia.models.Verse;
 
 import java.util.ArrayList;
@@ -42,9 +49,9 @@ import java.util.Map;
 public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecyclerViewAdapter.VersesViewHolder> {
     private static final String TAG = "VersesRecyclerViewAdapt";
     ArrayList<Verse> verseArrayList;
-    private Activity ctx;
+    private Context ctx;
 
-    public VersesRecyclerViewAdapter(Activity ctx, ArrayList<Verse> verseArrayList) {
+    public VersesRecyclerViewAdapter(Context ctx, ArrayList<Verse> verseArrayList) {
         this.verseArrayList = verseArrayList;
         this.ctx = ctx;
         Log.d(TAG, "VersesFragment: REcyclerview: INIT: "+ verseArrayList.size());
@@ -62,6 +69,7 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
     @NonNull
     @Override
     public VersesRecyclerViewAdapter.VersesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        this.ctx = parent.getContext();
         View rootView = LayoutInflater.from(parent.getContext()).inflate(R.layout.verses_adapter_item,parent,false);
         return new VersesRecyclerViewAdapter.VersesViewHolder(rootView);
     }
@@ -157,10 +165,40 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
 
         }
     }
+    public void openDialogVerses2(){
+
+//        final FragmentManager fm = ((AppCompatActivity) ctx).getSupportFragmentManager();
+        VersesInsideDialog vid = new VersesInsideDialog();
+
+        vid.show(((AppCompatActivity) ctx).getSupportFragmentManager(),"anything");
+
+    }
+    public void openDialogVerses(){
+
+        FragmentTransaction ft = ((FragmentActivity) ctx).getSupportFragmentManager().beginTransaction();
+        Fragment prev = ((FragmentActivity) ctx).getSupportFragmentManager().findFragmentByTag("dialog");
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+
+        // Create and show the dialog.
+        DialogFragment newFragment = new VersesInsideDialog();
+        newFragment.show(ft, "dialog");
+
+        //final FragmentManager fm = ((AppCompatActivity) ctx).getSupportFragmentManager();
+        //final VersesInsideDialog vid = new VersesInsideDialog();
+
+        //vid.show(fm,"anything");
+
+    }
 
     public void openDialogReferencesMaterial(int bookNumber, String elementClicked){
         String[] arrToshow = BibleDBHelper.getInstance(ctx).getConcordance(bookNumber, elementClicked);
         Context context = new ContextThemeWrapper(ctx, R.style.AppTheme2);
+//        final FragmentManager fm = ((FragmentActivity) ctx).getSupportFragmentManager();
+//        final VersesInsideDialog vid = new VersesInsideDialog();
+
         new MaterialAlertDialogBuilder(context)
                 .setTitle("Referencias:")
                 .setItems(arrToshow,  new DialogInterface.OnClickListener() {
@@ -176,6 +214,9 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
                             Log.d(TAG,title + " : " + verse.get(0).getTextSpanned().toString());
                             Log.d(TAG, "SIZE: " + verse.size());
                         }
+
+                        openDialogVerses2();
+
                     }
                 }).show();
     }

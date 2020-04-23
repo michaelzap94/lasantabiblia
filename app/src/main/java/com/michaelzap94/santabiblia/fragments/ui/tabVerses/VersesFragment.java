@@ -56,7 +56,7 @@ public class VersesFragment extends Fragment {
         this.chapter_number = getArguments().getInt("chapter");
         this.verse_number = getArguments().getInt("verse");
         Log.d(TAG, "onCreate: VersesFragment " + chapter_number);
-        rvAdapter = new VersesRecyclerViewAdapter(getActivity(), new ArrayList<>());
+        rvAdapter = new VersesRecyclerViewAdapter( getActivity(), new ArrayList<>());
 
         //get viewmodel class and properties, pass this context so LifeCycles are handled by ViewModel,
         // in case the Activity is destroyed and recreated(screen roation)
