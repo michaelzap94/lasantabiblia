@@ -41,23 +41,26 @@ import java.util.Map;
 
 public class DialogRecyclerView extends RecyclerView.Adapter<DialogRecyclerView.VersesDialogViewHolder> {
     private static final String TAG = "DialogRecyclerView";
-    ArrayList<Verse> verseDialogArrayList;
+    HashMap<String, ArrayList<Verse>> verseDialogHashMap;
     private Context ctxDialog;
-
-    public DialogRecyclerView(Context ctxDialog, ArrayList<Verse> verseDialogArrayList) {
-        this.verseDialogArrayList = verseDialogArrayList;
+    int totalSize;
+    ArrayList<Verse> versesArrayList = new ArrayList<>();
+    public DialogRecyclerView(Context ctxDialog, HashMap<String, ArrayList<Verse>> verseDialogHashMap) {
+        this.verseDialogHashMap = verseDialogHashMap;
         this.ctxDialog = ctxDialog;
-        Log.d(TAG, "VersesFragment: REcyclerview: INIT: "+ verseDialogArrayList.size());
-    }
+        //this.totalSize = verseDialogHashMap.size();
+        for (Map.Entry mapElement : this.verseDialogHashMap.entrySet()) {
+            String title = (String) mapElement.getKey();
+            ArrayList<Verse> innerVersesArrayList = (ArrayList<Verse>) mapElement.getValue();
+            this.versesArrayList.add(new Verse(0, 0, 0, null, title, 0));
+            this.versesArrayList.addAll(innerVersesArrayList);
+            //Log.d(TAG,title + " : " + verse.get(0).getTextSpanned().toString());
+//            Log.d(TAG, "SIZE: " + verse.size());
+            //this.totalSize = this.totalSize + versesArrayList.size();
+        }
 
-//    //function available so View can update the RecyclerView List once the information is available.
-//    public void updateVersesRecyclerView(List<Verse> _verseDialogArrayList) {
-//        Log.d(TAG, "VersesFragment: REcyclerview: UPDATE: "+ _verseDialogArrayList.size());
-//        verseDialogArrayList.clear();
-//        verseDialogArrayList.addAll(_verseDialogArrayList);
-//        //I have new data, delete everything and add new data
-//        notifyDataSetChanged();
-//    }
+        Log.d(TAG, "VersesFragment: REcyclerview: INIT: "+ verseDialogHashMap.size());
+    }
 
     @NonNull
     @Override
@@ -66,7 +69,6 @@ public class DialogRecyclerView extends RecyclerView.Adapter<DialogRecyclerView.
         View rootView = LayoutInflater.from(parent.getContext()).inflate(R.layout.verses_dialog_adapter_item,parent, false);
         return new DialogRecyclerView.VersesDialogViewHolder(rootView);
     }
-
     @Override
     public void onBindViewHolder(@NonNull DialogRecyclerView.VersesDialogViewHolder holder, int position) {
         Log.d(TAG, "RV onBindViewHolder: dialog " +  position);
@@ -74,16 +76,13 @@ public class DialogRecyclerView extends RecyclerView.Adapter<DialogRecyclerView.
     }
     @Override
     public int getItemViewType(int position) {
-        Log.d(TAG, "RV getItemViewType: dialog " +  position);
-
         return position;
 
     }
     @Override
     public int getItemCount() {
-        Log.d(TAG, "RV getItemCount: dialog " +  verseDialogArrayList.size());
-
-        return verseDialogArrayList.size();
+        Log.d(TAG, "RV getItemCount: dialog " +  this.versesArrayList.size());
+        return this.versesArrayList.size();
     }
 
     class VersesDialogViewHolder extends RecyclerView.ViewHolder {
@@ -99,12 +98,13 @@ public class DialogRecyclerView extends RecyclerView.Adapter<DialogRecyclerView.
 
         void bind() {
             Log.d(TAG, "bind: position dialog "+ getAdapterPosition());
-            Verse verse = verseDialogArrayList.get(getAdapterPosition());
-            Spanned spannedTextVerse = verse.getTextSpanned();
-            //String stringTextVerse = spannedTextVerse.toString();
-            Log.d(TAG, "bind: inside dialog: " + spannedTextVerse.toString());
-            txtView_verse_dialog.setText(spannedTextVerse);
-
+            Verse verse = versesArrayList.get(getAdapterPosition());
+            if(verse.getTextSpanned() != null){
+                Spanned spannedTextVerse = verse.getTextSpanned();
+                //String stringTextVerse = spannedTextVerse.toString();
+                Log.d(TAG, "bind: inside dialog: " + spannedTextVerse.toString());
+                txtView_verse_dialog.setText(spannedTextVerse);
+            }
             //Log.d(TAG, "position: verse.getTextTitle()" + getAdapterPosition() + " null: " +  ((boolean) (null == verse.getTextTitle())));
             //Bind data to layout elements
             if(verse.getTextTitle() != null){

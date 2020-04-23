@@ -41,6 +41,7 @@ import com.michaelzap94.santabiblia.dialogs.GridAdapter;
 import com.michaelzap94.santabiblia.fragments.dialogs.VersesInsideDialog;
 import com.michaelzap94.santabiblia.models.Verse;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -165,108 +166,105 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
 
         }
     }
-    public void openDialogVerses2(){
-
-//        final FragmentManager fm = ((AppCompatActivity) ctx).getSupportFragmentManager();
-        VersesInsideDialog vid = new VersesInsideDialog();
-
+    public void openDialogVerses2(HashMap<String, ArrayList<Verse>> versesFromCommentaries){
+        VersesInsideDialog vid = new VersesInsideDialog(versesFromCommentaries);
         vid.show(((AppCompatActivity) ctx).getSupportFragmentManager(),"anything");
 
     }
-    public void openDialogVerses(){
 
-        FragmentTransaction ft = ((FragmentActivity) ctx).getSupportFragmentManager().beginTransaction();
-        Fragment prev = ((FragmentActivity) ctx).getSupportFragmentManager().findFragmentByTag("dialog");
-        if (prev != null) {
-            ft.remove(prev);
-        }
-        ft.addToBackStack(null);
-
-        // Create and show the dialog.
-        DialogFragment newFragment = new VersesInsideDialog();
-        newFragment.show(ft, "dialog");
-
-        //final FragmentManager fm = ((AppCompatActivity) ctx).getSupportFragmentManager();
-        //final VersesInsideDialog vid = new VersesInsideDialog();
-
-        //vid.show(fm,"anything");
-
-    }
 
     public void openDialogReferencesMaterial(int bookNumber, String elementClicked){
-        String[] arrToshow = BibleDBHelper.getInstance(ctx).getConcordance(bookNumber, elementClicked);
         Context context = new ContextThemeWrapper(ctx, R.style.AppTheme2);
-//        final FragmentManager fm = ((FragmentActivity) ctx).getSupportFragmentManager();
-//        final VersesInsideDialog vid = new VersesInsideDialog();
+
+        String[] arrReturned = BibleDBHelper.getInstance(ctx).getReferences(bookNumber, elementClicked);
+        String[] arrToShow = new String[arrReturned.length];
+        for (int i = 0; i < arrReturned.length ; i++) {
+            arrToShow[i] = Html.fromHtml(arrReturned[i]).toString();
+        }
 
         new MaterialAlertDialogBuilder(context)
                 .setTitle("Referencias:")
-                .setItems(arrToshow,  new DialogInterface.OnClickListener() {
+                .setItems(arrToShow,  new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int position) {
                         Log.d(TAG, "onClick: position dialog: " + position);
-                        HashMap<String, ArrayList<Verse>> versesFromCommentaries = BibleDBHelper.getInstance(ctx).getVersesFromCommentaries(arrToshow[position]);
+                        HashMap<String, ArrayList<Verse>> versesFromCommentaries = BibleDBHelper.getInstance(ctx).getVersesFromCommentaries(arrReturned[position]);
                         Log.d(TAG,"Created hashmap size: " + versesFromCommentaries.size());
                         // Using Hashmap.forEach()
-                        for (Map.Entry mapElement : versesFromCommentaries.entrySet()) {
-                            String title = (String) mapElement.getKey();
-                            ArrayList<Verse> verse = (ArrayList<Verse>) mapElement.getValue();
-                            Log.d(TAG,title + " : " + verse.get(0).getTextSpanned().toString());
-                            Log.d(TAG, "SIZE: " + verse.size());
-                        }
+//                        for (Map.Entry mapElement : versesFromCommentaries.entrySet()) {
+//                            String title = (String) mapElement.getKey();
+//                            ArrayList<Verse> verse = (ArrayList<Verse>) mapElement.getValue();
+//                            Log.d(TAG,title + " : " + verse.get(0).getTextSpanned().toString());
+//                            Log.d(TAG, "SIZE: " + verse.size());
+//                        }
 
-                        openDialogVerses2();
+                        openDialogVerses2(versesFromCommentaries);
 
                     }
                 }).show();
     }
 
-    public void openDialogReferences(int bookNumber, String elementClicked) {
-        String[] arrToshow = BibleDBHelper.getInstance(ctx).getConcordance(bookNumber, elementClicked);
-        AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
-        builder.setTitle("Concordancia:");
-        builder.setItems( arrToshow, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int position) {
-                Log.d(TAG, "onClick: position dialog: " + position);
-                HashMap<String, ArrayList<Verse>> versesFromCommentaries = BibleDBHelper.getInstance(ctx).getVersesFromCommentaries(arrToshow[position]);
-                Log.d(TAG,"Created hashmap size: " + versesFromCommentaries.size());
-                // Using Hashmap.forEach()
-                for (Map.Entry mapElement : versesFromCommentaries.entrySet()) {
-                    String title = (String) mapElement.getKey();
-                    ArrayList<Verse> verse = (ArrayList<Verse>) mapElement.getValue();
-                    Log.d(TAG,title + " : " + verse.get(0).getTextSpanned().toString());
-                    Log.d(TAG, "SIZE: " + verse.size());
-                }
-            }
-        });
+//    public void openDialogReferences(int bookNumber, String elementClicked) {
+//        String[] arrToshow = BibleDBHelper.getInstance(ctx).getReferences(bookNumber, elementClicked);
+//        AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+//        builder.setTitle("Concordancia:");
+//        builder.setItems( arrToshow, new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int position) {
+//                Log.d(TAG, "onClick: position dialog: " + position);
+//                HashMap<String, ArrayList<Verse>> versesFromCommentaries = BibleDBHelper.getInstance(ctx).getVersesFromCommentaries(arrToshow[position]);
+//                Log.d(TAG,"Created hashmap size: " + versesFromCommentaries.size());
+//                // Using Hashmap.forEach()
+//                for (Map.Entry mapElement : versesFromCommentaries.entrySet()) {
+//                    String title = (String) mapElement.getKey();
+//                    ArrayList<Verse> verse = (ArrayList<Verse>) mapElement.getValue();
+//                    Log.d(TAG,title + " : " + verse.get(0).getTextSpanned().toString());
+//                    Log.d(TAG, "SIZE: " + verse.size());
+//                }
+//            }
+//        });
+//
+//        // create and show the alert dialog
+//        AlertDialog dialog = builder.create();
+//        dialog.show();
+//    }
 
-        // create and show the alert dialog
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
+//    public void openDialogVerses(){
+//
+//        FragmentTransaction ft = ((FragmentActivity) ctx).getSupportFragmentManager().beginTransaction();
+//        Fragment prev = ((FragmentActivity) ctx).getSupportFragmentManager().findFragmentByTag("dialog");
+//        if (prev != null) {
+//            ft.remove(prev);
+//        }
+//        ft.addToBackStack(null);
+//
+//        // Create and show the dialog.
+//        DialogFragment newFragment = new VersesInsideDialog();
+//        newFragment.show(ft, "dialog");
+//
+//    }
 
-    public void openDialogVersesSpecific(int bookNumber, String elementClicked) {
-
-        String[] arrToshow = BibleDBHelper.getInstance(ctx).getConcordance(bookNumber, elementClicked);
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
-        builder.setTitle("Concordancia:");
-
-        // add a list
-        //String[] animals = {textToShow};
-        builder.setItems( arrToshow, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int position) {
-                Log.d(TAG, "onClick: position dialog: " + position);
-
-            }
-        });
-
-        // create and show the alert dialog
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
+//    public void openDialogVersesSpecific(int bookNumber, String elementClicked) {
+//
+//        String[] arrToshow = BibleDBHelper.getInstance(ctx).getConcordance(bookNumber, elementClicked);
+//
+//        AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+//        builder.setTitle("Concordancia:");
+//
+//        // add a list
+//        //String[] animals = {textToShow};
+//        builder.setItems( arrToshow, new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int position) {
+//                Log.d(TAG, "onClick: position dialog: " + position);
+//
+//            }
+//        });
+//
+//        // create and show the alert dialog
+//        AlertDialog dialog = builder.create();
+//        dialog.show();
+//    }
 
 //    public void openDialogConc(View textView) {
 //        Log.d(TAG, "openDialogConc: " + textView);

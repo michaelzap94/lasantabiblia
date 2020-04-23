@@ -19,13 +19,17 @@ import com.michaelzap94.santabiblia.dialogs.DialogRecyclerView;
 import com.michaelzap94.santabiblia.models.Verse;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class VersesInsideDialog extends DialogFragment {
     private static final String TAG = "VersesInsideDialog";
-    ArrayList<Verse> verseArrayList = new ArrayList<>();
+    HashMap<String, ArrayList<Verse>> verseArrayList;
     RecyclerView rv;
     DialogRecyclerView adapter;
 
+    public VersesInsideDialog(HashMap<String, ArrayList<Verse>> verseArrayList){
+        this.verseArrayList = verseArrayList;
+    }
 
     @Nullable
     @Override
@@ -33,33 +37,14 @@ public class VersesInsideDialog extends DialogFragment {
         View rootView=inflater.inflate(R.layout.verses_dialog_fragment,container,false);
         Log.d(TAG, "onCreateView: inside dialog");
 
-        Spanned textSpanned = Html.fromHtml("<pb/>Y dijo Dios: Sea la luz; <f>[1†]</f> y fue la luz.");
-        verseArrayList.add(new Verse(230, 1, 1, textSpanned, 0));
-        verseArrayList.add(new Verse(230, 1, 1, textSpanned, 0));
-        verseArrayList.add(new Verse(230, 1, 1, textSpanned, 0));
-        verseArrayList.add(new Verse(230, 1, 1, textSpanned, 0));
-        verseArrayList.add(new Verse(230, 1, 1, textSpanned, 0));
-        verseArrayList.add(new Verse(230, 1, 1, textSpanned, 0));
-        verseArrayList.add(new Verse(230, 1, 1, textSpanned, 0));
-        verseArrayList.add(new Verse(230, 1, 1, textSpanned, 0));
-        verseArrayList.add(new Verse(230, 1, 1, textSpanned, 0));
-        verseArrayList.add(new Verse(230, 1, 1, textSpanned, 0));
-        verseArrayList.add(new Verse(230, 1, 1, textSpanned, 0));
-        verseArrayList.add(new Verse(230, 1, 1, textSpanned, 0));
-        verseArrayList.add(new Verse(230, 1, 1, textSpanned, 0));
-        verseArrayList.add(new Verse(230, 1, 1, textSpanned, 0));
-        verseArrayList.add(new Verse(230, 1, 1, textSpanned, 0));
-
         //RECYCER
         rv= (RecyclerView) rootView.findViewById(R.id.verses_inside_fragment_rv);
-
-
         //ADAPTER
         adapter = new DialogRecyclerView(this.getContext(), verseArrayList);
         rv.setAdapter(adapter);
         rv.setLayoutManager(new LinearLayoutManager(this.getContext()));
 
-        this.getDialog().setTitle("TV Shows");
+        getDialog().setTitle("My Dialog Title");
 
         return rootView;
     }

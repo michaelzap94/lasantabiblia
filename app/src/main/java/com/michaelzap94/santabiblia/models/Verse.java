@@ -51,7 +51,7 @@ public class Verse implements Parcelable {
         this.book_number = book_number;
         this.chapter_number = chapter_number;
         this.verse = verse;
-        //this.text = text;
+        this.textTitle = null;
         this.textSpanned = text;
         this.is_fav = is_fav;
     }

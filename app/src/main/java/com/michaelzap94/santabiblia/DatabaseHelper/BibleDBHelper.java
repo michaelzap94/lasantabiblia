@@ -116,10 +116,10 @@ public class BibleDBHelper {
         return list;
     }
 
-    public String[] getConcordance(int book_number, String marker){
+    public String[] getReferences(int book_number, String marker){
         //ArrayList<Concordance> list = new ArrayList();
         //String toReturn = "No element could be found";
-        ArrayList<String> listString = new ArrayList<>();
+
         String[] arrToReturn = {"No element found"};
         Cursor innerCursor;
         int rowCount;
@@ -234,12 +234,6 @@ public class BibleDBHelper {
             String[] titles = new String[groups];
             int counter = 0;
             while (matcher.find()) {
-                System.out.println("=========reading group: " + counter + "===================");
-                System.out.println("string: " + matcher.group(0));
-                System.out.println("book: " + matcher.group(1));
-                System.out.println("chapter: " + matcher.group(2));
-                System.out.println("verseFirst: " + matcher.group(3));
-                System.out.println("verseSecond: " + matcher.group(4));
                 String book = matcher.group(1);
                 String chapter = matcher.group(2);
                 String verseFirst = matcher.group(3);
@@ -263,12 +257,7 @@ public class BibleDBHelper {
             String[] verses = new String[2];
             int counter = 0;
             while (matcher.find()) {
-                System.out.println("=========reading group: " + counter + "===================");
-                System.out.println("string: " + matcher.group(0));
-                System.out.println("book: " + matcher.group(1));
-                System.out.println("chapter: " + matcher.group(2));
-                System.out.println("verseFirst: " + matcher.group(3));
-                //System.out.println("verseSecond: " + matcher.group(4));//SHOULD BE NULL ALWAYS
+
                 books[counter] = matcher.group(1);
                 chapters[counter] = matcher.group(2);
                 verses[counter] = matcher.group(3);
@@ -311,41 +300,6 @@ public class BibleDBHelper {
         }
         return title;
     }
-
-
-//    public ArrayList<Verse> getVersesSimple(int book_id, int chapter_number) {
-//        Cursor innerCursor;
-//        int rowCount;
-//        int i;
-//
-//        ArrayList<Verse> list = new ArrayList();
-//        try {
-//            innerCursor = openDataBaseNoHelper(DB_NAME_BIBLE_CONTENT).rawQuery("SELECT  verse , text FROM verses WHERE book_number = ? AND chapter = ? ORDER BY verse", new String[] {String.valueOf(book_id), String.valueOf(chapter_number)});
-//            if (innerCursor.moveToFirst()) {
-//                rowCount = innerCursor.getCount();
-//                for (i = 0; i < rowCount; i++) {
-//                    int verseCol = innerCursor.getColumnIndex(BibleContracts.VersesContract.COL_VERSE);
-//                    int textCol = innerCursor.getColumnIndex(BibleContracts.VersesContract.COL_TEXT);
-//                    int verse = innerCursor.getInt(verseCol);
-//                    String text = innerCursor.getString(textCol);
-//                    String textParsed;
-//
-//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-//                        textParsed = Html.fromHtml(text, Html.FROM_HTML_MODE_COMPACT).toString();
-//                    } else {
-//                        textParsed = Html.fromHtml(text).toString();
-//                    }
-//
-//                    String finalText = verse + ". "+textParsed.trim();
-//                    list.add(new Verse(book_id, chapter_number, verse, finalText, 0));
-//                    innerCursor.moveToNext();
-//                }
-//            }
-//            innerCursor.close();
-//        } catch (Exception e) {
-//        }
-//        return list;
-//    }
 
     public SQLiteDatabase openDataBaseNoHelper(String db_name) throws SQLException {
         String myPath = this.myContext.getDatabasePath(db_name).getPath();
