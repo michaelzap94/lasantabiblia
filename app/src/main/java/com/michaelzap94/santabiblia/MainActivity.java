@@ -3,6 +3,7 @@ package com.michaelzap94.santabiblia;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -17,7 +18,6 @@ import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends BaseActivityTopDrawer  {
     public static final String MY_PREFS_NAME = "MyPrefsFile";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState, R.layout.activity_main_base);
@@ -33,5 +33,8 @@ public class MainActivity extends BaseActivityTopDrawer  {
         super.onSaveInstanceState(outState);
     }
 
-
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        overridePendingTransition(0, 0);
+    }
 }

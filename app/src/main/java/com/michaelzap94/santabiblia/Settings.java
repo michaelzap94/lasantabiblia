@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -83,5 +84,10 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
         boolean canGoBack = getSupportFragmentManager().getBackStackEntryCount()>1;
         Settings.updateCanGoBack(canGoBack, Settings.this);
         super.onBackPressed();
+    }
+
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        overridePendingTransition(0, 0);
     }
 }

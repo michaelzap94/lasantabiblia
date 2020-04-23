@@ -10,6 +10,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -79,6 +80,7 @@ public class Bible extends BaseActivityTopDrawer {
             return PagerAdapter.POSITION_NONE;
         }
     }
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState, R.layout.activity_bible);
         Log.d(TAG, "onCreate: CLICK ");
@@ -143,6 +145,10 @@ public class Bible extends BaseActivityTopDrawer {
         dialog.show();
     }
 
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        overridePendingTransition(0, 0);
+    }
 //
 //    private VersesPagerAdapter setupViewPager(VersesPagerAdapter vpa) {
 //        Log.d(TAG, "setupViewPager: " + " " + this.book_number + " " + this.totalChapters);
