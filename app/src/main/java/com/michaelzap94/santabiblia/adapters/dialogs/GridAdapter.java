@@ -1,30 +1,16 @@
-package com.michaelzap94.santabiblia.dialogs;
+package com.michaelzap94.santabiblia.adapters.dialogs;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.viewpager.widget.ViewPager;
 
-import com.michaelzap94.santabiblia.Bible;
 import com.michaelzap94.santabiblia.R;
-import com.michaelzap94.santabiblia.models.Book;
-import com.michaelzap94.santabiblia.models.Verse;
-import com.michaelzap94.santabiblia.utilities.BookHelper;
-
-
-import java.util.ArrayList;
-
-import static android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP;
 
 public class GridAdapter extends BaseAdapter {
 

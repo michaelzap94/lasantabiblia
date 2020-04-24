@@ -1,8 +1,6 @@
 package com.michaelzap94.santabiblia.fragments.dialogs;
 
 import android.os.Bundle;
-import android.text.Html;
-import android.text.Spanned;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,9 +11,8 @@ import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.michaelzap94.santabiblia.Bible;
 import com.michaelzap94.santabiblia.R;
-import com.michaelzap94.santabiblia.dialogs.DialogRecyclerView;
+import com.michaelzap94.santabiblia.adapters.dialogs.DialogRecyclerView;
 import com.michaelzap94.santabiblia.models.Verse;
 
 import java.util.ArrayList;
@@ -31,6 +28,12 @@ public class VersesInsideDialog extends DialogFragment {
     public VersesInsideDialog(String title, HashMap<String, ArrayList<Verse>> verseArrayList){
         this.verseArrayList = verseArrayList;
         this.title = title;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        getDialog().getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
     }
 
     @Nullable
