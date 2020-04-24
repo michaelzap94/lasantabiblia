@@ -21,4 +21,6 @@
     <string name="search_card_text_title">Bible search</string>
     <string name="search_card_text_desc">Search text in the Bible</string>
     <string name="search_textview">You can search for...</string>
+    <string name="dash_new_value">Create new Label</string>
+    <string name="dash_text_view">Your Labels:</string>
 </resources>
