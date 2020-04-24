@@ -23,4 +23,5 @@
     <string name="search_textview">You can search for...</string>
     <string name="dash_new_value">Create new Label</string>
     <string name="dash_text_view">Your Labels:</string>
+    <string name="home_last_seen_text">Last Seen</string>
 </resources>
