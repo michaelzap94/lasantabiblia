@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.michaelzap94.santabiblia.BaseActivityTopDrawer;
 import com.michaelzap94.santabiblia.R;
 import com.michaelzap94.santabiblia.adapters.VersesRecyclerViewAdapter;
@@ -33,7 +35,10 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
     private int book_number;
     private int chapter_number;
     private int verse_number;
-
+    ///////////////////////////////////////////////////////////
+    private BottomSheetBehavior bottomSheetBehavior;
+    private TextView bottomSheetTextview;
+    ///////////////////////////////////////////////////////////
     private ArrayList<Verse> list = new ArrayList();
     private RecyclerView rvView;
     private VersesViewModel viewModel;
@@ -89,6 +94,35 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
         rvView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), rvView,VersesFragment.this));
         rvView.setAdapter(rvAdapter);//attach the RecyclerView adapter to the RecyclerView View
         /////////////////////////////////////////
+        ///////////////////////////////////////////////////////////
+        View bottomSheet = root.findViewById(R.id.bottom_sheet_nestedscrollview);
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+        bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                switch (newState){
+                    case BottomSheetBehavior.STATE_COLLAPSED:
+                        Toast.makeText(getActivity(), "BottomSheetBehavior.STATE_COLLAPSED", Toast.LENGTH_SHORT).show();
+                        break;
+                    case BottomSheetBehavior.STATE_EXPANDED:
+                        Toast.makeText(getActivity(), "BottomSheetBehavior.STATE_EXPANDED", Toast.LENGTH_SHORT).show();
+                        break;
+                    case BottomSheetBehavior.STATE_HIDDEN:
+                        Toast.makeText(getActivity(), "BottomSheetBehavior.STATE_HIDDEN", Toast.LENGTH_SHORT).show();
+                        break;
+                    case BottomSheetBehavior.STATE_HALF_EXPANDED:
+                        Toast.makeText(getActivity(), "BottomSheetBehavior.STATE_HALF_EXPANDED", Toast.LENGTH_SHORT).show();
+                        break;
+                    default: Toast.makeText(getActivity(), "BottomSheetBehavior DEFAULT", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                Log.d(TAG, "BottomSheetBehavior liding....");
+            }
+        });
+        ///////////////////////////////////////////////////////////
         observerViewModel();
 
     }
@@ -117,11 +151,15 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
     public void onItemClick(View view, int position) {
         Log.d(TAG, "onItemClick: " + position);
         Toast.makeText(getActivity(), "onItemClick" + position, Toast.LENGTH_SHORT).show();
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
     }
 
     @Override
     public void onItemLongClick(View view, int position) {
         Log.d(TAG, "onItemLongClick: " + position);
         Toast.makeText(getActivity(), "onItemLongClick" + position, Toast.LENGTH_SHORT).show();
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+
     }
 }

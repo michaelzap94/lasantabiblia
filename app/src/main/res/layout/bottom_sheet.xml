@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--<GridView xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--    android:id="@+id/bottom_sheet_nestedscrollview"-->
+<!--    android:numColumns="3"-->
+<!--    android:gravity="center"-->
+<!--    android:columnWidth="50dp"-->
+<!--    android:stretchMode="columnWidth"-->
+<!--    app:behavior_hideable="true"-->
+<!--    app:behavior_peekHeight="55dp"-->
+<!--    android:background="#690101"-->
+<!--    app:layout_behavior="@string/bottom_sheet_behavior"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="500dp">-->
+<!--    <com.google.android.material.button.MaterialButton-->
+<!--        style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton"-->
+<!--        app:cornerRadius="28dp"-->
+<!--        android:layout_width="56dp"-->
+<!--        android:layout_height="56dp"-->
+<!--        android:text="1" />-->
+
+<!--</GridView>-->
+<androidx.core.widget.NestedScrollView
+    android:id="@+id/bottom_sheet_nestedscrollview"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="500dp"
+    android:layout_width="match_parent"
+    app:behavior_hideable="true"
+    app:behavior_peekHeight="55dp"
+    android:background="#690101"
+    app:layout_behavior="@string/bottom_sheet_behavior">
+
+
+    <TextView
+        android:id="@+id/bottom_sheet_textview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="This is omething else \n\n do you get it" />
+<!--    <com.google.android.material.button.MaterialButton-->
+<!--        style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton"-->
+<!--        app:cornerRadius="28dp"-->
+<!--        android:layout_width="56dp"-->
+<!--        android:layout_height="56dp"-->
+<!--        android:text="1" />-->
+</androidx.core.widget.NestedScrollView>
