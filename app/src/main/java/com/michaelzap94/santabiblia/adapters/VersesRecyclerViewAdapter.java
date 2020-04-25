@@ -39,7 +39,6 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
     public VersesRecyclerViewAdapter(Context ctx, ArrayList<Verse> verseArrayList) {
         this.verseArrayList = verseArrayList;
         this.ctx = ctx;
-        Log.d(TAG, "VersesFragment: REcyclerview: INIT: "+ verseArrayList.size());
     }
 
     //function available so View can update the RecyclerView List once the information is available.
@@ -61,11 +60,6 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
 
     @Override
     public void onBindViewHolder(@NonNull VersesRecyclerViewAdapter.VersesViewHolder holder, int position) {
-//        Log.d(TAG, "onBindViewHolder: position "+position);
-//        Log.d(TAG, "holder: position "+holder.getAdapterPosition());
-//        //Verse verse = verseArrayList.get(holder.getAdapterPosition());
-//        //VersesRecyclerViewAdapter.VersesViewHolder viewHolder = (VersesRecyclerViewAdapter.VersesViewHolder) holder;
-//        //viewHolder.txtView_title.setText(verse.getText());
         holder.bind();
     }
     @Override
@@ -88,13 +82,9 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
         }
 
         void bind() {
-            //Log.d(TAG, "bind: position "+ getAdapterPosition());
             Verse verse = verseArrayList.get(getAdapterPosition());
-
             Spanned spannedTextVerse = verse.getTextSpanned();
             String stringTextVerse = spannedTextVerse.toString();
-
-            Log.d(TAG, "bind: " + stringTextVerse);
 
             if(stringTextVerse.indexOf("[") > -1 && stringTextVerse.indexOf("]") > -1){
                 SpannableString ss = new SpannableString(spannedTextVerse);
@@ -117,7 +107,7 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
                                     Spanned s = (Spanned) tv.getText();
                                     int start = s.getSpanStart(this);
                                     int end = s.getSpanEnd(this);
-                                    Log.d(TAG, "onClick " +verse.getBookNumber() + " " + s.subSequence(start, end));
+                                    Log.d(TAG, "ClickableSpan onClick " +verse.getBookNumber() + " " + s.subSequence(start, end));
                                     openDialogReferencesMaterial(verse.getBookNumber(), s.subSequence(start, end).toString());
                                 }
                             }

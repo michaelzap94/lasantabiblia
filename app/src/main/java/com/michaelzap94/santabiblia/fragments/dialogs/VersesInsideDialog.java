@@ -1,5 +1,7 @@
 package com.michaelzap94.santabiblia.fragments.dialogs;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -7,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -33,14 +36,38 @@ public class VersesInsideDialog extends DialogFragment {
     @Override
     public void onStart() {
         super.onStart();
-        getDialog().getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        getDialog().getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     }
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView=inflater.inflate(R.layout.verses_dialog_fragment,container,false);
-        Log.d(TAG, "onCreateView: inside dialog");
+    public void onPause(){
+        super.onPause();
+        this.dismissAllowingStateLoss();
+    }
+
+//    @Nullable
+//    @Override
+//    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+//        View rootView=inflater.inflate(R.layout.verses_dialog_fragment,container,false);
+//        Log.d(TAG, "onCreateView: inside dialog");
+//
+//        //RECYCER
+//        rv= (RecyclerView) rootView.findViewById(R.id.verses_inside_fragment_rv);
+//        //ADAPTER
+//        adapter = new DialogRecyclerView(this.getContext(), verseArrayList);
+//        rv.setAdapter(adapter);
+//        rv.setLayoutManager(new LinearLayoutManager(this.getContext()));
+//
+//        getDialog().setTitle(this.title);
+//
+//        return rootView;
+//    }
+
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View rootView=inflater.inflate(R.layout.verses_dialog_fragment,null,false);
+        Log.d(TAG, "onCreateDialog: inside dialog");
 
         //RECYCER
         rv= (RecyclerView) rootView.findViewById(R.id.verses_inside_fragment_rv);
@@ -49,9 +76,17 @@ public class VersesInsideDialog extends DialogFragment {
         rv.setAdapter(adapter);
         rv.setLayoutManager(new LinearLayoutManager(this.getContext()));
 
-        getDialog().setTitle(this.title);
-
-        return rootView;
+        return new AlertDialog.Builder(getActivity())
+                .setTitle(this.title)
+                .setView(rootView)
+                .setNegativeButton("OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                dialog.dismiss();
+                            }
+                        }
+                )
+                .create();
     }
 
 }

@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -25,7 +26,7 @@ import com.michaelzap94.santabiblia.models.Book;
 import com.michaelzap94.santabiblia.utilities.BookHelper;
 import com.michaelzap94.santabiblia.utilities.CommonMethods;
 
-public class Bible extends BaseActivityTopDrawer {
+public class Bible extends BaseActivityTopDrawer{
 
     private static final String TAG = "Bible";
     private int book_number;
@@ -141,22 +142,6 @@ public class Bible extends BaseActivityTopDrawer {
         super.onNewIntent(intent);
         overridePendingTransition(0, 0);
     }
-//
-//    private VersesPagerAdapter setupViewPager(VersesPagerAdapter vpa) {
-//        Log.d(TAG, "setupViewPager: " + " " + this.book_number + " " + this.totalChapters);
-//        for (int i = 1; i <= this.totalChapters; i++) {
-//            int i2;
-//            //ViewPagerAdapter viewPagerAdapter = this.adapter;
-//            int i3 = this.book_number;
-//            if (this.chapter_number == i) {
-//                i2 = this.verse_number;
-//            } else {
-//                i2 = 0;
-//            }
-//            vpa.addFragment(VersesFragment.newInstance(i3, i, i2));
-//        }
-//        return vpa;
-//    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState){

@@ -6,6 +6,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,11 +21,12 @@ import com.michaelzap94.santabiblia.BaseActivityTopDrawer;
 import com.michaelzap94.santabiblia.R;
 import com.michaelzap94.santabiblia.adapters.VersesRecyclerViewAdapter;
 import com.michaelzap94.santabiblia.models.Verse;
+import com.michaelzap94.santabiblia.utilities.RecyclerItemClickListener;
 import com.michaelzap94.santabiblia.viewmodel.VersesViewModel;
 
 import java.util.ArrayList;
 
-public class VersesFragment extends Fragment {
+public class VersesFragment extends Fragment implements RecyclerItemClickListener.OnRecyclerClickListener {
     private static final String TAG = "VersesFragment";
     public static final String TAB_VERSES_NUMBER = "tab_verses_number";
     View root;
@@ -83,6 +86,7 @@ public class VersesFragment extends Fragment {
         //////////////////////////////////////////////
         this.rvView = (RecyclerView) root.findViewById(R.id.verses_list_view);
         rvView.setLayoutManager(new LinearLayoutManager(this.getContext()));
+        rvView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), rvView,VersesFragment.this));
         rvView.setAdapter(rvAdapter);//attach the RecyclerView adapter to the RecyclerView View
         /////////////////////////////////////////
         observerViewModel();
@@ -107,5 +111,17 @@ public class VersesFragment extends Fragment {
                 VersesFragment.this.rvView.scrollToPosition(VersesFragment.this.verse_number - 1);
             }
         });
+    }
+
+    @Override
+    public void onItemClick(View view, int position) {
+        Log.d(TAG, "onItemClick: " + position);
+        Toast.makeText(getActivity(), "onItemClick" + position, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onItemLongClick(View view, int position) {
+        Log.d(TAG, "onItemLongClick: " + position);
+        Toast.makeText(getActivity(), "onItemLongClick" + position, Toast.LENGTH_SHORT).show();
     }
 }
