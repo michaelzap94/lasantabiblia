@@ -6,51 +6,14 @@
     android:layout_height="match_parent"
     tools:context=".Dashboard">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/dash_new_button"
-        app:icon="@drawable/ic_add_circle_outline"
-        app:iconGravity="textStart"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-        app:strokeColor="?attr/colorOnSurface"
-        app:strokeWidth="1dp"
-        app:elevation="2dp"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/dashboard_fragment"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:text="@string/dash_new_value"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-
-    <TextView
-        android:id="@+id/dash_text_view"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:text="@string/dash_text_view"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dash_new_button" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/dash_recycler_view"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_height="match_parent"
         app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dash_text_view" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"

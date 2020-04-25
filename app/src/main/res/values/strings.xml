@@ -24,4 +24,7 @@
     <string name="dash_new_value">Create new Label</string>
     <string name="dash_text_view">Your Labels:</string>
     <string name="home_last_seen_text">Last Seen</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
