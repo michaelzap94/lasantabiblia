@@ -51,7 +51,8 @@ public class RecyclerItemClickListener extends RecyclerView.SimpleOnItemTouchLis
                     Log.d(TAG, "rlc DO CODE HERE. ");
                     if(childView != null && rcListener != null){
                         Log.d(TAG, "rlc onSingleTapUp: calling listener.onItemClick");
-                        rcListener.onItemClick(childView, recyclerView.getChildAdapterPosition(childView));
+                        int positionOfTapRow = recyclerView.getChildAdapterPosition(childView);
+                        rcListener.onItemClick(childView, positionOfTapRow);
                     }
                     return true;
                 } else {

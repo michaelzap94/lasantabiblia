@@ -179,7 +179,43 @@ public class BookHelper {
         return listNT;
     }
 
-//    private static ArrayList<Book> getListAll() {
+
+    public static String getTitleBookAndCaps(int book, int chapter, int verseFrom, int verseTo) {
+        Book selectedBook = getBook(book);
+        if (selectedBook == null || verseFrom == 0) {
+            return BuildConfig.FLAVOR;
+        }
+        return selectedBook.getName() + " " + chapter + ":" + verseFrom + (verseFrom < verseTo ? "-" + verseTo : BuildConfig.FLAVOR);
+    }
+//
+//    public static String getUrlLibCaps(int libro, int capitulo, int versiculoi, int versiculof) {
+//        Book nlibro = getBook(libro);
+//        if (nlibro == null || versiculoi == 0) {
+//            return BuildConfig.FLAVOR;
+//        }
+//        return "http://tusversiculos.com/v/" + nlibro.getId() + "/" + capitulo + "/" + versiculoi + "/" + (versiculoi < versiculof ? versiculof + "/" : BuildConfig.FLAVOR);
+//    }
+
+
+    //    private static ArrayList<Book> getListOTDB() {
+//        if (listAT == null) {
+//            listAT = new ArrayList();
+//            // TodoDatabaseHandler is a SQLiteOpenHelper class connecting to SQLite
+//            //BibleDBHelper handler = new BibleDBHelper(context, BibleDBHelper.DB_NAME_BIBLE_CONTENT);
+//            //SQLiteDatabase db = handler.getReadableDatabase();
+//            //versesCursor = db.rawQuery("SELECT  verse AS _id, chapter, book_number, text FROM verses WHERE book_number = ? AND chapter = ?", new String[] {String.valueOf(book_number), String.valueOf(tab_number)});
+//
+//        }
+//        return listAT;
+//    }
+//    private static ArrayList<Book> getListNTDB() {
+//        if (listNT == null) {
+//            listNT = new ArrayList();
+//        }
+//        return listNT;
+//    }
+
+    //    private static ArrayList<Book> getListAll() {
 //        if (listAll == null) {
 //            listAll = new ArrayList();
 //            listAll.add(new Book(1, 10,"G\u00e9nesis", 50));
@@ -252,39 +288,5 @@ public class BookHelper {
 //        return listAll;
 //    }
 //
-//    public static String getTitleLibCaps(int libro, int capitulo, int versiculoi, int versiculof) {
-//        Book nlibro = getBook(libro);
-//        if (nlibro == null || versiculoi == 0) {
-//            return BuildConfig.FLAVOR;
-//        }
-//        return nlibro.getName() + " " + capitulo + ":" + versiculoi + (versiculoi < versiculof ? "-" + versiculof : BuildConfig.FLAVOR);
-//    }
-//
-//    public static String getUrlLibCaps(int libro, int capitulo, int versiculoi, int versiculof) {
-//        Book nlibro = getBook(libro);
-//        if (nlibro == null || versiculoi == 0) {
-//            return BuildConfig.FLAVOR;
-//        }
-//        return "http://tusversiculos.com/v/" + nlibro.getId() + "/" + capitulo + "/" + versiculoi + "/" + (versiculoi < versiculof ? versiculof + "/" : BuildConfig.FLAVOR);
-//    }
-
-
-    //    private static ArrayList<Book> getListOTDB() {
-//        if (listAT == null) {
-//            listAT = new ArrayList();
-//            // TodoDatabaseHandler is a SQLiteOpenHelper class connecting to SQLite
-//            //BibleDBHelper handler = new BibleDBHelper(context, BibleDBHelper.DB_NAME_BIBLE_CONTENT);
-//            //SQLiteDatabase db = handler.getReadableDatabase();
-//            //versesCursor = db.rawQuery("SELECT  verse AS _id, chapter, book_number, text FROM verses WHERE book_number = ? AND chapter = ?", new String[] {String.valueOf(book_number), String.valueOf(tab_number)});
-//
-//        }
-//        return listAT;
-//    }
-//    private static ArrayList<Book> getListNTDB() {
-//        if (listNT == null) {
-//            listNT = new ArrayList();
-//        }
-//        return listNT;
-//    }
 
 }
