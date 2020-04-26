@@ -8,16 +8,24 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.michaelzap94.santabiblia.DatabaseHelper.ContentDBHelper;
 import com.michaelzap94.santabiblia.R;
+import com.michaelzap94.santabiblia.adapters.DashboardRecyclerViewAdapter;
+import com.michaelzap94.santabiblia.adapters.VersesRecyclerViewAdapter;
+import com.michaelzap94.santabiblia.fragments.ui.tabVerses.VersesFragment;
 import com.michaelzap94.santabiblia.models.Label;
+import com.michaelzap94.santabiblia.utilities.RecyclerItemClickListener;
 
 import java.util.ArrayList;
 
@@ -28,6 +36,9 @@ import java.util.ArrayList;
 public class DashboardMainFragment extends Fragment {
     private static final String TAG = "DashboardMainFragment";
     private Button createNewLabel;
+    private RecyclerView rvView;
+    private DashboardRecyclerViewAdapter rvAdapter;
+
 
     public DashboardMainFragment() {
         // Required empty public constructor
@@ -41,6 +52,7 @@ public class DashboardMainFragment extends Fragment {
 
         ArrayList<Label> arrReturned = ContentDBHelper.getInstance(getActivity()).getAllLabels();
         Log.d(TAG, "onCreateView: SIZE: " + arrReturned.size());
+        rvAdapter = new DashboardRecyclerViewAdapter(getActivity(), arrReturned);
 
         createNewLabel = view.findViewById(R.id.dash_new_button);
         createNewLabel.setOnClickListener(new View.OnClickListener(){
@@ -59,6 +71,11 @@ public class DashboardMainFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+        //////////////////////////////////////////////
+        this.rvView = (RecyclerView) view.findViewById(R.id.dash_recycler_view);
+        rvView.setLayoutManager(new LinearLayoutManager(this.getContext()));
+//        rvView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), rvView, VersesFragment.this));
+        rvView.setAdapter(rvAdapter);//attach the RecyclerView adapter to the RecyclerView View
+        /////////////////////////////////////////
     }
 }
