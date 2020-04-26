@@ -97,23 +97,20 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
         ///////////////////////////////////////////////////////////
         View bottomSheet = root.findViewById(R.id.bottom_sheet_nestedscrollview);
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 switch (newState){
                     case BottomSheetBehavior.STATE_COLLAPSED:
-                        Toast.makeText(getActivity(), "BottomSheetBehavior.STATE_COLLAPSED", Toast.LENGTH_SHORT).show();
                         break;
                     case BottomSheetBehavior.STATE_EXPANDED:
-                        Toast.makeText(getActivity(), "BottomSheetBehavior.STATE_EXPANDED", Toast.LENGTH_SHORT).show();
                         break;
                     case BottomSheetBehavior.STATE_HIDDEN:
-                        Toast.makeText(getActivity(), "BottomSheetBehavior.STATE_HIDDEN", Toast.LENGTH_SHORT).show();
                         break;
                     case BottomSheetBehavior.STATE_HALF_EXPANDED:
-                        Toast.makeText(getActivity(), "BottomSheetBehavior.STATE_HALF_EXPANDED", Toast.LENGTH_SHORT).show();
                         break;
-                    default: Toast.makeText(getActivity(), "BottomSheetBehavior DEFAULT", Toast.LENGTH_SHORT).show();
+                    default: break;
                 }
             }
 
