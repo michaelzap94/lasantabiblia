@@ -1,5 +1,6 @@
 package com.michaelzap94.santabiblia.adapters;
 
+import android.app.ListActivity;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -7,8 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
@@ -55,29 +58,54 @@ public class DashboardRecyclerViewAdapter extends RecyclerView.Adapter<Dashboard
 
         void bind() {
 
-            int[][] states = new int[][] {
-                    new int[] { android.R.attr.state_enabled}, // enabled
-                    new int[] {-android.R.attr.state_enabled}, // disabled
-                    new int[] {-android.R.attr.state_checked}, // unchecked
-                    new int[] { android.R.attr.state_pressed}  // pressed
-            };
+//            int[][] states = new int[][] {
+//                    new int[] { android.R.attr.state_enabled}, // enabled
+//                    new int[] {-android.R.attr.state_enabled}, // disabled
+//                    new int[] {-android.R.attr.state_checked}, // unchecked
+//                    new int[] { android.R.attr.state_pressed}  // pressed
+//            };
+//
+//            int[] colors = new int[] {
+//                    Color.BLACK,
+//                    Color.RED,
+//                    Color.GREEN,
+//                    Color.BLUE
+//            };
 
-            int[] colors = new int[] {
-                    Color.BLACK,
-                    Color.RED,
-                    Color.GREEN,
-                    Color.BLUE
-            };
-
-            ColorStateList myList = new ColorStateList(states, colors);
-
+            //ColorStateList myList = new ColorStateList(states, colors);
             int labelPosition = getAdapterPosition();
             Label mLabel = labelArrayList.get(labelPosition);
             labelButton.setText(mLabel.getName());
-            labelButton.setTextColor(myList);
-            labelButton.setStrokeColor(myList);
+
+            try{
+                int color = Color.parseColor(mLabel.getColor());
+                ColorStateList colorState = ColorStateList.valueOf(color);
+                labelButton.setTextColor(color);
+                labelButton.setIconTint(colorState);
+                labelButton.setStrokeColor(colorState);
+            } catch (IllegalArgumentException e){
+            }
+
 
         }
     }
 
+//    ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT | ItemTouchHelper.DOWN | ItemTouchHelper.UP) {
+//
+//        @Override
+//        public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+//            Toast.makeText(ListActivity.this, "on Move", Toast.LENGTH_SHORT).show();
+//            return false;
+//        }
+//
+//        @Override
+//        public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+//            Toast.makeText(ListActivity.this, "on Swiped ", Toast.LENGTH_SHORT).show();
+//            //Remove swiped item from list and notify the RecyclerView
+//            int position = viewHolder.getAdapterPosition();
+//            arrayList.remove(position);
+//            adapter.notifyDataSetChanged();
+//
+//        }
+//    };
 }
