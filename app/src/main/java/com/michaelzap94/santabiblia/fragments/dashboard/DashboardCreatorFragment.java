@@ -89,6 +89,7 @@ public class DashboardCreatorFragment extends Fragment {
                     }
 
                     if(insertSuccess){
+                        getActivity().getSupportFragmentManager().popBackStack();
                         Toast.makeText(getActivity(), "Insert success", Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(getActivity(), "Insert failure", Toast.LENGTH_SHORT).show();

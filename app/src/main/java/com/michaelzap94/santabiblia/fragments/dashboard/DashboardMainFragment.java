@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.michaelzap94.santabiblia.Dashboard;
 import com.michaelzap94.santabiblia.DatabaseHelper.ContentDBHelper;
 import com.michaelzap94.santabiblia.R;
 import com.michaelzap94.santabiblia.adapters.DashboardRecyclerViewAdapter;
@@ -51,6 +52,12 @@ public class DashboardMainFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.dashboard_fragment, container, false);
+
+        Log.d(TAG, "onCreateView: MAIN");
+        //================================================================================================
+        boolean canGoBack = getActivity().getSupportFragmentManager().getBackStackEntryCount()>0;
+        Dashboard.updateCanGoBack(canGoBack, (AppCompatActivity)getActivity());
+        //================================================================================================
 
         ArrayList<Label> arrReturned = ContentDBHelper.getInstance(getActivity()).getAllLabels();
         Log.d(TAG, "onCreateView: SIZE: " + arrReturned.size());
