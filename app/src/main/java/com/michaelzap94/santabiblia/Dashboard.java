@@ -45,7 +45,6 @@ public class Dashboard extends AppCompatActivity {
         super.onResume();
         bottomNavigationView.setSelectedItemId(R.id.bnav_dashboard);
         getSupportActionBar().setTitle("Dashboard");
-
     }
 
     @Override

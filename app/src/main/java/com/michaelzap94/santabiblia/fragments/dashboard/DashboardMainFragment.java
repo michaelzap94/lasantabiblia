@@ -88,6 +88,14 @@ public class DashboardMainFragment extends Fragment {
         /////////////////////////////////////////
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (getActivity() instanceof Dashboard) {
+            ((Dashboard) getActivity()).getSupportActionBar().setTitle("Dashboard");
+        }
+    }
+
     public static void onLabelClickedFromList(Context ctx, Label mLabel) {
         DashboardLabelFragment dashboardLabelFragment = new DashboardLabelFragment(ctx , mLabel);
         FragmentManager fragmentManager = ((AppCompatActivity) ctx).getSupportFragmentManager();
