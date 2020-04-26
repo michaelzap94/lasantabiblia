@@ -31,10 +31,22 @@ public class DashboardCreatorFragment extends Fragment {
     private EditText name;
     private EditText color;
     private Button createButton;
+    private String nameVal = null;
+    private String colorVal = null;
+    private int idValue = -1;
+    private boolean editMode = false;
 
     public DashboardCreatorFragment() {
         // Required empty public constructor
     }
+
+    public DashboardCreatorFragment(String name, String color, int idValue) {
+        this.nameVal = name;
+        this.colorVal = color;
+        this.idValue = idValue;
+        this.editMode = true;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -47,6 +59,12 @@ public class DashboardCreatorFragment extends Fragment {
         name = view.findViewById(R.id.dash_creator_fragment_name_edittext);
         color = view.findViewById(R.id.dash_creator_fragment_color);
         createButton = view.findViewById(R.id.dash_creator_fragment_button);
+
+        if(nameVal != null && colorVal != null && editMode){
+            name.setText(nameVal);
+            color.setText(colorVal);
+        }
+
 
         createButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,8 +81,14 @@ public class DashboardCreatorFragment extends Fragment {
                 if(!error){
                     String nameValue = name.getText().toString();
                     String colorValue = color.getText().toString();
-                    Long idReturned = ContentDBHelper.getInstance(getActivity()).createLabel(nameValue, colorValue);
-                    if(idReturned != -1){
+                    boolean insertSuccess = false;
+                    if(editMode && idValue > 0){
+                        insertSuccess = ContentDBHelper.getInstance(getActivity()).editLabel(nameValue, colorValue, idValue);
+                    } else {
+                        insertSuccess = ContentDBHelper.getInstance(getActivity()).createLabel(nameValue, colorValue);
+                    }
+
+                    if(insertSuccess){
                         Toast.makeText(getActivity(), "Insert success", Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(getActivity(), "Insert failure", Toast.LENGTH_SHORT).show();

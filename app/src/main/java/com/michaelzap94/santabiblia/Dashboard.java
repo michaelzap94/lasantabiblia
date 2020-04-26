@@ -72,8 +72,10 @@ public class Dashboard extends AppCompatActivity {
             boolean canGoBack = getSupportFragmentManager().getBackStackEntryCount()>1;
             Log.d(TAG, "onOptionsItemSelected: "+canGoBack);
             Dashboard.updateCanGoBack(canGoBack, Dashboard.this);
+            return true;
+        } else {
+            return false;
         }
-        return true;
     }
 
     @Override

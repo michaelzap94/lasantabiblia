@@ -81,7 +81,7 @@ public class DashboardRecyclerViewAdapter extends RecyclerView.Adapter<Dashboard
             }
 
             labelButton.setOnClickListener(v -> {
-                DashboardMainFragment.onLabelClickedFromList(ctx, mLabel.getId());
+                DashboardMainFragment.onLabelClickedFromList(ctx, mLabel);
             });
 
 

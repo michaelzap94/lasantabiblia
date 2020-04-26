@@ -81,8 +81,8 @@ public class DashboardMainFragment extends Fragment {
         /////////////////////////////////////////
     }
 
-    public static void onLabelClickedFromList(Context ctx, int id) {
-        DashboardLabelFragment dashboardLabelFragment = new DashboardLabelFragment();
+    public static void onLabelClickedFromList(Context ctx, Label mLabel) {
+        DashboardLabelFragment dashboardLabelFragment = new DashboardLabelFragment(ctx , mLabel);
         FragmentManager fragmentManager = ((AppCompatActivity) ctx).getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.dashboard_fragment, dashboardLabelFragment, "labelFragmentTag");

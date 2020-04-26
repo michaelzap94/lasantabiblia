@@ -37,11 +37,17 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         this.context = context;
     }
 
-    public long createLabel(String name, String color){
+    public boolean createLabel(String name, String color){
         ContentValues cv = new ContentValues();
         cv.put("name", name);
         cv.put("color", color);
-        return this.getWritableDatabase().insert("labels",null, cv);
+        return this.getWritableDatabase().insert("labels",null, cv) > 0;
+    }
+    public boolean editLabel(String name, String color, int id){
+        ContentValues cv = new ContentValues();
+        cv.put("name", name);
+        cv.put("color", color);
+        return this.getWritableDatabase().update("labels", cv, "_id="+id, null) > 0;
     }
 
     public ArrayList<Label> getAllLabels(){
@@ -57,11 +63,13 @@ public class ContentDBHelper extends SQLiteOpenHelper {
                 for (i = 0; i < rowCount; i++) {
                     int nameCol = innerCursor.getColumnIndex("name");
                     int colorCol = innerCursor.getColumnIndex("color");
+                    int idCol = innerCursor.getColumnIndex("_id");
 
                     String name = innerCursor.getString(nameCol);
                     String color = innerCursor.getString(colorCol);
+                    int id = innerCursor.getInt(idCol);
 
-                    list.add(new Label(name, color));
+                    list.add(new Label(name, color, id));
                     innerCursor.moveToNext();
                 }
             }
@@ -69,6 +77,10 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         } catch (Exception e) {
         }
         return list;
+    }
+
+    public boolean deleteOneLabel(int id){
+        return this.getWritableDatabase().delete("labels", "_id =" + id, null) > 0;
     }
 
     @Override
