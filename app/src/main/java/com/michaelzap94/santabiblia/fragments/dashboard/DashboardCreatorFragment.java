@@ -103,4 +103,12 @@ public class DashboardCreatorFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (getActivity() instanceof Dashboard) {
+            ((Dashboard) getActivity()).getSupportActionBar().setTitle("New Label");
+        }
+    }
+
 }

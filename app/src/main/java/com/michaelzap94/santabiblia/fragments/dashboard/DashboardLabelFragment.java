@@ -22,6 +22,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.michaelzap94.santabiblia.BaseActivityTopDrawer;
 import com.michaelzap94.santabiblia.Dashboard;
 import com.michaelzap94.santabiblia.DatabaseHelper.BibleDBHelper;
 import com.michaelzap94.santabiblia.DatabaseHelper.ContentDBHelper;
@@ -77,6 +78,14 @@ public class DashboardLabelFragment extends Fragment {
 ////        rvView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), rvView, VersesFragment.this));
 //        rvView.setAdapter(rvAdapter);//attach the RecyclerView adapter to the RecyclerView View
         /////////////////////////////////////////
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (getActivity() instanceof Dashboard) {
+            ((Dashboard) getActivity()).getSupportActionBar().setTitle(this.mLabel.getName());
+        }
     }
 
     @Override
