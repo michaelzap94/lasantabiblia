@@ -51,7 +51,7 @@
     android:id="@+id/bottom_sheet_nestedscrollview"
     android:layout_width="match_parent"
     android:layout_height="340dp"
-    android:background="@android:color/darker_gray"
+    android:background="@android:color/white"
     android:orientation="vertical"
     app:behavior_hideable="true"
     app:behavior_skipCollapsed="true"
@@ -100,11 +100,21 @@
 <!--        android:text="This is the peak"-->
 <!--        android:textColor="@android:color/white" />-->
 
-    <TextView
+<!--    <TextView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:gravity="center"-->
+<!--        android:text="This is the content"-->
+<!--        android:textColor="@android:color/white" />-->
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/bottom_sheet_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:text="This is the content"
-        android:textColor="@android:color/white" />
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp" />
 
 </LinearLayout>

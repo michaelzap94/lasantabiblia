@@ -20,8 +20,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.michaelzap94.santabiblia.BaseActivityTopDrawer;
+import com.michaelzap94.santabiblia.DatabaseHelper.ContentDBHelper;
 import com.michaelzap94.santabiblia.R;
+import com.michaelzap94.santabiblia.adapters.DashboardRecyclerViewAdapter;
 import com.michaelzap94.santabiblia.adapters.VersesRecyclerViewAdapter;
+import com.michaelzap94.santabiblia.models.Label;
 import com.michaelzap94.santabiblia.models.Verse;
 import com.michaelzap94.santabiblia.utilities.RecyclerItemClickListener;
 import com.michaelzap94.santabiblia.viewmodel.VersesViewModel;
@@ -45,6 +48,10 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
     //Instantiate the RecyclerViewAdapter, passing an empty list initially.
     // this data will not be shown until you setAdapter to the RecyclerView view in the Layout
     private VersesRecyclerViewAdapter rvAdapter;
+    //==========================================================
+    private ArrayList<Label> arrLabels;
+    private DashboardRecyclerViewAdapter rvAdapterLabels;
+    private RecyclerView rvViewLabels;
 
     public static VersesFragment newInstance(int book, int chapter, int verse) {
         Log.d(TAG, "VersesFragment: newInstance" + + book + " " + chapter);
@@ -105,12 +112,17 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
                     case BottomSheetBehavior.STATE_COLLAPSED:
                         break;
                     case BottomSheetBehavior.STATE_EXPANDED:
+                        rvAdapterLabels = new DashboardRecyclerViewAdapter(getActivity(), arrLabels);
+                        rvViewLabels = (RecyclerView) view.findViewById(R.id.bottom_sheet_recycler_view);
+                        rvViewLabels.setLayoutManager(new LinearLayoutManager(VersesFragment.this.getContext()));
+//        rvViewLabels.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), rvView, VersesFragment.this));
+                        rvViewLabels.setAdapter(rvAdapterLabels);//attach the RecyclerView adapter to the RecyclerView View
                         break;
                     case BottomSheetBehavior.STATE_HIDDEN:
                         break;
                     case BottomSheetBehavior.STATE_HALF_EXPANDED:
                         break;
-                    default: break;
+                    default:
                 }
             }
 
@@ -148,6 +160,8 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
     public void onItemClick(View view, int position) {
         Log.d(TAG, "onItemClick: " + position);
         Toast.makeText(getActivity(), "onItemClick" + position, Toast.LENGTH_SHORT).show();
+
+        arrLabels = ContentDBHelper.getInstance(getActivity()).getAllLabels();
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
     }
@@ -156,6 +170,8 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
     public void onItemLongClick(View view, int position) {
         Log.d(TAG, "onItemLongClick: " + position);
         Toast.makeText(getActivity(), "onItemLongClick" + position, Toast.LENGTH_SHORT).show();
+
+        arrLabels = ContentDBHelper.getInstance(getActivity()).getAllLabels();
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
     }
