@@ -1,9 +1,11 @@
 package com.michaelzap94.santabiblia.fragments.dashboard;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -77,5 +79,14 @@ public class DashboardMainFragment extends Fragment {
 //        rvView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), rvView, VersesFragment.this));
         rvView.setAdapter(rvAdapter);//attach the RecyclerView adapter to the RecyclerView View
         /////////////////////////////////////////
+    }
+
+    public static void onLabelClickedFromList(Context ctx, int id) {
+        DashboardLabelFragment dashboardLabelFragment = new DashboardLabelFragment();
+        FragmentManager fragmentManager = ((AppCompatActivity) ctx).getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.dashboard_fragment, dashboardLabelFragment, "labelFragmentTag");
+        fragmentTransaction.addToBackStack(null);//If you don't want later pop more than one back stack, but still want to pop one at a time
+        fragmentTransaction.commit();
     }
 }

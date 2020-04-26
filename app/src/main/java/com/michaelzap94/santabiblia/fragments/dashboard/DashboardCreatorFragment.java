@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -13,9 +14,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.michaelzap94.santabiblia.Dashboard;
 import com.michaelzap94.santabiblia.DatabaseHelper.BibleDBHelper;
 import com.michaelzap94.santabiblia.DatabaseHelper.ContentDBHelper;
 import com.michaelzap94.santabiblia.R;
+import com.michaelzap94.santabiblia.Settings;
 import com.michaelzap94.santabiblia.models.Label;
 
 import java.util.ArrayList;
@@ -36,6 +39,10 @@ public class DashboardCreatorFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view =  inflater.inflate(R.layout.dashboard_creator_fragment, container, false);
+        //============================================================================================
+        boolean canGoBack = getActivity().getSupportFragmentManager().getBackStackEntryCount()>0;
+        Dashboard.updateCanGoBack(canGoBack, (AppCompatActivity)getActivity());
+        //============================================================================================
 
         name = view.findViewById(R.id.dash_creator_fragment_name_edittext);
         color = view.findViewById(R.id.dash_creator_fragment_color);

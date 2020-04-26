@@ -36,6 +36,12 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
     }
 
     @Override
+    public boolean onPreferenceStartFragment(PreferenceFragmentCompat caller, Preference pref) {
+        //WHEN USER TAPS ON A SECTION IN SETTINGS AND ALLOWS YOU TO CUSTOMIZE transitions/animations
+        return false;
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle outState){
         super.onSaveInstanceState(outState);
         outState.putBoolean(CAN_GO_BACK, canGoBack);
@@ -49,12 +55,6 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
         } else {
             canGoBack = getSupportFragmentManager().getBackStackEntryCount()>0;
         }
-    }
-
-    @Override
-    public boolean onPreferenceStartFragment(PreferenceFragmentCompat caller, Preference pref) {
-        //WHEN USER TAPS ON A SECTION IN SETTINGS AND ALLOWS YOU TO CUSTOMIZE transitions/animations
-        return false;
     }
 
     public static void updateCanGoBack(boolean canGoBack, AppCompatActivity activity){

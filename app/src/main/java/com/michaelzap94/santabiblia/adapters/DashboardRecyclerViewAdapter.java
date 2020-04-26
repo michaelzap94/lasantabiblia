@@ -4,6 +4,7 @@ import android.app.ListActivity;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +16,10 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
+import com.michaelzap94.santabiblia.BaseActivityTopDrawer;
 import com.michaelzap94.santabiblia.R;
+import com.michaelzap94.santabiblia.fragments.dashboard.DashboardMainFragment;
+import com.michaelzap94.santabiblia.models.Book;
 import com.michaelzap94.santabiblia.models.Label;
 import com.michaelzap94.santabiblia.models.Verse;
 
@@ -44,6 +48,10 @@ public class DashboardRecyclerViewAdapter extends RecyclerView.Adapter<Dashboard
     }
 
     @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
+    @Override
     public int getItemCount() {
         return labelArrayList.size();
     }
@@ -58,20 +66,6 @@ public class DashboardRecyclerViewAdapter extends RecyclerView.Adapter<Dashboard
 
         void bind() {
 
-//            int[][] states = new int[][] {
-//                    new int[] { android.R.attr.state_enabled}, // enabled
-//                    new int[] {-android.R.attr.state_enabled}, // disabled
-//                    new int[] {-android.R.attr.state_checked}, // unchecked
-//                    new int[] { android.R.attr.state_pressed}  // pressed
-//            };
-//
-//            int[] colors = new int[] {
-//                    Color.BLACK,
-//                    Color.RED,
-//                    Color.GREEN,
-//                    Color.BLUE
-//            };
-
             //ColorStateList myList = new ColorStateList(states, colors);
             int labelPosition = getAdapterPosition();
             Label mLabel = labelArrayList.get(labelPosition);
@@ -85,6 +79,10 @@ public class DashboardRecyclerViewAdapter extends RecyclerView.Adapter<Dashboard
                 labelButton.setStrokeColor(colorState);
             } catch (IllegalArgumentException e){
             }
+
+            labelButton.setOnClickListener(v -> {
+                DashboardMainFragment.onLabelClickedFromList(ctx, mLabel.getId());
+            });
 
 
         }
