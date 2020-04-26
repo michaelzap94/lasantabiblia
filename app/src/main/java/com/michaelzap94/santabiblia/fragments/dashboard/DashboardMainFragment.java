@@ -9,19 +9,24 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.michaelzap94.santabiblia.DatabaseHelper.ContentDBHelper;
 import com.michaelzap94.santabiblia.R;
+import com.michaelzap94.santabiblia.models.Label;
+
+import java.util.ArrayList;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class DashboardMainFragment extends Fragment {
-
+    private static final String TAG = "DashboardMainFragment";
     private Button createNewLabel;
 
     public DashboardMainFragment() {
@@ -33,6 +38,10 @@ public class DashboardMainFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.dashboard_fragment, container, false);
+
+        ArrayList<Label> arrReturned = ContentDBHelper.getInstance(getActivity()).getAllLabels();
+        Log.d(TAG, "onCreateView: SIZE: " + arrReturned.size());
+
         createNewLabel = view.findViewById(R.id.dash_new_button);
         createNewLabel.setOnClickListener(new View.OnClickListener(){
             @Override

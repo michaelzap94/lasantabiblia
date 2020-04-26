@@ -11,8 +11,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import com.michaelzap94.santabiblia.DatabaseHelper.BibleDBHelper;
+import com.michaelzap94.santabiblia.DatabaseHelper.ContentDBHelper;
 import com.michaelzap94.santabiblia.R;
+import com.michaelzap94.santabiblia.models.Label;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -38,11 +44,25 @@ public class DashboardCreatorFragment extends Fragment {
         createButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                boolean error = false;
                 if (name.getText().toString().trim().equalsIgnoreCase("")) {
                     name.setError("This field can not be blank");
+                    error = true;
                 }
                 if (color.getText().toString().trim().equalsIgnoreCase("")) {
                     color.setError("This field can not be blank");
+                    error = true;
+                }
+                if(!error){
+                    String nameValue = name.getText().toString();
+                    String colorValue = color.getText().toString();
+                    Long idReturned = ContentDBHelper.getInstance(getActivity()).createLabel(nameValue, colorValue);
+                    if(idReturned != -1){
+                        Toast.makeText(getActivity(), "Insert success", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getActivity(), "Insert failure", Toast.LENGTH_SHORT).show();
+                    }
+
                 }
 
             }

@@ -18,6 +18,19 @@ public class ContentDBHelper extends SQLiteOpenHelper {
     private static int DATABASE_VERSION = 1;
     private static String DB_NAME = "content.db";
     private Context context;
+    private static ContentDBHelper dbHelperSingleton = null;
+
+    public static synchronized ContentDBHelper getInstance(Context context) {
+        ContentDBHelper dbHelperInner;
+        synchronized (ContentDBHelper.class) {
+            if (dbHelperSingleton == null) {
+                //if not singleton, create one.
+                dbHelperSingleton = new ContentDBHelper(context);
+            }//else return existing one.
+            dbHelperInner = dbHelperSingleton;
+        }
+        return dbHelperInner;
+    }
 
     public ContentDBHelper(Context context) {
         super(context, DB_NAME, null, DATABASE_VERSION);
@@ -28,7 +41,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
         cv.put("name", name);
         cv.put("color", color);
-        return this.getReadableDatabase().insert("labels",null, cv);
+        return this.getWritableDatabase().insert("labels",null, cv);
     }
 
     public ArrayList<Label> getAllLabels(){
