@@ -29,6 +29,7 @@ import com.michaelzap94.santabiblia.utilities.CommonMethods;
 public class Bible extends BaseActivityTopDrawer{
 
     private static final String TAG = "Bible";
+    private BottomNavigationView bottomNavigationView;
     private int book_number;
     private int totalChapters;
     public String bookName;
@@ -111,7 +112,14 @@ public class Bible extends BaseActivityTopDrawer{
             }
         });
 
-        CommonMethods.bottomBarActionHandler((BottomNavigationView) findViewById(R.id.bottom_navigation), R.id.bnav_bible, Bible.this);
+        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+        CommonMethods.bottomBarActionHandler(bottomNavigationView, R.id.bnav_bible, Bible.this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        bottomNavigationView.setSelectedItemId(R.id.bnav_bible);
     }
 
     public void openDialog2() {

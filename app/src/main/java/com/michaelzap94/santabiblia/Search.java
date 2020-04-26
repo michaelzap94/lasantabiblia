@@ -9,6 +9,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.michaelzap94.santabiblia.utilities.CommonMethods;
 
 public class Search extends AppCompatActivity {
+    private static final String TAG = "Search";
+    private BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,7 +19,14 @@ public class Search extends AppCompatActivity {
 
 
 
-        CommonMethods.bottomBarActionHandler((BottomNavigationView) findViewById(R.id.bottom_navigation), R.id.bnav_search, Search.this);
+        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+        CommonMethods.bottomBarActionHandler(bottomNavigationView, R.id.bnav_search, Search.this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        bottomNavigationView.setSelectedItemId(R.id.bnav_search);
     }
 
     @Override

@@ -17,8 +17,8 @@ import com.michaelzap94.santabiblia.utilities.CommonMethods;
 
 public class Settings extends AppCompatActivity implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
     private static final String TAG = "Settings";
-    private static final String CAN_GO_BACK = "CAN_GO_BACK";
     private BottomNavigationView bottomNavigationView;
+    private static final String CAN_GO_BACK = "CAN_GO_BACK";
     private boolean canGoBack;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +32,14 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
                 .replace(R.id.activity_settings_fragment_item, new SettingsFragment())
                 .commit();
 
-        CommonMethods.bottomBarActionHandler((BottomNavigationView) findViewById(R.id.bottom_navigation), R.id.bnav_settings, Settings.this);
+        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+        CommonMethods.bottomBarActionHandler(bottomNavigationView, R.id.bnav_settings, Settings.this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        bottomNavigationView.setSelectedItemId(R.id.bnav_settings);
     }
 
     @Override

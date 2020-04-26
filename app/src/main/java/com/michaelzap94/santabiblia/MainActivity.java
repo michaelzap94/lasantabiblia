@@ -18,6 +18,8 @@ import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends BaseActivityTopDrawer  {
     public static final String MY_PREFS_NAME = "MyPrefsFile";
+    private BottomNavigationView bottomNavigationView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState, R.layout.activity_main_base);
@@ -25,7 +27,14 @@ public class MainActivity extends BaseActivityTopDrawer  {
 //        setContentView(R.layout.activity_main);
         CommonMethods.checkDatabaseExistLoad(MainActivity.this);
 
-        CommonMethods.bottomBarActionHandler((BottomNavigationView) findViewById(R.id.bottom_navigation), R.id.bnav_home, MainActivity.this);
+        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+        CommonMethods.bottomBarActionHandler(bottomNavigationView, R.id.bnav_home, MainActivity.this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        bottomNavigationView.setSelectedItemId(R.id.bnav_home);
     }
 
     @Override

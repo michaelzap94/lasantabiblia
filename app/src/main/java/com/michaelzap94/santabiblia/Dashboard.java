@@ -17,6 +17,7 @@ import com.michaelzap94.santabiblia.utilities.CommonMethods;
 
 public class Dashboard extends AppCompatActivity {
     private static final String TAG = "Dashboard";
+    private BottomNavigationView bottomNavigationView;
     private static final String CAN_GO_BACK_DASH = "CAN_GO_BACK_DASH_DASH";
     private boolean canGoBack;
 
@@ -35,7 +36,14 @@ public class Dashboard extends AppCompatActivity {
         fragmentTransaction.commit();
 
 
-        CommonMethods.bottomBarActionHandler((BottomNavigationView) findViewById(R.id.bottom_navigation), R.id.bnav_dashboard, Dashboard.this);
+        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+        CommonMethods.bottomBarActionHandler(bottomNavigationView, R.id.bnav_dashboard, Dashboard.this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        bottomNavigationView.setSelectedItemId(R.id.bnav_dashboard);
     }
 
     @Override
