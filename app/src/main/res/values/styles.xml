@@ -26,15 +26,21 @@
         <item name="actionModeBackground">@color/colorPrimary</item>
 <!--        <item name="actionModeCloseDrawable">@drawable/ic_compare_arrows</item>-->
         <item name="actionMenuTextColor">@color/blanco</item>
+        <item name="android:actionButtonStyle">@style/myActionButtonStyle</item>
+        <item name="actionButtonStyle">@style/myActionButtonStyle</item>
     </style>
-
+    <style name="myActionButtonStyle" parent="Widget.AppCompat.ActionButton">
+        <item name="android:minWidth">32dp</item>
+        <item name="android:maxWidth">45dp</item>
+        <item name="android:width">38dp</item>
+    </style>
 <!--    <style name="ActionModeTheme" >-->
 <!--        <item name="windowActionModeOverlay">true</item>-->
 <!--        <item name="android:actionModeBackground">@color/colorPrimary</item>-->
 <!--        <item name="actionModeCloseDrawable">@drawable/ic_compare_arrows</item>-->
 <!--        <item name="actionMenuTextColor">@color/blanco</item>-->
 <!--    </style>-->
-
+    <!--/////////////////////-->
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" >
         <item name="actionBarSize">48dp</item>
     </style>
@@ -50,6 +56,7 @@
         <item name="textAllCaps">true</item>
         <item name="android:textColor">@color/button_material_light</item>
     </style>
+    <!--/////////////////////-->
 
     <style name="ToolbarTitleAppearance" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textSize">18sp</item>

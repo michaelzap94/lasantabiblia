@@ -178,41 +178,15 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem menuItem) {
             switch (menuItem.getItemId()) {
-//                case R.id.menu_share /*2131624173*/:
+                case R.id.verse_menu_share:
 //                    Util.share(CapituloFragment.this.getContext(), CapituloFragment.this.mAdapter.getFormatVersiculo(), CapituloFragment.this.libro, CapituloFragment.this.capitulo, CapituloFragment.this.mAdapter.getSelectedVersiculoInc(), CapituloFragment.this.mAdapter.getSelectedVersiculoFin());
-//                    CapituloFragment.this.actionMode.finish();
-//                    return true;
-//                case R.id.menu_fav /*2131624181*/:
-//                    View layout = ((LayoutInflater) CapituloFragment.this.getActivity().getSystemService("layout_inflater")).inflate(R.layout.fav_dialog, null);
-//                    TextView fav_dig_tv1 = (TextView) layout.findViewById(R.id.fav_dig_tv1);
-//                    fav_dig_tv1.setText(CapituloFragment.this.mAdapter.getFormatVersiculo());
-//                    fav_dig_tv1.setVisibility(0);
-//                    final EditText fav_d_et1 = (EditText) layout.findViewById(R.id.fav_dig_et1);
-//                    Button fav_dig_b1 = (Button) layout.findViewById(R.id.fav_dig_b1);
-//                    final int vers1 = CapituloFragment.this.mAdapter.getSelectedVersiculoInc();
-//                    final int vers2 = CapituloFragment.this.mAdapter.getSelectedVersiculoFin();
-//                    fav_dig_b1.setOnClickListener(new View.OnClickListener() {
-//                        public void onClick(View arg0) {
-//                            fav_d_et1.setText(BuildConfig.FLAVOR);
-//                        }
-//                    });
-//                    new Builder(CapituloFragment.this.getActivity()).setTitle("Agregar Favorito").setView(layout).setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            DatabaseHelper.getLtHelper(CapituloFragment.this.getActivity()).addFavorito(CapituloFragment.this.libro, CapituloFragment.this.capitulo, vers1, vers2, fav_d_et1.getText().toString().trim(),getContext());
-//                            CapituloFragment.this.loadVersiculos();
-//                            CapituloFragment.this.getActivity().sendBroadcast(new Intent(FavoritosFragment.action_favoritos));
-//                        }
-//                    }).setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-//                        public void onClick(DialogInterface dialog, int which) {
-//                        }
-//                    }).show();
-//                    CapituloFragment.this.actionMode.finish();
-//                    return true;
-//                case R.id.menu_copi /*2131624182*/:
+                    actionMode.finish();
+                    return true;
+                case R.id.verse_menu_copy:
 //                    Util.copiar(CapituloFragment.this.getContext(), LibrosHelper.getTitleLibCaps(CapituloFragment.this.libro, CapituloFragment.this.capitulo, CapituloFragment.this.mAdapter.getSelectedVersiculoInc(), CapituloFragment.this.mAdapter.getSelectedVersiculoFin()), CapituloFragment.this.mAdapter.getFormatVersiculo());
-//                    CapituloFragment.this.actionMode.finish();
-//                    return true;
-                case R.id.menu_delete:
+                    actionMode.finish();
+                    return true;
+                case R.id.verse_menu_compare:
                     actionMode.finish();
                     return true;
                 default:
