@@ -170,9 +170,22 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
         return selectedItems.size();
     }
 
+//    public int getSelectedVerseFirst() {
+//        if (this.selectedItems.size() > 0) {
+//            return this.selectedItems.keyAt(0) + 1;
+//        }
+//        return 0;
+//    }
+//
+//    public int getSelectedVerseLast() {
+//        if (this.selectedItems.size() > 0) {
+//            return this.selectedItems.keyAt(this.selectedItems.size() - 1) + 1;
+//        }
+//        return 0;
+//    }
+
     public List<Integer> getSelectedItems() {
-        List<Integer> items =
-                new ArrayList<Integer>(selectedItems.size());
+        List<Integer> items = new ArrayList<>(selectedItems.size());
         for (int i = 0; i < selectedItems.size(); i++) {
             items.add(selectedItems.keyAt(i));
         }

@@ -40,21 +40,26 @@ public class RecyclerItemClickListener extends RecyclerView.SimpleOnItemTouchLis
 //                    Log.d(TAG, "rlc onSingleTapUp: childView "+ nextChild);
 //                    Log.d(TAG, "rlc onSingleTapUp: id: "+ nextChild.getId());
 //                }
-                TextView textView = (TextView) ((ViewGroup)childView).getChildAt(1);//this will be the verse textview
+
+                if(childView != null  && rcListener != null){
+                    TextView textView = (TextView) ((ViewGroup)childView).getChildAt(1);//this will be the verse textview
 
 //                Log.d(TAG, "rlc onSingleTapUp: getMovementMethod " + textView.getMovementMethod());
 //                Log.d(TAG, "rlc onSingleTapUp: textView.getSelectionStart() " + textView.getSelectionStart());
 //                Log.d(TAG, "rlc onSingleTapUp: textView.getSelectionEnd()  " + textView.getSelectionEnd());
 
-                if (textView.getSelectionStart() == -1 && textView.getSelectionEnd() == -1) {
-                    // do your code here this will only call if its not a hyperlink
-                    Log.d(TAG, "rlc DO CODE HERE. ");
-                    if(childView != null && rcListener != null){
-                        Log.d(TAG, "rlc onSingleTapUp: calling listener.onItemClick");
-                        int positionOfTapRow = recyclerView.getChildAdapterPosition(childView);
-                        rcListener.onItemClick(childView, positionOfTapRow);
+                    if (textView.getSelectionStart() == -1 && textView.getSelectionEnd() == -1) {
+                        // do your code here this will only call if its not a hyperlink
+                        Log.d(TAG, "rlc DO CODE HERE. ");
+                        if(childView != null && rcListener != null){
+                            Log.d(TAG, "rlc onSingleTapUp: calling listener.onItemClick");
+                            int positionOfTapRow = recyclerView.getChildAdapterPosition(childView);
+                            rcListener.onItemClick(childView, positionOfTapRow);
+                        }
+                        return true;
+                    } else {
+                        return super.onSingleTapUp(e);
                     }
-                    return true;
                 } else {
                     return super.onSingleTapUp(e);
                 }
