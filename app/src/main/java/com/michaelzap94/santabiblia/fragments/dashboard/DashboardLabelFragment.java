@@ -31,6 +31,7 @@ import com.michaelzap94.santabiblia.adapters.DashboardRecyclerViewAdapter;
 import com.michaelzap94.santabiblia.models.Label;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.michaelzap94.santabiblia.models.Verse;
+import com.michaelzap94.santabiblia.models.VersesMarked;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,8 +65,8 @@ public class DashboardLabelFragment extends Fragment {
         boolean canGoBack = getActivity().getSupportFragmentManager().getBackStackEntryCount()>0;
         Dashboard.updateCanGoBack(canGoBack, (AppCompatActivity)getActivity());
         //============================================================================================
-//        ArrayList<Label> arrReturned = ContentDBHelper.getInstance(getActivity()).getAllLabels();
-//        Log.d(TAG, "onCreateView: SIZE: " + arrReturned.size());
+        ArrayList<VersesMarked> arrReturned = ContentDBHelper.getInstance(getActivity()).getVersesMarked(this.mLabel.getId());
+        Log.d(TAG, "onCreateView: SIZE: " + arrReturned.size());
 //        rvAdapter = new DashboardRecyclerViewAdapter(getActivity(), arrReturned);
         return view;
     }

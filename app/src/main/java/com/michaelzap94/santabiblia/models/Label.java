@@ -5,10 +5,10 @@ public class Label {
     private String color;
     private int id;
 
-    public Label(String name, String color, int id) {
+    public Label(int id, String name, String color) {
+        this.id = id;
         this.name = name;
         this.color = color;
-        this.id = id;
     }
 
     public String getName() {

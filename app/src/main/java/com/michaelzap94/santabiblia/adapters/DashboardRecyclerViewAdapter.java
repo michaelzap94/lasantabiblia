@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.view.ActionMode;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,7 +34,9 @@ public class DashboardRecyclerViewAdapter extends RecyclerView.Adapter<Dashboard
     private ArrayList<Label> labelArrayList;
     private Context ctx;
     private int chapter_number;
+    private int book_number;
     private VersesRecyclerViewAdapter rvAdapter;
+    private ActionMode actionMode;
     public DashboardRecyclerViewAdapter(Context ctx, ArrayList<Label> labelArrayList) {
         this.ctx = ctx;
         this.labelArrayList = labelArrayList;
@@ -41,10 +44,12 @@ public class DashboardRecyclerViewAdapter extends RecyclerView.Adapter<Dashboard
         this.rvAdapter = null;
     }
 
-    public DashboardRecyclerViewAdapter(Context ctx, ArrayList<Label> labelArrayList, int chapter_number, VersesRecyclerViewAdapter rvAdapter) {
+    public DashboardRecyclerViewAdapter(Context ctx, ArrayList<Label> labelArrayList, int book_number,  int chapter_number, ActionMode actionMode, VersesRecyclerViewAdapter rvAdapter) {
         this.ctx = ctx;
         this.labelArrayList = labelArrayList;
+        this.book_number = book_number;
         this.chapter_number = chapter_number;
+        this.actionMode = actionMode;
         this.rvAdapter = rvAdapter;
     }
 
@@ -97,7 +102,7 @@ public class DashboardRecyclerViewAdapter extends RecyclerView.Adapter<Dashboard
                 if(ctx instanceof Dashboard){
                     DashboardMainFragment.onLabelClickedFromList(ctx, mLabel);
                 } else if(ctx instanceof Bible && chapter_number > -1 && rvAdapter != null){
-                    VersesFragment.onLabelClickedFromList(ctx, mLabel, chapter_number, rvAdapter);
+                    VersesFragment.onLabelClickedFromList(ctx, mLabel, book_number, chapter_number, actionMode, rvAdapter);
                 }
             });
 

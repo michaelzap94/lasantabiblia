@@ -155,7 +155,7 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
                         ((Bible) mActivity).hideFloatingActionButton();
                         break;
                     case BottomSheetBehavior.STATE_EXPANDED:
-                        rvAdapterLabels = new DashboardRecyclerViewAdapter(mActivity, arrLabels, chapter_number, rvAdapter);
+                        rvAdapterLabels = new DashboardRecyclerViewAdapter(mActivity, arrLabels, book_number, chapter_number, actionMode, rvAdapter);
                         rvViewLabels = (RecyclerView) view.findViewById(R.id.bottom_sheet_recycler_view);
                         rvViewLabels.setLayoutManager(new LinearLayoutManager(VersesFragment.this.getContext()));
                         //rvViewLabels.addOnItemTouchListener(new RecyclerItemClickListener(mActivity, rvView, VersesFragment.this));
@@ -280,12 +280,22 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
         }
     }
     //===============================================================================================
-    public static void onLabelClickedFromList(Context ctx, Label mLabel, int chapter_number, VersesRecyclerViewAdapter rvAdapter) {
-        String labelName = mLabel.getName();
-        String labelColor = mLabel.getColor();
-        int labelId = mLabel.getId();
+    public static void onLabelClickedFromList(Context ctx, Label mLabel, int book_number, int chapter_number, ActionMode actionMode, VersesRecyclerViewAdapter rvAdapter) {
+//        String labelName = mLabel.getName();
+//        String labelColor = mLabel.getColor();
+//        int labelId = mLabel.getId();
         Log.d(TAG, "onLabelClickedFromList: " + chapter_number);
         Log.d(TAG, "onLabelClickedFromList: " + rvAdapter.getSelectedItems());
+        boolean success = ContentDBHelper.getInstance(ctx).insertSelectedItemsBulkTransaction(mLabel, book_number, chapter_number, null, rvAdapter.getSelectedItems());
+        Log.d(TAG, "onLabelClickedFromList: RESULT " + success);
 
+        if(success) {
+            Toast.makeText(ctx, "Success inserting all elements", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(ctx, "Not all elements could be inserted", Toast.LENGTH_SHORT).show();
+        }
+        if(actionMode != null){
+            actionMode.finish();
+        }
     }
 }

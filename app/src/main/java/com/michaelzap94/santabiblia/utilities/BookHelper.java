@@ -200,11 +200,11 @@ public class BookHelper {
     public static String getTitleBookAndCaps(int chapter, List<Integer> selectedItems) {
         Log.d(TAG, "getTitleBookAndCaps: " + selectedItems);
         String verses = "";
-        List<List<Integer>> result = getVersesSelectedResults(selectedItems);
+        List<List<Integer>> versesGroups = getVersesSelectedResults(selectedItems);
 
-        String[] resultArr = new String[result.size()];
-        for (int i = 0; i < result.size(); i++) {
-            List<Integer> currentArr = result.get(i);
+        String[] resultArr = new String[versesGroups.size()];
+        for (int i = 0; i < versesGroups.size(); i++) {
+            List<Integer> currentArr = versesGroups.get(i);
             int verseFrom = (currentArr.get(0)+1);
             int verseTo = (currentArr.get(currentArr.size()-1)+1);
             resultArr[i] = verseFrom + (verseFrom < verseTo ? "-" + verseTo : BuildConfig.FLAVOR);
