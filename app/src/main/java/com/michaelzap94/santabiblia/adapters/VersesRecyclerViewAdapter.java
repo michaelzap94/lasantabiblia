@@ -149,50 +149,6 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
         vid.setStyle(DialogFragment.STYLE_NORMAL, R.style.CustomDialog);
         vid.show(((AppCompatActivity) ctx).getSupportFragmentManager(),"anything");
     }
-//ITEM SELECTED========================================================================
-    public int toggleSelection(int pos) {
-        if (selectedItems.get(pos, false)) {
-            selectedItems.delete(pos);
-        }
-        else {
-            selectedItems.put(pos, true);
-        }
-        notifyItemChanged(pos);
-        return getSelectedItemCount();
-    }
-
-    public void clearSelections() {
-        selectedItems.clear();
-        notifyDataSetChanged();
-    }
-
-    public int getSelectedItemCount() {
-        return selectedItems.size();
-    }
-
-//    public int getSelectedVerseFirst() {
-//        if (this.selectedItems.size() > 0) {
-//            return this.selectedItems.keyAt(0) + 1;
-//        }
-//        return 0;
-//    }
-//
-//    public int getSelectedVerseLast() {
-//        if (this.selectedItems.size() > 0) {
-//            return this.selectedItems.keyAt(this.selectedItems.size() - 1) + 1;
-//        }
-//        return 0;
-//    }
-
-    public List<Integer> getSelectedItems() {
-        List<Integer> items = new ArrayList<>(selectedItems.size());
-        for (int i = 0; i < selectedItems.size(); i++) {
-            items.add(selectedItems.keyAt(i));
-        }
-        return items;
-    }
-//========================================================================
-
     public void openDialogReferencesMaterial(int bookNumber, String elementClicked){
         Context context = new ContextThemeWrapper(ctx, R.style.AppTheme2);
 
@@ -215,4 +171,35 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
                     }
                 }).show();
     }
+
+    //ITEM SELECTED========================================================================
+    public int toggleSelection(int pos) {
+        if (selectedItems.get(pos, false)) {
+            selectedItems.delete(pos);
+        }
+        else {
+            selectedItems.put(pos, true);
+        }
+        notifyItemChanged(pos);
+        return getSelectedItemCount();
+    }
+
+    public void clearSelections() {
+        selectedItems.clear();
+        notifyDataSetChanged();
+    }
+
+    public int getSelectedItemCount() {
+        return selectedItems.size();
+    }
+
+    public List<Integer> getSelectedItems() {
+        List<Integer> items = new ArrayList<>(selectedItems.size());
+        for (int i = 0; i < selectedItems.size(); i++) {
+            items.add(selectedItems.keyAt(i));
+        }
+        return items;
+    }
+//========================================================================
+
 }

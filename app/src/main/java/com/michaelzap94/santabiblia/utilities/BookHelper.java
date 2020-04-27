@@ -183,7 +183,7 @@ public class BookHelper {
         return listNT;
     }
 
-    public static String getTitleBookAndCaps(String book, int chapter, List<Integer> selectedItems) {
+    public static String getTitleBookAndCaps(int chapter, List<Integer> selectedItems) {
         Log.d(TAG, "getTitleBookAndCaps: " + selectedItems);
         String verses = "";
         List<List<Integer>> result = new ArrayList<List<Integer>>();
@@ -206,7 +206,7 @@ public class BookHelper {
         Log.d(TAG, "STRING: " + result);
         verses = TextUtils.join(", ", resultArr);
 
-        return book + " " + chapter + ":" + verses;//
+        return chapter + ":" + verses;//
     }
 
 //    public static String getUrlLibCaps(int libro, int capitulo, int versiculoi, int versiculof) {

@@ -265,8 +265,9 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
         if(VersesFragment.this.actionMode != null){
             int items = rvAdapter.toggleSelection(idx);
             if(items > 0){
-                String title = BookHelper.getTitleBookAndCaps(this.currentBookName, this.chapter_number, rvAdapter.getSelectedItems());
-                actionMode.setTitle(title);
+                String title = BookHelper.getTitleBookAndCaps(this.chapter_number, rvAdapter.getSelectedItems());
+                actionMode.setTitle(this.currentBookName);
+                actionMode.setSubtitle(title);
             } else {
                 actionMode.finish();
             }
