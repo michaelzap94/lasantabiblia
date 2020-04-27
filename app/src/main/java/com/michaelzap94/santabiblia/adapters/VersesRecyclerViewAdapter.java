@@ -10,6 +10,7 @@ import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,10 +36,12 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
     private static final String TAG = "VersesRecyclerViewAdapt";
     ArrayList<Verse> verseArrayList;
     private Context ctx;
+    private SparseBooleanArray selectedItems;
 
     public VersesRecyclerViewAdapter(Context ctx, ArrayList<Verse> verseArrayList) {
         this.verseArrayList = verseArrayList;
         this.ctx = ctx;
+        this.selectedItems = new SparseBooleanArray();
     }
 
     //function available so View can update the RecyclerView List once the information is available.
@@ -61,6 +64,8 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
     @Override
     public void onBindViewHolder(@NonNull VersesRecyclerViewAdapter.VersesViewHolder holder, int position) {
         holder.bind();
+        holder.itemView.setActivated(selectedItems.get(position, false));
+
     }
     @Override
     public int getItemViewType(int position) {
@@ -137,7 +142,6 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
                 txtView_title.setText(verse.getTextTitle());
                 txtView_title.setVisibility(View.VISIBLE);
             }
-
         }
     }
     public void openDialogVerses2(String title, HashMap<String, ArrayList<Verse>> versesFromCommentaries){
@@ -145,7 +149,36 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
         vid.setStyle(DialogFragment.STYLE_NORMAL, R.style.CustomDialog);
         vid.show(((AppCompatActivity) ctx).getSupportFragmentManager(),"anything");
     }
+//ITEM SELECTED========================================================================
+    public int toggleSelection(int pos) {
+        if (selectedItems.get(pos, false)) {
+            selectedItems.delete(pos);
+        }
+        else {
+            selectedItems.put(pos, true);
+        }
+        notifyItemChanged(pos);
+        return getSelectedItemCount();
+    }
 
+    public void clearSelections() {
+        selectedItems.clear();
+        notifyDataSetChanged();
+    }
+
+    public int getSelectedItemCount() {
+        return selectedItems.size();
+    }
+
+    public List<Integer> getSelectedItems() {
+        List<Integer> items =
+                new ArrayList<Integer>(selectedItems.size());
+        for (int i = 0; i < selectedItems.size(); i++) {
+            items.add(selectedItems.keyAt(i));
+        }
+        return items;
+    }
+//========================================================================
 
     public void openDialogReferencesMaterial(int bookNumber, String elementClicked){
         Context context = new ContextThemeWrapper(ctx, R.style.AppTheme2);
