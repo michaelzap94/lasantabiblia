@@ -30,6 +30,7 @@ public class Bible extends BaseActivityTopDrawer{
 
     private static final String TAG = "Bible";
     private BottomNavigationView bottomNavigationView;
+    private FloatingActionButton fab;
     private int book_number;
     private int totalChapters;
     public String bookName;
@@ -104,7 +105,7 @@ public class Bible extends BaseActivityTopDrawer{
             this.viewPager.setCurrentItem(this.chapter_number - 1);
         }
 
-        FloatingActionButton fab = findViewById(R.id.fab);
+        fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -154,5 +155,19 @@ public class Bible extends BaseActivityTopDrawer{
     @Override
     protected void onSaveInstanceState(Bundle outState){
         super.onSaveInstanceState(outState);
+    }
+
+    public void showFloatingActionButton(){
+        fab.show();
+    }
+    public void hideFloatingActionButton(){
+        fab.hide();
+    }
+
+    public void showBottomNavigationView(){
+        bottomNavigationView.setVisibility(View.VISIBLE);
+    }
+    public void hideBottomNavigationView(){
+        bottomNavigationView.setVisibility(View.GONE);
     }
 }

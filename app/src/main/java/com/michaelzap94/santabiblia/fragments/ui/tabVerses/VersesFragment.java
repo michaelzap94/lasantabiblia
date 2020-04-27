@@ -1,5 +1,6 @@
 package com.michaelzap94.santabiblia.fragments.ui.tabVerses;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -26,7 +27,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.michaelzap94.santabiblia.BaseActivityTopDrawer;
+import com.michaelzap94.santabiblia.Bible;
 import com.michaelzap94.santabiblia.DatabaseHelper.ContentDBHelper;
 import com.michaelzap94.santabiblia.R;
 import com.michaelzap94.santabiblia.adapters.DashboardRecyclerViewAdapter;
@@ -48,6 +51,7 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
     private String currentBookName;
     private int chapter_number;
     private int verse_number;
+    private Activity mActivity;
     ///////////////////////////////////////////////////////////
     private ActionMode actionMode;
     private ActionModeCallback actionModeCallback = new ActionModeCallback();
@@ -79,12 +83,13 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mActivity = getActivity();
         this.book_number = getArguments().getInt("book");
         this.chapter_number = getArguments().getInt("chapter");
         this.verse_number = getArguments().getInt("verse");
         this.currentBookName = BookHelper.getBook(book_number).getName();
         Log.d(TAG, "onCreate: VersesFragment " + chapter_number);
-        rvAdapter = new VersesRecyclerViewAdapter( getActivity(), new ArrayList<>());
+        rvAdapter = new VersesRecyclerViewAdapter( mActivity, new ArrayList<>());
 
         //get viewmodel class and properties, pass this context so LifeCycles are handled by ViewModel,
         // in case the Activity is destroyed and recreated(screen roation)
@@ -111,10 +116,12 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
         //////////////////////////////////////////////
         this.rvView = (RecyclerView) root.findViewById(R.id.verses_list_view);
         rvView.setLayoutManager(new LinearLayoutManager(this.getContext()));
-        rvView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), rvView,VersesFragment.this));
+        rvView.addOnItemTouchListener(new RecyclerItemClickListener(mActivity, rvView,VersesFragment.this));
         rvView.setAdapter(rvAdapter);//attach the RecyclerView adapter to the RecyclerView View
         /////////////////////////////////////////
         ///////////////////////////////////////////////////////////
+//        FloatingActionButton floatingActionButton = ((Bible) mActivity).getFloatingActionButton();
+
         View bottomSheet = root.findViewById(R.id.bottom_sheet_nestedscrollview);
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
@@ -123,18 +130,24 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 switch (newState){
                     case BottomSheetBehavior.STATE_COLLAPSED:
+                        ((Bible) mActivity).hideBottomNavigationView();
+                        ((Bible) mActivity).hideFloatingActionButton();
                         break;
                     case BottomSheetBehavior.STATE_EXPANDED:
-                        rvAdapterLabels = new DashboardRecyclerViewAdapter(getActivity(), arrLabels);
+                        rvAdapterLabels = new DashboardRecyclerViewAdapter(mActivity, arrLabels);
                         rvViewLabels = (RecyclerView) view.findViewById(R.id.bottom_sheet_recycler_view);
                         rvViewLabels.setLayoutManager(new LinearLayoutManager(VersesFragment.this.getContext()));
-//        rvViewLabels.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), rvView, VersesFragment.this));
+//        rvViewLabels.addOnItemTouchListener(new RecyclerItemClickListener(mActivity, rvView, VersesFragment.this));
                         rvViewLabels.setAdapter(rvAdapterLabels);//attach the RecyclerView adapter to the RecyclerView View
                         break;
                     case BottomSheetBehavior.STATE_HIDDEN:
+                        ((Bible) mActivity).showBottomNavigationView();
+                        ((Bible) mActivity).showFloatingActionButton();
+
                         if(actionMode!=null){
                             actionMode.finish();
                         }
+
                         break;
                     case BottomSheetBehavior.STATE_HALF_EXPANDED:
                         break;
@@ -155,8 +168,8 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
     @Override
     public void onResume() {
         super.onResume();
-        if (getActivity() instanceof BaseActivityTopDrawer) {
-            ((BaseActivityTopDrawer) getActivity()).getSupportActionBar().setSubtitle("Capitulo "+this.chapter_number);
+        if (mActivity instanceof BaseActivityTopDrawer) {
+            ((BaseActivityTopDrawer) mActivity).getSupportActionBar().setSubtitle("Capitulo "+this.chapter_number);
         }
     }
 
@@ -213,9 +226,9 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
     @Override
     public void onItemClick(View view, int position) {
         Log.d(TAG, "onItemClick: " + position);
-        Toast.makeText(getActivity(), "onItemClick" + position, Toast.LENGTH_SHORT).show();
+        Toast.makeText(mActivity, "onItemClick" + position, Toast.LENGTH_SHORT).show();
 
-//        arrLabels = ContentDBHelper.getInstance(getActivity()).getAllLabels();
+//        arrLabels = ContentDBHelper.getInstance(mActivity).getAllLabels();
 //        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         //Only keep selecting items if actionMode exists.
         myToggleSelection(position);
@@ -224,14 +237,14 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
     @Override
     public void onItemLongClick(View view, int position) {
         Log.d(TAG, "onItemLongClick: " + position);
-        Toast.makeText(getActivity(), "onItemLongClick" + position, Toast.LENGTH_SHORT).show();
-        arrLabels = ContentDBHelper.getInstance(getActivity()).getAllLabels();
+        Toast.makeText(mActivity, "onItemLongClick" + position, Toast.LENGTH_SHORT).show();
+        arrLabels = ContentDBHelper.getInstance(mActivity).getAllLabels();
 //        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         //===============================================================
         //Create the actionMode only on LongClick
         if (VersesFragment.this.actionMode == null) {
-            actionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(VersesFragment.this.actionModeCallback);
+            actionMode = ((AppCompatActivity) mActivity).startSupportActionMode(VersesFragment.this.actionModeCallback);
         }
         myToggleSelection(position);
     }
