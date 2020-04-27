@@ -49,7 +49,6 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         cv.put("color", color);
         return this.getWritableDatabase().update("labels", cv, "_id="+id, null) > 0;
     }
-
     public ArrayList<Label> getAllLabels(){
         Cursor innerCursor;
         int rowCount;
@@ -78,17 +77,17 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         }
         return list;
     }
-
     public boolean deleteOneLabel(int id){
         return this.getWritableDatabase().delete("labels", "_id =" + id, null) > 0;
     }
+
+
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE labels (_id INTEGER PRIMARY KEY, name VARCHAR NOT NULL, color VARCHAR NOT NULL)");
         db.execSQL("CREATE TABLE verses_marked (_id INTEGER PRIMARY KEY, label INTEGER NOT NULL, book_number INTEGER NOT NULL, chapter INTEGER NOT NULL, verseFrom INTEGER NOT NULL, verseTo INTEGER NOT NULL, color VARCHAR NOT NULL, text VARCHAR, date_created datetime default current_timestamp, date_updated datetime default current_timestamp, state INTEGER NOT NULL)");
     }
-
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS labels");

@@ -21,6 +21,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -35,6 +37,7 @@ import com.michaelzap94.santabiblia.DatabaseHelper.ContentDBHelper;
 import com.michaelzap94.santabiblia.R;
 import com.michaelzap94.santabiblia.adapters.DashboardRecyclerViewAdapter;
 import com.michaelzap94.santabiblia.adapters.VersesRecyclerViewAdapter;
+import com.michaelzap94.santabiblia.fragments.dashboard.DashboardLabelFragment;
 import com.michaelzap94.santabiblia.models.Book;
 import com.michaelzap94.santabiblia.models.Label;
 import com.michaelzap94.santabiblia.models.Verse;
@@ -152,10 +155,10 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
                         ((Bible) mActivity).hideFloatingActionButton();
                         break;
                     case BottomSheetBehavior.STATE_EXPANDED:
-                        rvAdapterLabels = new DashboardRecyclerViewAdapter(mActivity, arrLabels);
+                        rvAdapterLabels = new DashboardRecyclerViewAdapter(mActivity, arrLabels, chapter_number, rvAdapter);
                         rvViewLabels = (RecyclerView) view.findViewById(R.id.bottom_sheet_recycler_view);
                         rvViewLabels.setLayoutManager(new LinearLayoutManager(VersesFragment.this.getContext()));
-//        rvViewLabels.addOnItemTouchListener(new RecyclerItemClickListener(mActivity, rvView, VersesFragment.this));
+                        //rvViewLabels.addOnItemTouchListener(new RecyclerItemClickListener(mActivity, rvView, VersesFragment.this));
                         rvViewLabels.setAdapter(rvAdapterLabels);//attach the RecyclerView adapter to the RecyclerView View
                         break;
                     case BottomSheetBehavior.STATE_HIDDEN:
@@ -240,7 +243,6 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
             return false;
         }
     }
-
     @Override
     public void onItemClick(View view, int position) {
         Log.d(TAG, "onItemClick: " + position);
@@ -251,7 +253,6 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
         //Only keep selecting items if actionMode exists.
         myToggleSelection(position);
     }
-
     @Override
     public void onItemLongClick(View view, int position) {
         Log.d(TAG, "onItemLongClick: " + position);
@@ -277,5 +278,14 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
                 actionMode.finish();
             }
         }
+    }
+    //===============================================================================================
+    public static void onLabelClickedFromList(Context ctx, Label mLabel, int chapter_number, VersesRecyclerViewAdapter rvAdapter) {
+        String labelName = mLabel.getName();
+        String labelColor = mLabel.getColor();
+        int labelId = mLabel.getId();
+        Log.d(TAG, "onLabelClickedFromList: " + chapter_number);
+        Log.d(TAG, "onLabelClickedFromList: " + rvAdapter.getSelectedItems());
+
     }
 }

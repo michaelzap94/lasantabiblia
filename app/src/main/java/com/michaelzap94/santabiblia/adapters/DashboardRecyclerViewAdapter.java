@@ -17,8 +17,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
 import com.michaelzap94.santabiblia.BaseActivityTopDrawer;
+import com.michaelzap94.santabiblia.Bible;
+import com.michaelzap94.santabiblia.Dashboard;
 import com.michaelzap94.santabiblia.R;
 import com.michaelzap94.santabiblia.fragments.dashboard.DashboardMainFragment;
+import com.michaelzap94.santabiblia.fragments.ui.tabVerses.VersesFragment;
 import com.michaelzap94.santabiblia.models.Book;
 import com.michaelzap94.santabiblia.models.Label;
 import com.michaelzap94.santabiblia.models.Verse;
@@ -27,12 +30,22 @@ import java.util.ArrayList;
 
 public class DashboardRecyclerViewAdapter extends RecyclerView.Adapter<DashboardRecyclerViewAdapter.DashboardViewHolder> {
     private static final String TAG = "DashboardRecyclerViewAd";
-    ArrayList<Label> labelArrayList;
-    Context ctx;
-
+    private ArrayList<Label> labelArrayList;
+    private Context ctx;
+    private int chapter_number;
+    private VersesRecyclerViewAdapter rvAdapter;
     public DashboardRecyclerViewAdapter(Context ctx, ArrayList<Label> labelArrayList) {
         this.ctx = ctx;
         this.labelArrayList = labelArrayList;
+        this.chapter_number = -1;
+        this.rvAdapter = null;
+    }
+
+    public DashboardRecyclerViewAdapter(Context ctx, ArrayList<Label> labelArrayList, int chapter_number, VersesRecyclerViewAdapter rvAdapter) {
+        this.ctx = ctx;
+        this.labelArrayList = labelArrayList;
+        this.chapter_number = chapter_number;
+        this.rvAdapter = rvAdapter;
     }
 
     @NonNull
@@ -81,7 +94,11 @@ public class DashboardRecyclerViewAdapter extends RecyclerView.Adapter<Dashboard
             }
 
             labelButton.setOnClickListener(v -> {
-                DashboardMainFragment.onLabelClickedFromList(ctx, mLabel);
+                if(ctx instanceof Dashboard){
+                    DashboardMainFragment.onLabelClickedFromList(ctx, mLabel);
+                } else if(ctx instanceof Bible && chapter_number > -1 && rvAdapter != null){
+                    VersesFragment.onLabelClickedFromList(ctx, mLabel, chapter_number, rvAdapter);
+                }
             });
 
 

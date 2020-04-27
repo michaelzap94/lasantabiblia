@@ -183,9 +183,7 @@ public class BookHelper {
         return listNT;
     }
 
-    public static String getTitleBookAndCaps(int chapter, List<Integer> selectedItems) {
-        Log.d(TAG, "getTitleBookAndCaps: " + selectedItems);
-        String verses = "";
+    public static List<List<Integer>> getVersesSelectedResults(List<Integer> selectedItems){
         List<List<Integer>> result = new ArrayList<List<Integer>>();
         List<Integer> currentList = null;
         for (int i = 0; i < selectedItems.size(); i++) {
@@ -196,6 +194,14 @@ public class BookHelper {
             }
             currentList.add(selectedItems.get(i)); //add current element to the curr list
         }
+        return result;
+    }
+
+    public static String getTitleBookAndCaps(int chapter, List<Integer> selectedItems) {
+        Log.d(TAG, "getTitleBookAndCaps: " + selectedItems);
+        String verses = "";
+        List<List<Integer>> result = getVersesSelectedResults(selectedItems);
+
         String[] resultArr = new String[result.size()];
         for (int i = 0; i < result.size(); i++) {
             List<Integer> currentArr = result.get(i);
@@ -203,7 +209,7 @@ public class BookHelper {
             int verseTo = (currentArr.get(currentArr.size()-1)+1);
             resultArr[i] = verseFrom + (verseFrom < verseTo ? "-" + verseTo : BuildConfig.FLAVOR);
         }
-        Log.d(TAG, "STRING: " + result);
+        Log.d(TAG, "STRING: " + resultArr);
         verses = TextUtils.join(", ", resultArr);
 
         return chapter + ":" + verses;//
