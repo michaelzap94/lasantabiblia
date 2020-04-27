@@ -186,100 +186,29 @@ public class BookHelper {
     public static String getTitleBookAndCaps(String book, int chapter, List<Integer> selectedItems) {
         Log.d(TAG, "getTitleBookAndCaps: " + selectedItems);
         String verses = "";
-        String versesFinal = "";
-        if(selectedItems.size() == 1){
-            verses = verses + (selectedItems.get(0) + 1);
-        } else {
-            List<List<Integer>> result = new ArrayList<List<Integer>>();
-            List<Integer> currentList = null;
-            for (int i = 0; i < selectedItems.size(); i++) {
-                if(i == 0 || (selectedItems.get(i) != selectedItems.get(i-1)+1)) {
-                    //if the current element is the first element or doesn't satisfy the condition
-                    currentList = new ArrayList<Integer>(); //create a new list and set it to curr
-                    result.add(currentList); //add the newly created list to the result list
-                }
-                currentList.add(selectedItems.get(i)); //add current element to the curr list
+        List<List<Integer>> result = new ArrayList<List<Integer>>();
+        List<Integer> currentList = null;
+        for (int i = 0; i < selectedItems.size(); i++) {
+            if(i == 0 || (selectedItems.get(i) != selectedItems.get(i-1)+1)) {
+                //if the current element is the first element or doesn't satisfy the condition
+                currentList = new ArrayList<Integer>(); //create a new list and set it to curr
+                result.add(currentList); //add the newly created list to the result list
             }
-            String[] resultArr = new String[result.size()];
-            for (int i = 0; i < result.size(); i++) {
-                List<Integer> currentArr = result.get(i);
-                int verseFrom = (currentArr.get(0)+1);
-                int verseTo = (currentArr.get(currentArr.size()-1)+1);
-                resultArr[i] = verseFrom + (verseFrom < verseTo ? "-" + verseTo : BuildConfig.FLAVOR);
-            }
-            Log.d(TAG, "STRING: " + result);
-            verses = TextUtils.join(", ", resultArr);
-
+            currentList.add(selectedItems.get(i)); //add current element to the curr list
         }
-
+        String[] resultArr = new String[result.size()];
+        for (int i = 0; i < result.size(); i++) {
+            List<Integer> currentArr = result.get(i);
+            int verseFrom = (currentArr.get(0)+1);
+            int verseTo = (currentArr.get(currentArr.size()-1)+1);
+            resultArr[i] = verseFrom + (verseFrom < verseTo ? "-" + verseTo : BuildConfig.FLAVOR);
+        }
+        Log.d(TAG, "STRING: " + result);
+        verses = TextUtils.join(", ", resultArr);
 
         return book + " " + chapter + ":" + verses;//
-
     }
 
-//    public static String getTitleBookAndCaps(String book, int chapter, List<Integer> selectedItems) {
-//        Log.d(TAG, "getTitleBookAndCaps: " + selectedItems);
-//        String verses = "";
-//        String versesFinal = "";
-//        if(selectedItems.size() == 1){
-//            verses = verses + (selectedItems.get(0) + 1);
-//        } else {
-//            boolean needComma = false;
-//            int i = 0;
-//            int j;
-//            int startVerse = 0;
-//            int endVerse = 0;
-//            int newStartVerse = 0;
-//            int newEndVerse = 0;
-//            for (j = 1; j < selectedItems.size(); j++) {
-//                if (selectedItems.get(j) == selectedItems.get(j - 1) + 1) {
-//                    startVerse = selectedItems.get(i) + 1;
-//                    endVerse = selectedItems.get(j) + 1;
-//                    if(!needComma){
-//                        verses = startVerse + "-" + endVerse;
-//                    } else {
-//                        if(verses == ""){
-//                            verses = startVerse + "-" + endVerse;
-//                        } else {
-//                            if(newStartVerse>0){
-//                                verses = verses + "-" + endVerse;
-//                                newStartVerse = 0;
-//                            } else {
-//                                verses = verses + ", " +  startVerse + "-" + endVerse;
-//                            }
-//                        }
-//                    }
-//                } else {
-//                    needComma = true;
-//                    i = j;
-//                    newStartVerse = selectedItems.get(i) + 1;
-////                    newEndVerse = selectedItems.get(j) + 1;
-//                    if(verses == ""){
-//                        verses = startVerse + "-" + endVerse;
-//                    } else {
-//                        verses = verses + ", " +  newStartVerse;
-//                    }
-//
-//                }
-//            }
-//
-//        }
-//
-//
-//        return book + " " + chapter + ":" + verses;//verseFrom + (verseFrom < verseTo ? "-" + verseTo : BuildConfig.FLAVOR);
-//
-//    }
-
-//    public static String getTitleBookAndCaps(String book, int chapter, int verseFrom, int verseTo) {
-////        Book selectedBook = getBook(book);
-////        if (selectedBook == null || verseFrom == 0) {
-////            return BuildConfig.FLAVOR;
-////        }
-////        return selectedBook.getName() + " " + chapter + ":" + verseFrom + (verseFrom < verseTo ? "-" + verseTo : BuildConfig.FLAVOR);
-//          return book + " " + chapter + ":" + verseFrom + (verseFrom < verseTo ? "-" + verseTo : BuildConfig.FLAVOR);
-//
-//    }
-//
 //    public static String getUrlLibCaps(int libro, int capitulo, int versiculoi, int versiculof) {
 //        Book nlibro = getBook(libro);
 //        if (nlibro == null || versiculoi == 0) {
