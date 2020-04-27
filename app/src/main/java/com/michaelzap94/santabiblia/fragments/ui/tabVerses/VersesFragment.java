@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.michaelzap94.santabiblia.BaseActivityTopDrawer;
@@ -118,9 +119,26 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
         rvView.setLayoutManager(new LinearLayoutManager(this.getContext()));
         rvView.addOnItemTouchListener(new RecyclerItemClickListener(mActivity, rvView,VersesFragment.this));
         rvView.setAdapter(rvAdapter);//attach the RecyclerView adapter to the RecyclerView View
+//        BottomNavigationView bottomNavigationView = ((Bible) mActivity).getBottomNavigationView();
+//        rvView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//            @Override
+//            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//                Log.d(TAG, "onScrolled: "+dy);
+//                if (dy > 0 && bottomNavigationView.isShown()) {
+//                    bottomNavigationView.setVisibility(View.GONE);
+//                } else if (dy < 0 ) {
+//                    bottomNavigationView.setVisibility(View.VISIBLE);
+//                }
+//            }
+//
+//            @Override
+//            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+//
+//                super.onScrollStateChanged(recyclerView, newState);
+//            }
+//        });
         /////////////////////////////////////////
         ///////////////////////////////////////////////////////////
-//        FloatingActionButton floatingActionButton = ((Bible) mActivity).getFloatingActionButton();
 
         View bottomSheet = root.findViewById(R.id.bottom_sheet_nestedscrollview);
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);

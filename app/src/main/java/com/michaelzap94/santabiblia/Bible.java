@@ -163,7 +163,9 @@ public class Bible extends BaseActivityTopDrawer{
     public void hideFloatingActionButton(){
         fab.hide();
     }
-
+    public BottomNavigationView getBottomNavigationView(){
+        return bottomNavigationView;
+    }
     public void showBottomNavigationView(){
         bottomNavigationView.setVisibility(View.VISIBLE);
     }
