@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.HttpAuthHandler;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,11 +18,13 @@ import com.michaelzap94.santabiblia.BuildConfig;
 import com.michaelzap94.santabiblia.R;
 import com.michaelzap94.santabiblia.models.Label;
 import com.michaelzap94.santabiblia.models.VersesMarked;
+import com.michaelzap94.santabiblia.utilities.BookHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class VersesMarkedRecyclerViewAdapter extends RecyclerView.Adapter<VersesMarkedRecyclerViewAdapter.VersesMarkedViewHolder> {
     private static final String TAG = "VersesRecyclerViewAdapt";
@@ -79,25 +82,21 @@ public class VersesMarkedRecyclerViewAdapter extends RecyclerView.Adapter<Verses
 
         void bind() {
             VersesMarked versesMarked = versesMarkedArrayList.get(getAdapterPosition());
-            Label label = versesMarked.getLabel();
+//            Label label = versesMarked.getLabel();
             String bookName = versesMarked.getBook().getName();
-            int book_number = versesMarked.getBook().getBookNumber();
-            int id = versesMarked.getIdVerseMarked();
+//            int book_number = versesMarked.getBook().getBookNumber();
+//            int id = versesMarked.getIdVerseMarked();
             int chapter = versesMarked.getChapter();
             boolean hasNote = versesMarked.hasNote();
 //            String note = versesMarked.getNote();
-            HashMap<Integer, String> verseTextDict = versesMarked.getVerseTextDict();
+            TreeMap<Integer, String> verseTextDict = versesMarked.getVerseTextDict();
             String content = "";
-            int verseFrom = 1000;//no chapter has more than 1000 verses, therefore this is enough: Infinity
-            int verseTo = 0;
-            for (Map.Entry mapElement : verseTextDict.entrySet()) {
+//            int verseFrom = 1000;//no chapter has more than 1000 verses, therefore this is enough: Infinity
+//            int verseTo = 0;
+            List<Integer> selectedItems = new ArrayList<>();
+            for (Map.Entry<Integer, String> mapElement : verseTextDict.entrySet()) {
                 int verseNumber = (Integer) mapElement.getKey();
-                if(verseNumber < verseFrom){
-                    verseFrom = verseNumber;
-                }
-                if(verseNumber > verseTo){
-                    verseTo = verseNumber;
-                }
+                selectedItems.add(verseNumber - 1);
                 String text = (String) mapElement.getValue();
                 content = content + " <b>" + verseNumber + "</b>"  + ". " + text;
             }
@@ -109,7 +108,9 @@ public class VersesMarkedRecyclerViewAdapter extends RecyclerView.Adapter<Verses
                 contentSpanned = Html.fromHtml(content);
             }
 
-            String title = bookName + " " + chapter + ":" + verseFrom  + (verseFrom < verseTo ? "-" + verseTo : BuildConfig.FLAVOR);
+            //String title = bookName + " " + chapter + ":" + verseFrom  + (verseFrom < verseTo ? "-" + verseTo : BuildConfig.FLAVOR);
+            String titleChapterVerses = BookHelper.getTitleBookAndCaps(chapter, selectedItems);
+            String title = bookName + " " + titleChapterVerses;
             txtView_title.setText(title);
             txtView_content.setText(contentSpanned);
             if(hasNote) {

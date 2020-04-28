@@ -8,6 +8,7 @@ import com.michaelzap94.santabiblia.BuildConfig;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 
 public class VersesMarked implements Parcelable {
     public static final Creator<VersesMarked> CREATOR = new Creator<VersesMarked>() {
@@ -26,7 +27,7 @@ public class VersesMarked implements Parcelable {
     private String note;
     private String uuid;
 //    protected List<String> textsGroup = new ArrayList();
-    protected HashMap<Integer, String> verseTextDict = new HashMap<>();
+    protected TreeMap<Integer, String> verseTextDict = new TreeMap<>();
 
 
     public VersesMarked(int id, String uuid, Book book, Label label, int chapter, int verse, String text, String note) {
@@ -52,7 +53,7 @@ public class VersesMarked implements Parcelable {
     public String getUuid() {
         return uuid;
     }
-    public HashMap<Integer, String> getVerseTextDict(){
+    public TreeMap<Integer, String> getVerseTextDict(){
         return this.verseTextDict;
     }
     public int getIdVerseMarked() {
