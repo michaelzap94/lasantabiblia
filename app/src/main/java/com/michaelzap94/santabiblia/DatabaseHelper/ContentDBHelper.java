@@ -81,7 +81,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         return list;
     }
     public boolean deleteOneLabel(int id){
-        return this.getWritableDatabase().delete("labels", "_id =" + id, null) > 0;
+         return this.getWritableDatabase().delete("labels", "_id =" + id, null) > 0;
     }
 
 
@@ -231,12 +231,26 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         return list;
     }
 
+    public boolean deleteVersesMarkedGroup(int label_id, String uuid){
+        return this.getWritableDatabase().delete("verses_marked", "label_id =" + label_id + " AND UUID ="+ uuid, null) > 0;
+    }
+
+    public int getVersesMarkedNumber(int label_id) {
+        try {
+            String query = "SELECT * FROM verses_marked WHERE label_id=" + label_id;
+            Cursor labelSpecificRows = this.getReadableDatabase().rawQuery(query, null);
+            return labelSpecificRows.getCount();
+        } catch (Exception e) {
+        }
+        return -1;
+    }
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE labels (_id INTEGER PRIMARY KEY, name VARCHAR NOT NULL, color VARCHAR NOT NULL, permanent INTEGER DEFAULT 0)");
         db.execSQL("CREATE TABLE verses_marked (_id INTEGER PRIMARY KEY, label_id INTEGER NOT NULL, book_number INTEGER NOT NULL, chapter INTEGER NOT NULL, verseFrom INTEGER NOT NULL, verseTo INTEGER NOT NULL, " +
                 "label_name VARCHAR NOT NULL, label_color VARCHAR NOT NULL, note VARCHAR, date_created datetime DEFAULT current_timestamp, date_updated datetime DEFAULT current_timestamp, UUID VARCHAR NOT NULL, state INTEGER DEFAULT 0," +
-                "FOREIGN KEY (label_id) REFERENCES labels (_id))");
+                "FOREIGN KEY (label_id) REFERENCES labels (_id) ON DELETE CASCADE)");
 
         db.execSQL("INSERT INTO labels (name,color) VALUES( \"Favourites\", \"#fce703\")");
         db.execSQL("INSERT INTO labels (name,color) VALUES( \"Memorize\", \"#fc5a03\")");
@@ -246,5 +260,10 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS labels");
         db.execSQL("DROP TABLE IF EXISTS verses_marked");
         onCreate(db);
+    }
+
+    @Override
+    public void onConfigure(SQLiteDatabase db){
+        db.setForeignKeyConstraintsEnabled(true);
     }
 }
