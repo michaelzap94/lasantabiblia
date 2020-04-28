@@ -45,26 +45,75 @@
                 />
 
         </LinearLayout>
-
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.4dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:background="@android:color/darker_gray" />
         <!-- Buttons -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="4dp"
+            android:layout_margin="10dp"
+            android:weightSum="4"
+            android:layout_gravity="end"
             android:orientation="horizontal">
-            <com.google.android.material.button.MaterialButton
-                android:layout_width="wrap_content"
+            <ImageButton
+                android:id="@+id/label_item_copy"
+                android:background="?android:selectableItemBackground"
+                android:layout_width="match_parent"
+                android:layout_marginRight="15dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:text="action_1"
-                style="?attr/borderlessButtonStyle"
+                android:src="@drawable/ic_copy"
                 />
-            <com.google.android.material.button.MaterialButton
-                android:layout_width="wrap_content"
+            <ImageButton
+                android:id="@+id/label_item_share"
+                android:background="?android:selectableItemBackground"
+                android:layout_width="match_parent"
+                android:layout_marginRight="15dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="action_2"
-                style="?attr/borderlessButtonStyle"
+                android:src="@drawable/ic_share"
                 />
+            <ImageButton
+                android:id="@+id/label_item_edit"
+                android:background="?android:selectableItemBackground"
+                android:layout_width="match_parent"
+                android:layout_marginRight="15dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_edit"
+                />
+            <ImageButton
+                android:id="@+id/label_item_delete"
+                android:background="?android:selectableItemBackground"
+                android:layout_width="match_parent"
+                android:layout_marginRight="15dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_delete"
+                />
+<!--            <com.google.android.material.button.MaterialButton-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginEnd="8dp"-->
+<!--                android:text="action_1"-->
+<!--                style="?attr/borderlessButtonStyle"-->
+<!--                />-->
+
+<!--            <com.google.android.material.button.MaterialButton-->
+<!--                style="@style/Widget.MaterialComponents.Button.TextButton"-->
+<!--                android:layout_width="46dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                app:icon="@drawable/ic_bookmark" />-->
+<!--            <com.google.android.material.button.MaterialButton-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="action_2"-->
+<!--                style="?attr/borderlessButtonStyle"-->
+<!--                />-->
         </LinearLayout>
 
     </LinearLayout>

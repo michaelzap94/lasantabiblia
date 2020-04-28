@@ -34,8 +34,8 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
                 android:background="@android:color/darker_gray" />
 
             <!-- Buttons -->
@@ -48,20 +48,22 @@
 
                 <com.google.android.material.button.MaterialButton
                     app:icon="@drawable/ic_bookmark"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    app:iconGravity="start"
+                    style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="left"
+                    android:gravity="start"
                     android:text="Salmos 2" />
 
                 <com.google.android.material.button.MaterialButton
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
                     app:icon="@drawable/ic_eye"
+                    app:iconGravity="start"
+                    style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="left"
+                    android:gravity="start"
                     android:text="Juan 1" />
             </LinearLayout>
 
