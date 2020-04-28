@@ -23,8 +23,8 @@ public class VersesMarked implements Parcelable {
     private Book book;
     private Label label;
     private int chapter;
-    private String note = BuildConfig.FLAVOR;
-    protected List<String> textsGroup = new ArrayList();
+    private String note;
+//    protected List<String> textsGroup = new ArrayList();
     protected HashMap<Integer, String> verseTextDict = new HashMap<>();
 
 
@@ -51,15 +51,21 @@ public class VersesMarked implements Parcelable {
     public HashMap<Integer, String> getVerseTextDict(){
         return this.verseTextDict;
     }
-
     public int getIdVerseMarked() {
         return this.id;
     }
-
+    public Book getBook() {
+        return book;
+    }
+    public Label getLabel() {
+        return label;
+    }
+    public int getChapter() {
+        return chapter;
+    }
     public boolean hasNote() {
         return (this.note == null || this.note.equals(BuildConfig.FLAVOR)) ? false : true;
     }
-
     public String getNote() {
         return this.note;
     }

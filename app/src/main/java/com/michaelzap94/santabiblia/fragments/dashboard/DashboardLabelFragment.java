@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment;
 
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.michaelzap94.santabiblia.BaseActivityTopDrawer;
@@ -28,6 +29,7 @@ import com.michaelzap94.santabiblia.DatabaseHelper.BibleDBHelper;
 import com.michaelzap94.santabiblia.DatabaseHelper.ContentDBHelper;
 import com.michaelzap94.santabiblia.R;
 import com.michaelzap94.santabiblia.adapters.DashboardRecyclerViewAdapter;
+import com.michaelzap94.santabiblia.adapters.VersesMarkedRecyclerViewAdapter;
 import com.michaelzap94.santabiblia.models.Label;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.michaelzap94.santabiblia.models.Verse;
@@ -43,7 +45,7 @@ public class DashboardLabelFragment extends Fragment {
     private Context ctx;
 
     private RecyclerView rvView;
-    private DashboardRecyclerViewAdapter rvAdapter;
+    private VersesMarkedRecyclerViewAdapter rvAdapter;
 
     public DashboardLabelFragment(Context ctx, Label mLabel) {
         this.ctx = ctx;
@@ -67,18 +69,18 @@ public class DashboardLabelFragment extends Fragment {
         //============================================================================================
         ArrayList<VersesMarked> arrReturned = ContentDBHelper.getInstance(getActivity()).getVersesMarked(this.mLabel.getId());
         Log.d(TAG, "onCreateView: SIZE: " + arrReturned.size());
-//        rvAdapter = new DashboardRecyclerViewAdapter(getActivity(), arrReturned);
+        rvAdapter = new VersesMarkedRecyclerViewAdapter(getActivity(), arrReturned);
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        //////////////////////////////////////////////
-//        this.rvView = (RecyclerView) view.findViewById(R.id.dash_recycler_view);
-//        rvView.setLayoutManager(new LinearLayoutManager(this.getContext()));
-////        rvView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), rvView, VersesFragment.this));
-//        rvView.setAdapter(rvAdapter);//attach the RecyclerView adapter to the RecyclerView View
-        /////////////////////////////////////////
+        ////////////////////////////////////////////
+        this.rvView = (RecyclerView) view.findViewById(R.id.verses_marked_recycler_view);
+        rvView.setLayoutManager(new LinearLayoutManager(this.getContext()));
+//        rvView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), rvView, VersesFragment.this));
+        rvView.setAdapter(rvAdapter);//attach the RecyclerView adapter to the RecyclerView View
+        ///////////////////////////////////////
     }
 
     @Override

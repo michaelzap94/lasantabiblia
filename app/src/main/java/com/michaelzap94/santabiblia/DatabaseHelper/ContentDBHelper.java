@@ -176,7 +176,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
                     int verseTo = labelSpecificRows.getInt(verseToCol);
                     String note = null;
                     if(!labelSpecificRows.isNull(noteCol)){
-                        note = labelSpecificRows.getString(label_nameCol);
+                        note = labelSpecificRows.getString(noteCol);
                     }
 
                     Label specificLabel = new Label(label_id, label_name, label_color);
