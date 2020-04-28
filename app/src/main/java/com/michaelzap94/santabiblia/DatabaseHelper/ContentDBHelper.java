@@ -13,7 +13,9 @@ import com.michaelzap94.santabiblia.models.VersesMarked;
 import com.michaelzap94.santabiblia.utilities.BookHelper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 public class ContentDBHelper extends SQLiteOpenHelper {
     private static int DATABASE_VERSION = 1;
@@ -88,17 +90,24 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         int label_id = label.getId();
         String label_name = label.getName();
         String label_color = label.getColor();
+
         List<List<Integer>> versesGroups = BookHelper.getVersesSelectedResults(selectedItems);//[[1,2,3],[6,7],[9]]
         SQLiteDatabase db = this.getWritableDatabase();
         db.beginTransaction();
         try{
+            String uniqueID = UUID.randomUUID().toString();
             ContentValues cv = new ContentValues();
             cv.put("label_id", label_id);
             cv.put("label_name", label_name);
             cv.put("label_color", label_color);
             cv.put("book_number", book_number);
             cv.put("chapter", chapter_number);
-            cv.put("note", (note == null || note.equals(BuildConfig.FLAVOR) ?  "NULL" : note));
+            if(note == null || note.equals(BuildConfig.FLAVOR)){
+                cv.putNull("note");
+            } else {
+                cv.put("note", note);
+            }
+            cv.put("UUID", uniqueID);
             for (int i = 0; i < versesGroups.size(); i++) {
                 List<Integer> currentGroup = versesGroups.get(i);
                 int verseFrom = (currentGroup.get(0)+1);
@@ -135,7 +144,6 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         }
         return true;
     }
-
     public boolean insertVersesMarked(int label_id, String label_name, String label_color, int book_number, int chapter_number, int verseFrom, int verseTo, String note) {
         ContentValues cv = new ContentValues();
         cv.put("label_id", label_id);
@@ -152,6 +160,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
     public ArrayList<VersesMarked> getVersesMarked(int label_id) {
         int labelSpecificRowsCount;
         int i;
+        HashMap<String,Integer> history = new HashMap<>();
         ArrayList<VersesMarked> list = new ArrayList<>();
         try {            //String query = "SELECT * FROM verses_marked " + "JOIN categories ON teams.cat = catagories.Id WHERE fav=0)";
             String query = "SELECT * FROM verses_marked WHERE label_id=" + label_id;
@@ -160,6 +169,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
                 labelSpecificRowsCount = labelSpecificRows.getCount();
                 for (i = 0; i < labelSpecificRowsCount; i++) {
                     int _idCol= labelSpecificRows.getColumnIndex("_id");
+                    int uuidCol = labelSpecificRows.getColumnIndex("UUID");
                     int label_nameCol= labelSpecificRows.getColumnIndex("label_name");
                     int label_colorCol= labelSpecificRows.getColumnIndex("label_color");
                     int book_numberCol= labelSpecificRows.getColumnIndex("book_number");
@@ -168,6 +178,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
                     int verseToCol= labelSpecificRows.getColumnIndex("verseTo");
                     int noteCol= labelSpecificRows.getColumnIndex("note");
                     int _id = labelSpecificRows.getInt(_idCol);
+                    String uuid = labelSpecificRows.getString(uuidCol);
                     String label_name = labelSpecificRows.getString(label_nameCol);
                     String label_color = labelSpecificRows.getString(label_colorCol);
                     int book_number = labelSpecificRows.getInt(book_numberCol);
@@ -192,21 +203,22 @@ public class ContentDBHelper extends SQLiteOpenHelper {
 //                        innerQuery = "SELECT verse , text FROM verses WHERE book_number = ? AND chapter = ? ORDER BY book_number, chapter, verse";
 //                    }
 //                    Cursor innerCursor = this.getReadableDatabase().rawQuery(innerQuery, null);
+                    Integer  indexIfInHistory = history.get(uuid);
                     Cursor innerCursor = BibleDBHelper.getInstance(context).openDataBaseNoHelper(BibleDBHelper.DB_NAME_BIBLE_CONTENT).rawQuery(innerQuery, null);
                     if (innerCursor.moveToFirst()) {
                         do{
                             int verseCol = innerCursor.getColumnIndex(BibleContracts.VersesContract.COL_VERSE);
                             int textCol = innerCursor.getColumnIndex(BibleContracts.VersesContract.COL_TEXT);
-
                             int verse = innerCursor.getInt(verseCol);
                             String text = innerCursor.getString(textCol).trim();
                             //if one verse only OR this is the first verse from the query results.
                             //therefore, we'll only create one VersesMarked object and then add to it the rest of the verses.
-                            if (verseFrom == verseTo || verseFrom == verse) {
-                                VersesMarked innerVerseMarked = new VersesMarked(_id, specificBook, specificLabel, chapter, verse, text, note);
+                            if ((verseFrom == verseTo || verseFrom == verse) && (indexIfInHistory == null)) {
+                                VersesMarked innerVerseMarked = new VersesMarked(_id, uuid, specificBook, specificLabel, chapter, verse, text, note);
                                 list.add(innerVerseMarked);
+                                history.put(uuid, (list.size() - 1));//put this as seen and the index where inserted in HISTORY
                             } else {//if more than one verse and this is not the first verse
-                                ((VersesMarked) list.get(list.size() - 1)).addToVerseTextDict(verse, text);
+                                ((VersesMarked) list.get(history.get(uuid))).addToVerseTextDict(verse, text);
                             }
                         } while(innerCursor.moveToNext());
                     }
@@ -223,7 +235,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE labels (_id INTEGER PRIMARY KEY, name VARCHAR NOT NULL, color VARCHAR NOT NULL, permanent INTEGER DEFAULT 0)");
         db.execSQL("CREATE TABLE verses_marked (_id INTEGER PRIMARY KEY, label_id INTEGER NOT NULL, book_number INTEGER NOT NULL, chapter INTEGER NOT NULL, verseFrom INTEGER NOT NULL, verseTo INTEGER NOT NULL, " +
-                "label_name VARCHAR NOT NULL, label_color VARCHAR NOT NULL, note VARCHAR, date_created datetime DEFAULT current_timestamp, date_updated datetime DEFAULT current_timestamp, state INTEGER DEFAULT 0," +
+                "label_name VARCHAR NOT NULL, label_color VARCHAR NOT NULL, note VARCHAR, date_created datetime DEFAULT current_timestamp, date_updated datetime DEFAULT current_timestamp, UUID VARCHAR NOT NULL, state INTEGER DEFAULT 0," +
                 "FOREIGN KEY (label_id) REFERENCES labels (_id))");
 
         db.execSQL("INSERT INTO labels (name,color) VALUES( \"Favourites\", \"#fce703\")");

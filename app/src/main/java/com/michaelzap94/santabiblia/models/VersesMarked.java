@@ -24,12 +24,14 @@ public class VersesMarked implements Parcelable {
     private Label label;
     private int chapter;
     private String note;
+    private String uuid;
 //    protected List<String> textsGroup = new ArrayList();
     protected HashMap<Integer, String> verseTextDict = new HashMap<>();
 
 
-    public VersesMarked(int id, Book book, Label label, int chapter, int verse, String text, String note) {
+    public VersesMarked(int id, String uuid, Book book, Label label, int chapter, int verse, String text, String note) {
         this.id = id;
+        this.uuid = uuid;
         this.book = book;
         this.label = label;
         this.chapter = chapter;
@@ -47,7 +49,9 @@ public class VersesMarked implements Parcelable {
     public void addToVerseTextDict(int verse, String text){
         this.verseTextDict.put(verse, text);
     }
-
+    public String getUuid() {
+        return uuid;
+    }
     public HashMap<Integer, String> getVerseTextDict(){
         return this.verseTextDict;
     }
