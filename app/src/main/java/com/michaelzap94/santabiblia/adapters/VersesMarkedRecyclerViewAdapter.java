@@ -1,6 +1,8 @@
 package com.michaelzap94.santabiblia.adapters;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Build;
 import android.text.Html;
 import android.text.Spanned;
@@ -39,7 +41,7 @@ public class VersesMarkedRecyclerViewAdapter extends RecyclerView.Adapter<Verses
     }
 
     //function available so View can update the RecyclerView List once the information is available.
-    public void updateVersesRecyclerView(List<VersesMarked> _versesMarkedArrayList) {
+    public void updateVersesMarkedRecyclerView(List<VersesMarked> _versesMarkedArrayList) {
         Log.d(TAG, "VersesFragment: REcyclerview: UPDATE: " + _versesMarkedArrayList.size());
         versesMarkedArrayList.clear();
         versesMarkedArrayList.addAll(_versesMarkedArrayList);
@@ -73,11 +75,19 @@ public class VersesMarkedRecyclerViewAdapter extends RecyclerView.Adapter<Verses
         TextView txtView_title;
         TextView txtView_note;
         TextView txtView_content;
+        View btn_copy;
+        View btn_share;
+        View btn_edit;
+        View btn_delete;
         public VersesMarkedViewHolder(@NonNull View itemView) {
             super(itemView);
             txtView_title = itemView.findViewById(R.id.verses_marked_cardview_title);
             txtView_note = itemView.findViewById(R.id.verses_marked_cardview_note);
             txtView_content = itemView.findViewById(R.id.verses_marked_cardview_content);
+            btn_copy = itemView.findViewById(R.id.label_item_copy);
+            btn_share = itemView.findViewById(R.id.label_item_share);
+            btn_edit = itemView.findViewById(R.id.label_item_edit);
+            btn_delete = itemView.findViewById(R.id.label_item_delete);
         }
 
         void bind() {
@@ -116,7 +126,36 @@ public class VersesMarkedRecyclerViewAdapter extends RecyclerView.Adapter<Verses
             if(hasNote) {
                 txtView_note.setText(versesMarked.getNote());
             }
+            this.bindButtonListeners(versesMarked, title);
+        }
 
+        void bindButtonListeners(VersesMarked versesMarked, String title){
+            btn_copy.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                }
+            });
+            btn_share.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                }
+            });
+            btn_edit.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                }
+            });
+            btn_delete.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    new AlertDialog.Builder(ctx).setMessage("Desea quitar " + title + " de sus favoritos?").setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+//                            DatabaseHelper.getLtHelper(FavoritosFragment.this.getActivity()).delFavorito(nodo.getIdFavorito(),getContext());
+//                            FavoritosFragment.this.loadFavoritos();
+                        }
+                    }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    }).show();
+                }
+            });
         }
     }
 
