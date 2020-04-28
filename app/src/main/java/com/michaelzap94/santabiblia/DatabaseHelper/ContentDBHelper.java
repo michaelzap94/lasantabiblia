@@ -232,7 +232,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
     }
 
     public boolean deleteVersesMarkedGroup(int label_id, String uuid){
-        return this.getWritableDatabase().delete("verses_marked", "label_id =" + label_id + " AND UUID ="+ uuid, null) > 0;
+        return this.getWritableDatabase().delete("verses_marked", "label_id = ? AND UUID = ?", new String[]{String.valueOf(label_id), uuid}) > 0;
     }
 
     public int getVersesMarkedNumber(int label_id) {

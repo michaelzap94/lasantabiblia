@@ -3,6 +3,7 @@ package com.michaelzap94.santabiblia.adapters;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.text.Html;
 import android.text.Spanned;
@@ -12,15 +13,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.HttpAuthHandler;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.michaelzap94.santabiblia.BuildConfig;
+import com.michaelzap94.santabiblia.DatabaseHelper.ContentDBHelper;
 import com.michaelzap94.santabiblia.R;
 import com.michaelzap94.santabiblia.models.Label;
 import com.michaelzap94.santabiblia.models.VersesMarked;
 import com.michaelzap94.santabiblia.utilities.BookHelper;
+import com.michaelzap94.santabiblia.utilities.CommonMethods;
+import com.michaelzap94.santabiblia.viewmodel.VersesMarkedViewModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -126,12 +131,13 @@ public class VersesMarkedRecyclerViewAdapter extends RecyclerView.Adapter<Verses
             if(hasNote) {
                 txtView_note.setText(versesMarked.getNote());
             }
-            this.bindButtonListeners(versesMarked, title);
+            this.bindButtonListeners(versesMarked, title, contentSpanned.toString());
         }
 
-        void bindButtonListeners(VersesMarked versesMarked, String title){
+        void bindButtonListeners(VersesMarked versesMarked, String title, String content){
             btn_copy.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
+                    CommonMethods.copyText(ctx,title, content);
                 }
             });
             btn_share.setOnClickListener(new View.OnClickListener() {
@@ -146,8 +152,7 @@ public class VersesMarkedRecyclerViewAdapter extends RecyclerView.Adapter<Verses
                 public void onClick(View v) {
                     new AlertDialog.Builder(ctx).setMessage("Desea quitar " + title + " de sus favoritos?").setPositiveButton("Si", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-//                            DatabaseHelper.getLtHelper(FavoritosFragment.this.getActivity()).delFavorito(nodo.getIdFavorito(),getContext());
-//                            FavoritosFragment.this.loadFavoritos();
+                            deleteOneFromVersesMarked(versesMarked.getLabel().getId(), versesMarked.getUuid(), getAdapterPosition());
                         }
                     }).setNegativeButton("No", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
@@ -159,4 +164,25 @@ public class VersesMarkedRecyclerViewAdapter extends RecyclerView.Adapter<Verses
         }
     }
 
+    public void deleteOneFromVersesMarked(int label_id, String uuid, int position){new VersesMarkedRecyclerViewAdapter.RemoveVersesMarked(position).execute(String.valueOf(label_id), uuid);}
+    private class RemoveVersesMarked extends AsyncTask<String, Void, Boolean> {
+        private int position;
+        private RemoveVersesMarked(int position) {
+            this.position = position;
+        }
+        protected Boolean doInBackground(String... args) {
+            Log.d(TAG, "doInBackground: " + args[0]);
+            return ContentDBHelper.getInstance(VersesMarkedRecyclerViewAdapter.this.ctx).deleteVersesMarkedGroup(Integer.parseInt(args[0]), args[1]);
+        }
+        @Override
+        protected void onPostExecute(Boolean success) {
+            super.onPostExecute(success);
+            if(success){
+                versesMarkedArrayList.remove(this.position);
+                notifyItemRemoved(this.position);
+            } else {
+                Toast.makeText(VersesMarkedRecyclerViewAdapter.this.ctx, "This item could not be deleted", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 }

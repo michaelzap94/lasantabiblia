@@ -1,6 +1,8 @@
 package com.michaelzap94.santabiblia.utilities;
 
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -52,7 +54,6 @@ public class CommonMethods {
     private static boolean loadBibles(Context context) throws ExecutionException, InterruptedException {
         return new ImportBibles().execute(context).get();
     }
-
     private static class ImportBibles extends AsyncTask<Context, Void, Boolean> {
         //get data and populate the list
         protected Boolean doInBackground(Context... arg) {
@@ -106,5 +107,11 @@ public class CommonMethods {
                 }
             }
         });
+    }
+
+    public static void copyText(Context context, String title, String text){
+        String content = title + "\n" + text;
+        ((ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE)).setPrimaryClip(ClipData.newPlainText("Bible content", content));
+        Toast.makeText(context, title + " Copied.", Toast.LENGTH_SHORT).show();
     }
 }
