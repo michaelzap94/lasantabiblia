@@ -22,10 +22,11 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginLeft="8dp"
         app:errorEnabled="true"
         app:counterEnabled="true"
-        app:counterMaxLength="20"
+        app:counterMaxLength="30"
         app:helperTextEnabled="true"
         app:helperText="Letters left"
         android:hint="Name Of Label">
@@ -49,12 +50,26 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="8dp">
-                <TextView
-                    android:id="@+id/dash_creator_fragment_color_txtview"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/dash_creator_fragment_color_txtview"
-                    android:textAppearance="?attr/textAppearanceHeadline6" />
+                    android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/dash_creator_fragment_color_txtview_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="3dp"
+                        android:text="@string/dash_creator_fragment_color_txtview"
+                        android:textAppearance="?attr/textAppearanceSubtitle1" />
+                    <TextView
+                        android:id="@+id/dash_creator_fragment_color_txtview_info"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:focusable="true"
+                        android:clickable="true"
+                        android:focusableInTouchMode="true"
+                        android:textAppearance="?attr/textAppearanceSubtitle2" />
+                </LinearLayout>
                 <GridView
                     android:id="@+id/dash_creator_gridview"
                     android:layout_width="match_parent"
