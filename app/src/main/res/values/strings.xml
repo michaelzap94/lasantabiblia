@@ -28,6 +28,6 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="dash_creator_fragment_name_txtview">Name of Label</string>
-    <string name="dash_creator_fragment_color_txtview">Choose the color of your Label</string>
+    <string name="dash_creator_fragment_color_txtview">Color of Label:</string>
     <string name="dash_creator_fragment_button">Create Label</string>
 </resources>

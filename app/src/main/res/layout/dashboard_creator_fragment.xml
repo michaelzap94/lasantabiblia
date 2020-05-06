@@ -8,40 +8,72 @@
     android:orientation="vertical"
     tools:context=".fragments.dashboard.DashboardCreatorFragment">
 
+<!--    <EditText-->
+<!--        android:id="@+id/dash_creator_fragment_name_edittext"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:ems="10"-->
+<!--        android:inputType="textPersonName"-->
+<!--        android:hint="Name Of Label" />-->
 
-    <TextView
-        android:id="@+id/dash_creator_fragment_name_txtview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/dash_creator_fragment_name_txtview"
-        android:textSize="22sp"
-        android:textStyle="bold" />
-
-    <EditText
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_weight = "0"
         android:id="@+id/dash_creator_fragment_name_edittext"
-        android:layout_width="wrap_content"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Name" />
+        android:layout_margin="8dp"
+        app:errorEnabled="true"
+        app:counterEnabled="true"
+        app:counterMaxLength="20"
+        app:helperTextEnabled="true"
+        app:helperText="Letters left"
+        android:hint="Name Of Label">
 
-    <TextView
-        android:id="@+id/dash_creator_fragment_color_txtview"
-        android:layout_width="wrap_content"
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_weight = "2"
+        android:id="@+id/card"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/dash_creator_fragment_color_txtview"
-        android:textSize="22sp"
-        android:textStyle="bold" />
+        android:layout_margin="8dp">
 
-    <EditText
-        android:id="@+id/dash_creator_fragment_color"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Name" />
-
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="8dp">
+                <TextView
+                    android:id="@+id/dash_creator_fragment_color_txtview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/dash_creator_fragment_color_txtview"
+                    android:textAppearance="?attr/textAppearanceHeadline6" />
+                <GridView
+                    android:id="@+id/dash_creator_gridview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:columnWidth="50dp"
+                    android:drawSelectorOnTop="true"
+                    android:gravity="center"
+                    android:numColumns="auto_fit"
+                    android:stretchMode="columnWidth"
+                    android:verticalSpacing="10dp"
+                    android:focusable="true"
+                    android:clickable="true"/>
+            </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
     <Button
+        android:layout_weight = "0"
+        android:layout_marginRight="4dp"
+        android:layout_marginLeft="4dp"
         android:id="@+id/dash_creator_fragment_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
