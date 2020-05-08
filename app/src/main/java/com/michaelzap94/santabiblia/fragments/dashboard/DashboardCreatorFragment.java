@@ -40,6 +40,7 @@ import com.michaelzap94.santabiblia.adapters.dialogs.GridAdapter;
 import com.michaelzap94.santabiblia.models.Label;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -156,7 +157,7 @@ public class DashboardCreatorFragment extends Fragment implements LabelColorCrea
         name = view.findViewById(R.id.dash_creator_fragment_name_edittext);
         color_txtview_info = view.findViewById(R.id.dash_creator_fragment_color_txtview_info);
         createButton = view.findViewById(R.id.dash_creator_fragment_button);
-        LabelColorCreatorRecyclerView adapter = new LabelColorCreatorRecyclerView(getActivity(), colors, this);
+        LabelColorCreatorRecyclerView adapter = new LabelColorCreatorRecyclerView(getActivity(), colors, editMode, this);
         GridLayoutManager manager = new GridLayoutManager(getActivity(), 6, GridLayoutManager.VERTICAL, false);
         //============================================================================================
         boolean canGoBack = getActivity().getSupportFragmentManager().getBackStackEntryCount()>0;
@@ -177,6 +178,9 @@ public class DashboardCreatorFragment extends Fragment implements LabelColorCrea
         if(nameVal != null && colorVal != null && editMode){
             name.getEditText().setText(nameVal);
             color_txtview_info.setText(colorVal);
+            int position = Arrays.asList(colors).indexOf(colorVal);
+            adapter.setSelected(position);
+            onItemClick(position);
         }
 
 

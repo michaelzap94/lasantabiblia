@@ -13,17 +13,28 @@ import com.michaelzap94.santabiblia.R;
 
 public class LabelColorCreatorRecyclerView extends RecyclerView.Adapter<LabelColorCreatorRecyclerView.ViewHolder> {
     private static final String TAG = "LabelColorCreatorRecycl";
-    String[] mColors;
-    Context mContext;
+    private String[] mColors;
+    private Context mContext;
     protected ItemListener mListener;
     private int selected = -1;
-    View selectedView = null;
-    ViewGroup parent;
+    boolean editMode;
 
-    public LabelColorCreatorRecyclerView(Context context, String[] colors, ItemListener itemListener) {
+    public int getSelected() {
+        return selected;
+    }
+
+    public void setSelected(int selected) {
+        this.selected = selected;
+    }
+
+    private View selectedView = null;
+    private ViewGroup parent;
+
+    public LabelColorCreatorRecyclerView(Context context, String[] colors, boolean eMode, ItemListener itemListener) {
         mColors = colors;
         mContext = context;
-        mListener=itemListener;
+        mListener = itemListener;
+        editMode = eMode;
     }
     public int getColorSelected(){
         return selected;
@@ -57,6 +68,10 @@ public class LabelColorCreatorRecyclerView extends RecyclerView.Adapter<LabelCol
         }
         void bind() {
             this.colorButton.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(mColors[getAdapterPosition()])));
+            if(editMode && getAdapterPosition() == selected){
+                this.colorButton.setImageResource(R.drawable.ic_check_circle);
+                selectedView = this.colorButton;
+            }
         }
 
         @Override
