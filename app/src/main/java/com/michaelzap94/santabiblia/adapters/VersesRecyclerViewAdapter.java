@@ -133,7 +133,6 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
                     end = stringTextVerse.indexOf("]", end + 1);
                     //index = stringTextVerse.indexOf("†", index + 1);
                 }
-                ssTextVerse.setSpan(new BackgroundColorSpan(Color.parseColor("#40e0d0")), 0, ssTextVerse.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 txtView_verse.setText(ssTextVerse, TextView.BufferType.SPANNABLE);
 
             } else {
