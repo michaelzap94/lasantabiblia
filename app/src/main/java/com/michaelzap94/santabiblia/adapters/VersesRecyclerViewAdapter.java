@@ -4,10 +4,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.text.Html;
+import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
+import android.text.style.BackgroundColorSpan;
 import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -89,10 +91,10 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
         void bind() {
             Verse verse = verseArrayList.get(getAdapterPosition());
             Spanned spannedTextVerse = verse.getTextSpanned();
+            SpannableString ssTextVerse = verse.getTextSpannableString();
             String stringTextVerse = spannedTextVerse.toString();
 
             if(stringTextVerse.indexOf("[") > -1 && stringTextVerse.indexOf("]") > -1){
-                SpannableString ss = new SpannableString(spannedTextVerse);
 
                 int start = stringTextVerse.indexOf("[");
                 int end = stringTextVerse.indexOf("]");
@@ -123,7 +125,7 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
                             ds.setUnderlineText(false);
                         }
                     };
-                    ss.setSpan(clickableSpan, start, end + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    ssTextVerse.setSpan(clickableSpan, start, end + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                     txtView_verse.setMovementMethod(LinkMovementMethod.getInstance());
                     txtView_verse.setHighlightColor(Color.TRANSPARENT);
 
@@ -131,10 +133,11 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
                     end = stringTextVerse.indexOf("]", end + 1);
                     //index = stringTextVerse.indexOf("†", index + 1);
                 }
-                txtView_verse.setText(ss, TextView.BufferType.SPANNABLE);
+                ssTextVerse.setSpan(new BackgroundColorSpan(Color.parseColor("#40e0d0")), 0, ssTextVerse.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                txtView_verse.setText(ssTextVerse, TextView.BufferType.SPANNABLE);
 
             } else {
-                txtView_verse.setText(spannedTextVerse);
+                txtView_verse.setText(ssTextVerse);
             }
             //Log.d(TAG, "position: verse.getTextTitle()" + getAdapterPosition() + " null: " +  ((boolean) (null == verse.getTextTitle())));
             //Bind data to layout elements

@@ -35,7 +35,18 @@ public class Verse implements Parcelable {
     protected String text;
     protected String textTitle;
     protected Spanned textSpanned;
+    protected SpannableString ssTextVerse;
 
+    public Verse(int book_number, int chapter_number, int verse, Spanned text, SpannableString ssTextVerse, String textTitle, int is_fav) {
+        this.book_number = book_number;
+        this.chapter_number = chapter_number;
+        this.verse = verse;
+        //this.text = text;
+        this.textSpanned = text;
+        this.textTitle = textTitle;
+        this.is_fav = is_fav;
+        this.ssTextVerse = ssTextVerse;
+    }
 
     public Verse(int book_number, int chapter_number, int verse, Spanned text, String textTitle, int is_fav) {
         this.book_number = book_number;
@@ -88,6 +99,8 @@ public class Verse implements Parcelable {
     public Spanned getTextSpanned(){
         return this.textSpanned;
     }
+
+    public SpannableString getTextSpannableString() {return this.ssTextVerse;}
 
 //    public void setTextSpanned(String textWithHTML){
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {

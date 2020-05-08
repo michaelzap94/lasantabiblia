@@ -1,12 +1,17 @@
 package com.michaelzap94.santabiblia.DatabaseHelper;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Build;
 import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.Spanned;
+import android.text.style.BackgroundColorSpan;
 
 import com.michaelzap94.santabiblia.models.Book;
 import com.michaelzap94.santabiblia.models.Concordance;
@@ -91,15 +96,20 @@ public class BibleDBHelper {
                         textToBeParsed = "<b>" + verse + "</b>" + ". " + text;
                     }
 
+
                     Spanned textSpanned;
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                         textSpanned = Html.fromHtml(textToBeParsed, Html.FROM_HTML_MODE_COMPACT);
                     } else {
                         textSpanned = Html.fromHtml(textToBeParsed);
                     }
+
+                    SpannableString ssTextVerse = new SpannableString(textSpanned);
+                    ssTextVerse.setSpan(new BackgroundColorSpan(Color.parseColor("#40e0d0")), 0, ssTextVerse.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
                     //If a Verse is in the array already and we see the same verse again, it's because there are 2+ titles
                     if(!history.containsKey(verse)){
-                        list.add(new Verse(book_number, chapter_number, verse, textSpanned, textTitle, 0));
+                        list.add(new Verse(book_number, chapter_number, verse, textSpanned, ssTextVerse, textTitle, 0));
                         history.put(verse, true);
                     } else {
                         Verse existingVerse = list.get(verse - 1);
