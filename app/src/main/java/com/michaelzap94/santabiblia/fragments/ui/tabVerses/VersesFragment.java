@@ -153,13 +153,17 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
                     case BottomSheetBehavior.STATE_COLLAPSED:
                         ((Bible) mActivity).hideBottomNavigationView();
                         ((Bible) mActivity).hideFloatingActionButton();
+                        if(rvAdapterLabels == null){
+                            rvAdapterLabels = new DashboardRecyclerViewAdapter(mActivity, arrLabels, book_number, chapter_number, actionMode, rvAdapter);
+                        }
+                        if(rvViewLabels == null) {
+                            rvViewLabels = (RecyclerView) view.findViewById(R.id.bottom_sheet_recycler_view);
+                            rvViewLabels.setLayoutManager(new LinearLayoutManager(VersesFragment.this.getContext()));
+                            //rvViewLabels.addOnItemTouchListener(new RecyclerItemClickListener(mActivity, rvView, VersesFragment.this));
+                            rvViewLabels.setAdapter(rvAdapterLabels);//attach the RecyclerView adapter to the RecyclerView View
+                        }
                         break;
                     case BottomSheetBehavior.STATE_EXPANDED:
-                        rvAdapterLabels = new DashboardRecyclerViewAdapter(mActivity, arrLabels, book_number, chapter_number, actionMode, rvAdapter);
-                        rvViewLabels = (RecyclerView) view.findViewById(R.id.bottom_sheet_recycler_view);
-                        rvViewLabels.setLayoutManager(new LinearLayoutManager(VersesFragment.this.getContext()));
-                        //rvViewLabels.addOnItemTouchListener(new RecyclerItemClickListener(mActivity, rvView, VersesFragment.this));
-                        rvViewLabels.setAdapter(rvAdapterLabels);//attach the RecyclerView adapter to the RecyclerView View
                         break;
                     case BottomSheetBehavior.STATE_HIDDEN:
                         ((Bible) mActivity).showBottomNavigationView();
@@ -256,16 +260,19 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
     @Override
     public void onItemLongClick(View view, int position) {
         Log.d(TAG, "onItemLongClick: " + position);
-        Toast.makeText(mActivity, "onItemLongClick" + position, Toast.LENGTH_SHORT).show();
-        arrLabels = ContentDBHelper.getInstance(mActivity).getAllLabels();
-//        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         //===============================================================
         //Create the actionMode only on LongClick
         if (VersesFragment.this.actionMode == null) {
             actionMode = ((AppCompatActivity) mActivity).startSupportActionMode(VersesFragment.this.actionModeCallback);
         }
         myToggleSelection(position);
+        //===============================================================
+        Toast.makeText(mActivity, "onItemLongClick" + position, Toast.LENGTH_SHORT).show();
+        if(arrLabels == null){
+            arrLabels = ContentDBHelper.getInstance(mActivity).getAllLabels();
+        }
+//        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
     private void myToggleSelection(int idx) {
         if(VersesFragment.this.actionMode != null){
