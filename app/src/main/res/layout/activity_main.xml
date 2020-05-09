@@ -6,13 +6,15 @@
     android:layout_height="match_parent">
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/card"
+        android:id="@+id/main_card_last"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/main_card_mem"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -31,6 +33,7 @@
                 android:padding="8dp"
                 android:text="@string/home_last_seen_text"
                 android:textAppearance="?attr/textAppearanceHeadline6" />
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
@@ -47,25 +50,196 @@
                 android:weightSum="2">
 
                 <com.google.android.material.button.MaterialButton
-                    app:icon="@drawable/ic_bookmark"
-                    app:iconGravity="start"
                     style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="start"
-                    android:text="Salmos 2" />
+                    android:text="Salmos 2"
+                    app:icon="@drawable/ic_bookmark"
+                    app:iconGravity="start" />
 
                 <com.google.android.material.button.MaterialButton
-                    app:icon="@drawable/ic_eye"
-                    app:iconGravity="start"
                     style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="start"
-                    android:text="Juan 1" />
+                    android:text="Juan 1"
+                    app:icon="@drawable/ic_eye"
+                    app:iconGravity="start" />
             </LinearLayout>
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/main_card_mem"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/main_card_mem_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/main_card_last">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/dash_new_button"
+                app:icon="@drawable/ic_add_circle_outline"
+                app:iconGravity="textStart"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                app:strokeColor="?attr/colorOnSurface"
+                app:strokeWidth="1dp"
+                app:elevation="2dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:text="To Learn" />
+<!--            <View-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="0.5dp"-->
+<!--                android:layout_marginLeft="16dp"-->
+<!--                android:layout_marginRight="16dp"-->
+<!--                android:background="@android:color/darker_gray" />-->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:padding="8dp"
+                android:text="Learned: 12/15"
+                android:textAppearance="?attr/textAppearanceHeadline6" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/main_card_mem_content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/main_card_mem">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="8dp"
+                android:paddingRight="16dp"
+                android:paddingLeft="16dp"
+                android:paddingBottom="8dp">
+
+                <!-- Title, secondary and supporting text -->
+                <TextView
+                    android:layout_weight="0"
+                    android:id="@+id/verses_marked_cardview_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Salmos 1:1-2"
+                    android:textAppearance="?attr/textAppearanceSubtitle1"
+                    android:textStyle="bold" />
+<!--                <TextView-->
+<!--                    android:layout_weight="0"-->
+<!--                    android:id="@+id/verses_marked_cardview_note"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="2dp"-->
+<!--                    android:text="Note"-->
+<!--                    android:textAppearance="?attr/textAppearanceSubtitle1"-->
+<!--                    android:textColor="?android:attr/textColorSecondary"-->
+<!--                    />-->
+                <TextView
+                    android:layout_weight="2"
+                    android:id="@+id/verses_marked_cardview_content"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:ellipsize="end"
+                    android:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+                    android:textAppearance="?attr/textAppearanceBody1"
+                    />
+<!--                <View-->
+<!--                    android:layout_weight="0"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="0.4dp"-->
+<!--                    android:layout_marginTop="10dp"-->
+<!--                    android:layout_marginLeft="16dp"-->
+<!--                    android:layout_marginRight="16dp"-->
+<!--                    android:background="@android:color/darker_gray" />-->
+                <LinearLayout
+                    android:layout_weight="0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:orientation="horizontal"
+                    android:weightSum="3"
+                    android:layout_gravity="center"
+                    android:clipChildren="false">
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/main_card_mem_content_doubt"
+                        app:fabSize="mini"
+                        app:elevation="6dp"
+                        app:borderWidth="0dp"
+                        android:layout_margin="10dp"
+                        android:src="@drawable/ic_later"
+                        app:backgroundTint="@android:color/holo_orange_dark"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="start"
+                        android:clickable="true"
+                        />
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/main_card_mem_content_learned"
+                        app:fabSize="mini"
+                        app:elevation="6dp"
+                        app:borderWidth="0dp"
+                        android:layout_margin="10dp"
+                        android:src="@drawable/ic_check"
+                        app:backgroundTint="@android:color/holo_green_light"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center_horizontal"
+                        android:layout_marginStart="24dp"
+                        android:clickable="true"
+                        />
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/main_card_mem_content_notlearned"
+                        app:fabSize="mini"
+                        app:elevation="6dp"
+                        app:borderWidth="0dp"
+                        android:layout_margin="10dp"
+                        android:src="@drawable/ic_cross"
+                        app:backgroundTint="@android:color/holo_red_dark"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                        android:layout_marginStart="24dp"
+                        android:clickable="true"
+                        />
+                </LinearLayout>
 
         </LinearLayout>
 

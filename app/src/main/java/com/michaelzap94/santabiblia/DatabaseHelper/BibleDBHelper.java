@@ -105,7 +105,10 @@ public class BibleDBHelper {
                     }
 
                     SpannableString ssTextVerse = new SpannableString(textSpanned);
-                    ssTextVerse.setSpan(new BackgroundColorSpan(Color.parseColor("#40e0d0")), 0, ssTextVerse.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+//                    ssTextVerse.setSpan(new BackgroundColorSpan(Color.parseColor("#40e0d0")), 0, 10, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+//                    ssTextVerse.setSpan(new BackgroundColorSpan(Color.parseColor("#bada55")), 10, ssTextVerse.length()/2, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+//                    ssTextVerse.setSpan(new BackgroundColorSpan(Color.parseColor("#ff7373")), ssTextVerse.length()/2, ssTextVerse.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
 
                     //If a Verse is in the array already and we see the same verse again, it's because there are 2+ titles
                     if(!history.containsKey(verse)){
