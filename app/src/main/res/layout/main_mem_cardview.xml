@@ -10,12 +10,12 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
         android:paddingTop="8dp"
         android:paddingRight="16dp"
         android:paddingLeft="16dp"
-        android:paddingBottom="8dp">
+        android:paddingBottom="0dp">
 
         <!-- Title, secondary and supporting text -->
         <TextView
@@ -40,7 +40,7 @@
             android:layout_weight="2"
             android:id="@+id/verses_marked_cardview_content"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginTop="4dp"
             android:ellipsize="end"
             android:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
@@ -56,9 +56,10 @@
         <!--                    android:background="@android:color/darker_gray" />-->
         <LinearLayout
             android:layout_weight="0"
+            android:gravity="bottom|end"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
+            android:layout_marginTop="8dp"
             android:orientation="horizontal"
             android:weightSum="3"
             android:layout_gravity="center"
