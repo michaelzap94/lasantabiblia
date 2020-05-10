@@ -59,7 +59,7 @@ public class MainActivity extends BaseActivityTopDrawer  {
 
         mCardShadowTransformer = new ShadowTransformer(viewPager, mainCardViewPagerAdapter);
 
-        viewPager.setPadding(68, 8, 68, 8);
+        viewPager.setPadding(68, 8, 68, 10);
 //        viewPager.setPageMargin(5);
         viewPager.setAdapter(mainCardViewPagerAdapter);
         viewPager.setPageTransformer(false, mCardShadowTransformer);
