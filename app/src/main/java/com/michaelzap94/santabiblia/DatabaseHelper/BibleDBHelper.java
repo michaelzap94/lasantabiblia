@@ -15,12 +15,16 @@ import android.text.style.BackgroundColorSpan;
 
 import com.michaelzap94.santabiblia.models.Book;
 import com.michaelzap94.santabiblia.models.Concordance;
+import com.michaelzap94.santabiblia.models.Label;
 import com.michaelzap94.santabiblia.models.Verse;
+import com.michaelzap94.santabiblia.models.VersesMarked;
 import com.michaelzap94.santabiblia.utilities.BookHelper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -54,13 +58,119 @@ public class BibleDBHelper {
           //this.DB_PATH = "/data/data/" + context.getPackageName() + "/" + "databases/";
     }
 
+    public TreeMap<Integer, ArrayList<Label>> getLabelsOfVersesMarked(int book_number, int chapter) {
+        int labelSpecificRowsCount;
+        int i;
+//        HashMap<String,Integer> history = new HashMap<>();
+//        ArrayList<VersesMarked> versesMarkedList = new ArrayList<>();
+        TreeMap<Integer, ArrayList<Label>> versesMarkedListOfLabels = new TreeMap<>();
+        try {            //String query = "SELECT * FROM verses_marked " + "JOIN categories ON teams.cat = catagories.Id WHERE fav=0)";
+            String query = "SELECT * FROM verses_marked WHERE book_number = ? AND chapter = ? ORDER BY book_number, chapter, verseFrom";
+            Cursor labelSpecificRows = ContentDBHelper.getInstance(myContext).getReadableDatabase().rawQuery(query, new String[] {String.valueOf(book_number), String.valueOf(chapter)});
+            if (labelSpecificRows.moveToFirst()) {
+                labelSpecificRowsCount = labelSpecificRows.getCount();
+                for (i = 0; i < labelSpecificRowsCount; i++) {
+                    int _idCol= labelSpecificRows.getColumnIndex("_id");
+                    int uuidCol = labelSpecificRows.getColumnIndex("UUID");
+                    int label_idCol = labelSpecificRows.getColumnIndex("label_id");
+                    int label_nameCol= labelSpecificRows.getColumnIndex("label_name");
+                    int label_colorCol= labelSpecificRows.getColumnIndex("label_color");
+                    int label_perCol= labelSpecificRows.getColumnIndex("label_permanent");
+                    //int book_numberCol= labelSpecificRows.getColumnIndex("book_number");
+                    //int chapterCol= labelSpecificRows.getColumnIndex("chapter");
+                    int verseFromCol= labelSpecificRows.getColumnIndex("verseFrom");
+                    int verseToCol= labelSpecificRows.getColumnIndex("verseTo");
+                    int noteCol= labelSpecificRows.getColumnIndex("note");
+                    int _id = labelSpecificRows.getInt(_idCol);
+                    String uuid = labelSpecificRows.getString(uuidCol);
+                    int label_id = labelSpecificRows.getInt(label_idCol);
+                    String label_name = labelSpecificRows.getString(label_nameCol);
+                    String label_color = labelSpecificRows.getString(label_colorCol);
+                    int label_permanent = labelSpecificRows.getInt(label_perCol);
+                    //int book_number = labelSpecificRows.getInt(book_numberCol);
+                    //int chapter = labelSpecificRows.getInt(chapterCol);
+                    int verseFrom = labelSpecificRows.getInt(verseFromCol);
+                    int verseTo = labelSpecificRows.getInt(verseToCol);
+                    String note = null;
+                    if(!labelSpecificRows.isNull(noteCol)){
+                        note = labelSpecificRows.getString(noteCol);
+                    }
+                    Label specificLabel = new Label(label_id, label_name, label_color, label_permanent);
+                    Book specificBook = BookHelper.getBook(book_number);
+
+
+
+                    for (int j = verseFrom; j <= verseTo; j++) {
+                        //if verse has not been seen yet, add it along with the label for this row result
+                        if(!versesMarkedListOfLabels.containsKey(j)) {
+                            versesMarkedListOfLabels.put(j, new ArrayList<Label>(Arrays.asList(specificLabel)));
+                        } else {
+                            ArrayList<Label> listOfLabels = versesMarkedListOfLabels.get(j);
+                            listOfLabels.add(specificLabel);
+                            versesMarkedListOfLabels.put(j, listOfLabels);
+                        }
+
+
+
+                        //if one verse only OR this is the first verse from the query results.
+                        //therefore, we'll only create one VersesMarked object and then add to it the rest of the verses.
+//                        if ((verseFrom == verseTo || verseFrom == verse) && (indexIfInHistory == null)) {
+//                                VersesMarked innerVerseMarked = new VersesMarked(_id, uuid, specificBook, specificLabel, chapter, verse, text, note);
+//                                list.add(innerVerseMarked);
+//                                history.put(uuid, (list.size() - 1));//put this as seen and the index where inserted in HISTORY
+//                            } else {//if more than one verse and this is not the first verse
+//                                ((VersesMarked) list.get(history.get(uuid))).addToVerseTextDict(verse, text);
+//                            }
+                    }
+
+
+//                    String innerQuery = "SELECT verse , text FROM verses WHERE " +
+//                            "book_number = "+book_number+" AND " +
+//                            "chapter = "+chapter+" AND " +
+//                            "verse BETWEEN "+verseFrom+" AND "+verseTo+" " +
+//                            "ORDER BY book_number, chapter, verse";
+//                    if(verseFrom == verseTo){
+//                        innerQuery = "SELECT verse , text FROM verses WHERE book_number = ? AND chapter = ? ORDER BY book_number, chapter, verse";
+//                    } else {
+//                        innerQuery = "SELECT verse , text FROM verses WHERE book_number = ? AND chapter = ? ORDER BY book_number, chapter, verse";
+//                    }
+//                    Cursor innerCursor = this.getReadableDatabase().rawQuery(innerQuery, null);
+                    //Integer  indexIfInHistory = history.get(uuid);
+                    //Cursor innerCursor = BibleDBHelper.getInstance(context).openDataBaseNoHelper(BibleDBHelper.DB_NAME_BIBLE_CONTENT).rawQuery(innerQuery, null);
+//                    if (innerCursor.moveToFirst()) {
+//                        do{
+//                            int verseCol = innerCursor.getColumnIndex(BibleContracts.VersesContract.COL_VERSE);
+//                            int textCol = innerCursor.getColumnIndex(BibleContracts.VersesContract.COL_TEXT);
+//                            int verse = innerCursor.getInt(verseCol);
+//                            String text = innerCursor.getString(textCol).trim();
+//                            //if one verse only OR this is the first verse from the query results.
+//                            //therefore, we'll only create one VersesMarked object and then add to it the rest of the verses.
+//                            if ((verseFrom == verseTo || verseFrom == verse) && (indexIfInHistory == null)) {
+//                                VersesMarked innerVerseMarked = new VersesMarked(_id, uuid, specificBook, specificLabel, chapter, verse, text, note);
+//                                list.add(innerVerseMarked);
+//                                history.put(uuid, (list.size() - 1));//put this as seen and the index where inserted in HISTORY
+//                            } else {//if more than one verse and this is not the first verse
+//                                ((VersesMarked) list.get(history.get(uuid))).addToVerseTextDict(verse, text);
+//                            }
+//                        } while(innerCursor.moveToNext());
+//                    }
+
+                    labelSpecificRows.moveToNext();
+                }
+            }
+        } catch (Exception e){
+        }
+        return versesMarkedListOfLabels;
+    }
 
     public ArrayList<Verse> getVerses(int book_number, int chapter_number) {
+
+        TreeMap<Integer, ArrayList<Label>> labelsOfVersesMarked = getLabelsOfVersesMarked(book_number, chapter_number);
+        //==========================================
         Cursor innerCursor;
         int rowCount;
         int i;
         Map<Integer,Boolean> history = new HashMap<>();
-
         ArrayList<Verse> list = new ArrayList();
         try {
             String query = "SELECT verses.verse , verses.text, stories.title, stories.verse AS story_at_verse, order_if_several FROM verses LEFT JOIN stories" +
@@ -105,10 +215,19 @@ public class BibleDBHelper {
                     }
 
                     SpannableString ssTextVerse = new SpannableString(textSpanned);
-//                    ssTextVerse.setSpan(new BackgroundColorSpan(Color.parseColor("#40e0d0")), 0, 10, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-//                    ssTextVerse.setSpan(new BackgroundColorSpan(Color.parseColor("#bada55")), 10, ssTextVerse.length()/2, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-//                    ssTextVerse.setSpan(new BackgroundColorSpan(Color.parseColor("#ff7373")), ssTextVerse.length()/2, ssTextVerse.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
+                    int ssTextVerseLength = ssTextVerse.length();
+                    //CHECK IF THIS VERSE SHOULD HAVE A COLOR AND LABEL ASSIGNED TO IT.
+                    if(labelsOfVersesMarked.containsKey(verse)){
+                        ArrayList<Label> listOfLabels = labelsOfVersesMarked.get(verse);
+                        int labelsTotal = listOfLabels.size();
+                        int temp = (int) Math.ceil(ssTextVerseLength / labelsTotal);
+                        for (int j = 0; j < labelsTotal; j++) {
+                            int start = j * temp;
+                            int end = start + temp;
+                            Label currentLabel = listOfLabels.get(j);
+                            ssTextVerse.setSpan(new BackgroundColorSpan(Color.parseColor(currentLabel.getColor())), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        }
+                    }
 
                     //If a Verse is in the array already and we see the same verse again, it's because there are 2+ titles
                     if(!history.containsKey(verse)){
