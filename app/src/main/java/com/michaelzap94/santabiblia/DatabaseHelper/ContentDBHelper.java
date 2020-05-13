@@ -66,12 +66,13 @@ public class ContentDBHelper extends SQLiteOpenHelper {
                     int nameCol = innerCursor.getColumnIndex("name");
                     int colorCol = innerCursor.getColumnIndex("color");
                     int idCol = innerCursor.getColumnIndex("_id");
-
+                    int perCol = innerCursor.getColumnIndex("permanent");
                     String name = innerCursor.getString(nameCol);
                     String color = innerCursor.getString(colorCol);
                     int id = innerCursor.getInt(idCol);
+                    int permanent = innerCursor.getInt(perCol);
 
-                    list.add(new Label(id, name, color));
+                    list.add(new Label(id, name, color, permanent));
                     innerCursor.moveToNext();
                 }
             }
@@ -172,6 +173,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
                     int uuidCol = labelSpecificRows.getColumnIndex("UUID");
                     int label_nameCol= labelSpecificRows.getColumnIndex("label_name");
                     int label_colorCol= labelSpecificRows.getColumnIndex("label_color");
+                    int label_perCol= labelSpecificRows.getColumnIndex("label_permanent");
                     int book_numberCol= labelSpecificRows.getColumnIndex("book_number");
                     int chapterCol= labelSpecificRows.getColumnIndex("chapter");
                     int verseFromCol= labelSpecificRows.getColumnIndex("verseFrom");
@@ -181,6 +183,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
                     String uuid = labelSpecificRows.getString(uuidCol);
                     String label_name = labelSpecificRows.getString(label_nameCol);
                     String label_color = labelSpecificRows.getString(label_colorCol);
+                    int label_permanent = labelSpecificRows.getInt(label_perCol);
                     int book_number = labelSpecificRows.getInt(book_numberCol);
                     int chapter = labelSpecificRows.getInt(chapterCol);
                     int verseFrom = labelSpecificRows.getInt(verseFromCol);
@@ -190,7 +193,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
                         note = labelSpecificRows.getString(noteCol);
                     }
 
-                    Label specificLabel = new Label(label_id, label_name, label_color);
+                    Label specificLabel = new Label(label_id, label_name, label_color, label_permanent);
                     Book specificBook = BookHelper.getBook(book_number);
                     String innerQuery = "SELECT verse , text FROM verses WHERE " +
                                                                         "book_number = "+book_number+" AND " +
@@ -249,11 +252,11 @@ public class ContentDBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE labels (_id INTEGER PRIMARY KEY, name VARCHAR NOT NULL, color VARCHAR NOT NULL, permanent INTEGER DEFAULT 0)");
         db.execSQL("CREATE TABLE verses_marked (_id INTEGER PRIMARY KEY, label_id INTEGER NOT NULL, book_number INTEGER NOT NULL, chapter INTEGER NOT NULL, verseFrom INTEGER NOT NULL, verseTo INTEGER NOT NULL, " +
-                "label_name VARCHAR NOT NULL, label_color VARCHAR NOT NULL, note VARCHAR, date_created datetime DEFAULT current_timestamp, date_updated datetime DEFAULT current_timestamp, UUID VARCHAR NOT NULL, state INTEGER DEFAULT 0," +
+                "label_name VARCHAR NOT NULL, label_color VARCHAR NOT NULL, label_permanent INTEGER DEFAULT 0, note VARCHAR, date_created datetime DEFAULT current_timestamp, date_updated datetime DEFAULT current_timestamp, UUID VARCHAR NOT NULL, state INTEGER DEFAULT 0," +
                 "FOREIGN KEY (label_id) REFERENCES labels (_id) ON DELETE CASCADE)");
 
-        db.execSQL("INSERT INTO labels (name,color) VALUES( \"Favourites\", \"#fce703\")");
-        db.execSQL("INSERT INTO labels (name,color) VALUES( \"Memorize\", \"#fc5a03\")");
+        db.execSQL("INSERT INTO labels (name,color,permanent) VALUES( \"Favourites\", \"#ffff00\", 1)");
+        db.execSQL("INSERT INTO labels (name,color,permanent) VALUES( \"Memorize\", \"#00ff00\", 1)");
     }
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
