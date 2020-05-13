@@ -5,7 +5,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,6 +23,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -38,6 +42,8 @@ import com.michaelzap94.santabiblia.R;
 import com.michaelzap94.santabiblia.adapters.DashboardRecyclerViewAdapter;
 import com.michaelzap94.santabiblia.adapters.VersesRecyclerViewAdapter;
 import com.michaelzap94.santabiblia.fragments.dashboard.DashboardLabelFragment;
+import com.michaelzap94.santabiblia.fragments.dialogs.VersesInsideDialog;
+import com.michaelzap94.santabiblia.fragments.dialogs.VersesLabelNoteDialog;
 import com.michaelzap94.santabiblia.models.Book;
 import com.michaelzap94.santabiblia.models.Label;
 import com.michaelzap94.santabiblia.models.Verse;
@@ -46,6 +52,7 @@ import com.michaelzap94.santabiblia.utilities.RecyclerItemClickListener;
 import com.michaelzap94.santabiblia.viewmodel.VersesViewModel;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class VersesFragment extends Fragment implements RecyclerItemClickListener.OnRecyclerClickListener {
     private static final String TAG = "VersesFragment";
@@ -288,21 +295,8 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
     }
     //===============================================================================================
     public static void onLabelClickedFromList(Context ctx, Label mLabel, int book_number, int chapter_number, ActionMode actionMode, VersesRecyclerViewAdapter rvAdapter) {
-//        String labelName = mLabel.getName();
-//        String labelColor = mLabel.getColor();
-//        int labelId = mLabel.getId();
-        Log.d(TAG, "onLabelClickedFromList: " + chapter_number);
-        Log.d(TAG, "onLabelClickedFromList: " + rvAdapter.getSelectedItems());
-        boolean success = ContentDBHelper.getInstance(ctx).insertSelectedItemsBulkTransaction(mLabel, book_number, chapter_number, null, rvAdapter.getSelectedItems());
-        Log.d(TAG, "onLabelClickedFromList: RESULT " + success);
-
-        if(success) {
-            Toast.makeText(ctx, "Success inserting all elements", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(ctx, "Not all elements could be inserted", Toast.LENGTH_SHORT).show();
-        }
-        if(actionMode != null){
-            actionMode.finish();
-        }
+        VersesLabelNoteDialog vid = new VersesLabelNoteDialog(ctx, mLabel, book_number, chapter_number, actionMode, rvAdapter);
+        vid.setStyle(DialogFragment.STYLE_NORMAL, R.style.CustomDialog);
+        vid.show(((AppCompatActivity) ctx).getSupportFragmentManager(),"anything");
     }
 }
