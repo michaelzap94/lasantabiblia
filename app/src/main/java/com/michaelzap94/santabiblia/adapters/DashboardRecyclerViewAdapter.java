@@ -37,6 +37,9 @@ public class DashboardRecyclerViewAdapter extends RecyclerView.Adapter<Dashboard
     private int book_number;
     private VersesRecyclerViewAdapter rvAdapter;
     private ActionMode actionMode;
+    public void setActionMode(ActionMode actionMode) {
+        this.actionMode = actionMode;
+    }
     public DashboardRecyclerViewAdapter(Context ctx, ArrayList<Label> labelArrayList) {
         this.ctx = ctx;
         this.labelArrayList = labelArrayList;

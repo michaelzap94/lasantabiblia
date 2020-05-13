@@ -162,6 +162,8 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
                         ((Bible) mActivity).hideFloatingActionButton();
                         if(rvAdapterLabels == null){
                             rvAdapterLabels = new DashboardRecyclerViewAdapter(mActivity, arrLabels, book_number, chapter_number, actionMode, rvAdapter);
+                        } else {
+                            rvAdapterLabels.setActionMode(actionMode);
                         }
                         if(rvViewLabels == null) {
                             rvViewLabels = (RecyclerView) view.findViewById(R.id.bottom_sheet_recycler_view);
@@ -269,7 +271,7 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
         Log.d(TAG, "onItemLongClick: " + position);
         //===============================================================
         //Create the actionMode only on LongClick
-        if (VersesFragment.this.actionMode == null) {
+        if (actionMode == null) {
             actionMode = ((AppCompatActivity) mActivity).startSupportActionMode(VersesFragment.this.actionModeCallback);
         }
         myToggleSelection(position);
@@ -295,6 +297,7 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
     }
     //===============================================================================================
     public static void onLabelClickedFromList(Context ctx, Label mLabel, int book_number, int chapter_number, ActionMode actionMode, VersesRecyclerViewAdapter rvAdapter) {
+
         VersesLabelNoteDialog vid = new VersesLabelNoteDialog(ctx, mLabel, book_number, chapter_number, actionMode, rvAdapter);
         vid.setStyle(DialogFragment.STYLE_NORMAL, R.style.CustomDialog);
         vid.show(((AppCompatActivity) ctx).getSupportFragmentManager(),"anything");
