@@ -26,6 +26,7 @@ import com.michaelzap94.santabiblia.fragments.ui.tabVerses.VersesFragment;
 import com.michaelzap94.santabiblia.models.Book;
 import com.michaelzap94.santabiblia.models.Label;
 import com.michaelzap94.santabiblia.models.Verse;
+import com.michaelzap94.santabiblia.viewmodel.VersesViewModel;
 
 import java.util.ArrayList;
 
@@ -36,6 +37,7 @@ public class DashboardRecyclerViewAdapter extends RecyclerView.Adapter<Dashboard
     private int chapter_number;
     private int book_number;
     private VersesRecyclerViewAdapter rvAdapter;
+    private VersesViewModel viewModel;
     private ActionMode actionMode;
     public void setActionMode(ActionMode actionMode) {
         this.actionMode = actionMode;
@@ -47,13 +49,14 @@ public class DashboardRecyclerViewAdapter extends RecyclerView.Adapter<Dashboard
         this.rvAdapter = null;
     }
 
-    public DashboardRecyclerViewAdapter(Context ctx, ArrayList<Label> labelArrayList, int book_number,  int chapter_number, ActionMode actionMode, VersesRecyclerViewAdapter rvAdapter) {
+    public DashboardRecyclerViewAdapter(Context ctx, ArrayList<Label> labelArrayList, int book_number,  int chapter_number, ActionMode actionMode, VersesRecyclerViewAdapter rvAdapter, VersesViewModel viewModel) {
         this.ctx = ctx;
         this.labelArrayList = labelArrayList;
         this.book_number = book_number;
         this.chapter_number = chapter_number;
         this.actionMode = actionMode;
         this.rvAdapter = rvAdapter;
+        this.viewModel = viewModel;
     }
 
     @NonNull
@@ -104,8 +107,8 @@ public class DashboardRecyclerViewAdapter extends RecyclerView.Adapter<Dashboard
             labelButton.setOnClickListener(v -> {
                 if(ctx instanceof Dashboard){
                     DashboardMainFragment.onLabelClickedFromList(ctx, mLabel);
-                } else if(ctx instanceof Bible && chapter_number > -1 && rvAdapter != null){
-                    VersesFragment.onLabelClickedFromList(ctx, mLabel, book_number, chapter_number, actionMode, rvAdapter);
+                } else if(ctx instanceof Bible && chapter_number > -1 && rvAdapter != null && viewModel != null){
+                    VersesFragment.onLabelClickedFromList(ctx, mLabel, book_number, chapter_number, actionMode, rvAdapter, viewModel);
                 }
             });
 

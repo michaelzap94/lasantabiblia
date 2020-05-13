@@ -22,6 +22,7 @@ import com.michaelzap94.santabiblia.R;
 import com.michaelzap94.santabiblia.adapters.VersesRecyclerViewAdapter;
 import com.michaelzap94.santabiblia.models.Label;
 import com.michaelzap94.santabiblia.utilities.BookHelper;
+import com.michaelzap94.santabiblia.viewmodel.VersesViewModel;
 
 import java.util.List;
 
@@ -37,14 +38,16 @@ public class VersesLabelNoteDialog extends DialogFragment {
     EditText input;
     String title;
     String dialogTitle;
+    VersesViewModel viewModel;
 
-    public VersesLabelNoteDialog(Context ctx, Label mLabel, int book_number, int chapter_number, ActionMode actionMode, VersesRecyclerViewAdapter rvAdapter) {
+    public VersesLabelNoteDialog(Context ctx, Label mLabel, int book_number, int chapter_number, ActionMode actionMode, VersesRecyclerViewAdapter rvAdapter, VersesViewModel viewModel) {
         this.ctx = ctx;
         this.mLabel = mLabel;
         this.book_number = book_number;
         this.chapter_number = chapter_number;
         this.actionMode = actionMode;
         this.rvAdapter = rvAdapter;
+        this.viewModel = viewModel;
 
         List<Integer> selectedItems = rvAdapter.getSelectedItems();
         String titleBookAndCaps = BookHelper.getTitleBookAndCaps(chapter_number, selectedItems);
@@ -85,7 +88,7 @@ public class VersesLabelNoteDialog extends DialogFragment {
                                 String note = input.getText().toString();
                                 boolean success = ContentDBHelper.getInstance(ctx).insertSelectedItemsBulkTransaction(mLabel, book_number, chapter_number, note, rvAdapter.getSelectedItems());
                                 if(success) {
-                                    Toast.makeText(ctx, "Success inserting all elements", Toast.LENGTH_SHORT).show();
+                                    viewModel.fetchData(book_number, chapter_number);
                                 } else {
                                     Toast.makeText(ctx, "Not all elements could be inserted", Toast.LENGTH_SHORT).show();
                                 }

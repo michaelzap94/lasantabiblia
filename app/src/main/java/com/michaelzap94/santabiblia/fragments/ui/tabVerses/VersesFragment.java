@@ -161,7 +161,7 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
                         ((Bible) mActivity).hideBottomNavigationView();
                         ((Bible) mActivity).hideFloatingActionButton();
                         if(rvAdapterLabels == null){
-                            rvAdapterLabels = new DashboardRecyclerViewAdapter(mActivity, arrLabels, book_number, chapter_number, actionMode, rvAdapter);
+                            rvAdapterLabels = new DashboardRecyclerViewAdapter(mActivity, arrLabels, book_number, chapter_number, actionMode, rvAdapter, viewModel);
                         } else {
                             rvAdapterLabels.setActionMode(actionMode);
                         }
@@ -296,9 +296,9 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
         }
     }
     //===============================================================================================
-    public static void onLabelClickedFromList(Context ctx, Label mLabel, int book_number, int chapter_number, ActionMode actionMode, VersesRecyclerViewAdapter rvAdapter) {
+    public static void onLabelClickedFromList(Context ctx, Label mLabel, int book_number, int chapter_number, ActionMode actionMode, VersesRecyclerViewAdapter rvAdapter, VersesViewModel viewModel) {
 
-        VersesLabelNoteDialog vid = new VersesLabelNoteDialog(ctx, mLabel, book_number, chapter_number, actionMode, rvAdapter);
+        VersesLabelNoteDialog vid = new VersesLabelNoteDialog(ctx, mLabel, book_number, chapter_number, actionMode, rvAdapter, viewModel);
         vid.setStyle(DialogFragment.STYLE_NORMAL, R.style.CustomDialog);
         vid.show(((AppCompatActivity) ctx).getSupportFragmentManager(),"anything");
     }
