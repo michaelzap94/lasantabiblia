@@ -86,12 +86,13 @@ public class VersesLabelNoteDialog extends DialogFragment {
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 String note = input.getText().toString();
-                                boolean success = ContentDBHelper.getInstance(ctx).insertSelectedItemsBulkTransaction(mLabel, book_number, chapter_number, note, rvAdapter.getSelectedItems());
-                                if(success) {
-                                    viewModel.fetchData(book_number, chapter_number);
-                                } else {
-                                    Toast.makeText(ctx, "Not all elements could be inserted", Toast.LENGTH_SHORT).show();
-                                }
+//                                boolean success = ContentDBHelper.getInstance(ctx).insertSelectedItemsBulkTransaction(mLabel, book_number, chapter_number, note, rvAdapter.getSelectedItems());
+//                                if(success) {
+//                                } else {
+//                                    Toast.makeText(ctx, "Not all elements could be inserted", Toast.LENGTH_SHORT).show();
+//                                }
+                                viewModel.markVerses(mLabel, book_number, chapter_number, note, rvAdapter.getSelectedItems());
+
                                 dialog.dismiss();
                                 if(actionMode != null){
                                     actionMode.finish();
