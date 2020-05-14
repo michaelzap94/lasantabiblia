@@ -23,6 +23,7 @@ public class SearchSpecific extends AppCompatActivity {
     private static final String TAG = "SearchSpecific";
     private int _id;
     private String title;
+    private String type;
     private SearchView searchView;
     private TextView resultsCounter;
     private RecyclerView rvView;
@@ -37,9 +38,13 @@ public class SearchSpecific extends AppCompatActivity {
         if (extras != null) {
             this._id = extras.getInt("id");
             switch (this._id){
-                case R.id.search_card_conc: title = getResources().getString(R.string.search_card_conc_title);
+                case R.id.search_card_conc:
+                    title = getResources().getString(R.string.search_card_conc_title);
+                    type = "conc";
                     break;
-                case R.id.search_card_dict: title = getResources().getString(R.string.search_card_dict_title);
+                case R.id.search_card_dict:
+                    title = getResources().getString(R.string.search_card_dict_title);
+                    type = "dict";
                     break;
                 case R.id.search_card_label: title = getResources().getString(R.string.search_card_label_title);
                     break;
@@ -66,7 +71,7 @@ public class SearchSpecific extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                ArrayList<String[]> results = BibleDBHelper.getInstance(SearchSpecific.this).searchInConcordance(query);
+                ArrayList<String[]> results = BibleDBHelper.getInstance(SearchSpecific.this).searchInConcordanceOrDictionary(query, type);
                 resultsCounter.setText("Results: " + results.size());
                 rvAdapter.refreshSearchResults(results);
                 return true;

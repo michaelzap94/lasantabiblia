@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.SplittableRandom;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,6 +37,7 @@ public class BibleDBHelper {
 
     public static final String DB_NAME_BIBLE_CONTENT = "RVR60.db";
     public static final String DB_NAME_BIBLE_CONCORDANCE = "concordance.db";
+    public static final String DB_NAME_BIBLE_DICTIONARY = "ibalpedic.db";
     public static final String DB_NAME_BIBLE_COMMENTARIES = "RVR60commentaries.db";
     public static final int DB_VERSION = 1;
     private Context myContext;
@@ -473,11 +475,9 @@ public class BibleDBHelper {
         return results;
     }
 
-    //CONCORDANCE========================================================================================
-    public ArrayList<String[]> searchInConcordance(String input) {
-        Log.d(TAG, "searchInConcordance: " + input);
-        Log.d(TAG, "searchInConcordance: " + input.toUpperCase(Locale.getDefault()));
-        Log.d(TAG, "searchInConcordance: " + input.toUpperCase());
+    //CONCORDANCE OR DICTIONARY========================================================================================
+    public ArrayList<String[]> searchInConcordanceOrDictionary(String input, String type) {
+        String dbName = (type == "conc") ? DB_NAME_BIBLE_CONCORDANCE: DB_NAME_BIBLE_DICTIONARY;
         ArrayList<String[]> results = new ArrayList<>();
         int labelSpecificRowsCount;
         try {
@@ -488,9 +488,7 @@ public class BibleDBHelper {
 //                    " WHERE REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(topic,'\u00C1','A'), '\u00C9','E'),'\u00CD','I'),'\u00D3','O'),'\u00DA','U'),'.',''),',',''),' ',''),':',''),';',''),'?',''),'\u00bf',''),'\u00a1',''),'!',''),'(',''),')','') " +
 //                    " LIKE '%" + input.toUpperCase() + "%' ORDER BY topic, definition";
             //String query = "SELECT * FROM dictionary WHERE topic LIKE '%" + input.toUpperCase() + "%' ORDER BY topic, definition COLLATE UNICODE";
-            Log.d(TAG, "searchInConcordance: " + query);
-
-            Cursor cursorResults = openDataBaseNoHelper(DB_NAME_BIBLE_CONCORDANCE).rawQuery(query, null);
+            Cursor cursorResults = openDataBaseNoHelper(dbName).rawQuery(query, null);
             if (cursorResults.moveToFirst()) {
                 labelSpecificRowsCount = cursorResults.getCount();
                 for (int i = 0; i < labelSpecificRowsCount; i++) {
@@ -509,6 +507,31 @@ public class BibleDBHelper {
         return results;
     }
 
+//    public ArrayList<String[]> searchInDictionary(String input) {
+//        ArrayList<String[]> results = new ArrayList<>();
+//        int labelSpecificRowsCount;
+//        try {
+//            String query = "SELECT topic, definition FROM dictionary d " +
+//                    " WHERE REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(topic,'\u00C1','A'), '\u00C9','E'),'\u00CD','I'),'\u00D3','O'),'\u00DA','U'),'.',''),':',''),';',''),'?',''),'\u00bf',''),'\u00a1',''),'!',''),'(',''),')','') " +
+//                    " LIKE '%" + input.trim().toUpperCase() + "%' ORDER BY topic, definition";
+//            Cursor cursorResults = openDataBaseNoHelper(DB_NAME_BIBLE_DICTIONARY).rawQuery(query, null);
+//            if (cursorResults.moveToFirst()) {
+//                labelSpecificRowsCount = cursorResults.getCount();
+//                for (int i = 0; i < labelSpecificRowsCount; i++) {
+//                    int topicCol = cursorResults.getColumnIndex("topic");
+//                    int defCol = cursorResults.getColumnIndex("definition");
+//                    String topic = cursorResults.getString(topicCol).trim();
+//                    String definition = cursorResults.getString(defCol).trim();
+//                    results.add(new String[]{topic, definition});
+//
+//                    cursorResults.moveToNext();
+//                }
+//            }
+//            cursorResults.close();
+//        } catch (Exception e) {
+//        }
+//        return results;
+//    }
 
     public Cursor query(String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy, String limit) {
         return myDataBase.query(table, columns, selection, selectionArgs, groupBy, having, orderBy, limit);
