@@ -66,7 +66,7 @@ public class SearchSpecific extends AppCompatActivity {
         rvAdapter = new SearchResultsRecyclerView(new ArrayList<String[]>());
         rvView.setAdapter(rvAdapter);//attach the RecyclerView adapter to the RecyclerView View
         //=========================================================================================
-
+        searchView.clearFocus();
         // perform set on query text listener event
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -74,6 +74,7 @@ public class SearchSpecific extends AppCompatActivity {
                 ArrayList<String[]> results = BibleDBHelper.getInstance(SearchSpecific.this).searchInConcordanceOrDictionary(query, type);
                 resultsCounter.setText("Results: " + results.size());
                 rvAdapter.refreshSearchResults(results);
+                searchView.clearFocus();
                 return true;
             }
 
