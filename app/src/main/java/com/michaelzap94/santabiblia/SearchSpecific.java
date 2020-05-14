@@ -15,6 +15,7 @@ import com.michaelzap94.santabiblia.DatabaseHelper.BibleDBHelper;
 import com.michaelzap94.santabiblia.adapters.SearchResultsRecyclerView;
 import com.michaelzap94.santabiblia.adapters.VersesRecyclerViewAdapter;
 import com.michaelzap94.santabiblia.models.Book;
+import com.michaelzap94.santabiblia.models.SearchResult;
 import com.michaelzap94.santabiblia.utilities.BookHelper;
 
 import java.util.ArrayList;
@@ -63,7 +64,7 @@ public class SearchSpecific extends AppCompatActivity {
         //=========================================================================================
         this.rvView = (RecyclerView) findViewById(R.id.search_results_recyclerview);
         rvView.setLayoutManager(new LinearLayoutManager(this));
-        rvAdapter = new SearchResultsRecyclerView(new ArrayList<String[]>());
+        rvAdapter = new SearchResultsRecyclerView(new ArrayList<>());
         rvView.setAdapter(rvAdapter);//attach the RecyclerView adapter to the RecyclerView View
         //=========================================================================================
         searchView.clearFocus();
@@ -71,7 +72,7 @@ public class SearchSpecific extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                ArrayList<String[]> results = BibleDBHelper.getInstance(SearchSpecific.this).searchInConcordanceOrDictionary(query, type);
+                ArrayList<SearchResult> results = BibleDBHelper.getInstance(SearchSpecific.this).searchInConcordanceOrDictionary(query, type);
                 resultsCounter.setText("Results: " + results.size());
                 rvAdapter.refreshSearchResults(results);
                 searchView.clearFocus();

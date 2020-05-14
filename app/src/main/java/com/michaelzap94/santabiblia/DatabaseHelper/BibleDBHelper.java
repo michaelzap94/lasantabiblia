@@ -17,6 +17,7 @@ import android.util.Log;
 import com.michaelzap94.santabiblia.models.Book;
 import com.michaelzap94.santabiblia.models.Concordance;
 import com.michaelzap94.santabiblia.models.Label;
+import com.michaelzap94.santabiblia.models.SearchResult;
 import com.michaelzap94.santabiblia.models.Verse;
 import com.michaelzap94.santabiblia.models.VersesMarked;
 import com.michaelzap94.santabiblia.utilities.BookHelper;
@@ -444,44 +445,44 @@ public class BibleDBHelper {
     }
 
     //SEARCH IN BIBLE=================================================================================================
-    public ArrayList<String[]> searchInBible(String input) {
-        Log.d(TAG, "searchInBible: " + input);
-        Log.d(TAG, "searchInBible: " + input.toUpperCase(Locale.getDefault()));
-        Log.d(TAG, "searchInBible: " + input.toUpperCase());
-        ArrayList<String[]> results = new ArrayList<>();
-        int labelSpecificRowsCount;
-        try {
-            String query = "SELECT topic, definition FROM dictionary d " +
-                    " WHERE REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(topic,'\u00C1','A'), '\u00C9','E'),'\u00CD','I'),'\u00D3','O'),'\u00DA','U'),'.',''),',',''),' ',''),':',''),';',''),'?',''),'\u00bf',''),'\u00a1',''),'!',''),'(',''),')','') " +
-                    " LIKE '%" + input.toUpperCase(Locale.getDefault()) + "%' ORDER BY topic, definition";
-            //String query = "SELECT * FROM dictionary WHERE topic LIKE '%" + input.toUpperCase() + "%' ORDER BY topic, definition COLLATE UNICODE";
-            Log.d(TAG, "searchInBible: " + query);
-            Cursor cursorResults = openDataBaseNoHelper(DB_NAME_BIBLE_CONCORDANCE).rawQuery(query, null);
-            if (cursorResults.moveToFirst()) {
-                labelSpecificRowsCount = cursorResults.getCount();
-                for (int i = 0; i < labelSpecificRowsCount; i++) {
-                    int topicCol = cursorResults.getColumnIndex("topic");
-                    int defCol = cursorResults.getColumnIndex("definition");
-                    String topic = cursorResults.getString(topicCol).trim();
-                    String definition = cursorResults.getString(defCol).trim();
-                    results.add(new String[]{topic, definition});
-
-                    cursorResults.moveToNext();
-                }
-            }
-            cursorResults.close();
-        } catch (Exception e) {
-        }
-        return results;
-    }
+//    public ArrayList<String[]> searchInBible(String input) {
+//        Log.d(TAG, "searchInBible: " + input);
+//        Log.d(TAG, "searchInBible: " + input.toUpperCase(Locale.getDefault()));
+//        Log.d(TAG, "searchInBible: " + input.toUpperCase());
+//        ArrayList<String[]> results = new ArrayList<>();
+//        int labelSpecificRowsCount;
+//        try {
+//            String query = "SELECT topic, definition FROM dictionary d " +
+//                    " WHERE REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(topic,'\u00C1','A'), '\u00C9','E'),'\u00CD','I'),'\u00D3','O'),'\u00DA','U'),'.',''),',',''),' ',''),':',''),';',''),'?',''),'\u00bf',''),'\u00a1',''),'!',''),'(',''),')','') " +
+//                    " LIKE '%" + input.toUpperCase(Locale.getDefault()) + "%' ORDER BY topic, definition";
+//            //String query = "SELECT * FROM dictionary WHERE topic LIKE '%" + input.toUpperCase() + "%' ORDER BY topic, definition COLLATE UNICODE";
+//            Log.d(TAG, "searchInBible: " + query);
+//            Cursor cursorResults = openDataBaseNoHelper(DB_NAME_BIBLE_CONCORDANCE).rawQuery(query, null);
+//            if (cursorResults.moveToFirst()) {
+//                labelSpecificRowsCount = cursorResults.getCount();
+//                for (int i = 0; i < labelSpecificRowsCount; i++) {
+//                    int topicCol = cursorResults.getColumnIndex("topic");
+//                    int defCol = cursorResults.getColumnIndex("definition");
+//                    String topic = cursorResults.getString(topicCol).trim();
+//                    String definition = cursorResults.getString(defCol).trim();
+//                    results.add(new String[]{topic, definition});
+//
+//                    cursorResults.moveToNext();
+//                }
+//            }
+//            cursorResults.close();
+//        } catch (Exception e) {
+//        }
+//        return results;
+//    }
 
     //CONCORDANCE OR DICTIONARY========================================================================================
-    public ArrayList<String[]> searchInConcordanceOrDictionary(String input, String type) {
+    public ArrayList<SearchResult> searchInConcordanceOrDictionary(String input, String type) {
         String dbName = (type == "conc") ? DB_NAME_BIBLE_CONCORDANCE: DB_NAME_BIBLE_DICTIONARY;
-        ArrayList<String[]> results = new ArrayList<>();
+        ArrayList<SearchResult> results = new ArrayList<>();
         int labelSpecificRowsCount;
         try {
-            String query = "SELECT topic, definition FROM dictionary d " +
+            String query = "SELECT _id, topic, definition FROM dictionary d " +
                     " WHERE REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(topic,'\u00C1','A'), '\u00C9','E'),'\u00CD','I'),'\u00D3','O'),'\u00DA','U'),'.',''),':',''),';',''),'?',''),'\u00bf',''),'\u00a1',''),'!',''),'(',''),')','') " +
                     " LIKE '%" + input.trim().toUpperCase() + "%' ORDER BY topic, definition";
 //            String query = "SELECT topic, definition FROM dictionary d " +
@@ -492,12 +493,13 @@ public class BibleDBHelper {
             if (cursorResults.moveToFirst()) {
                 labelSpecificRowsCount = cursorResults.getCount();
                 for (int i = 0; i < labelSpecificRowsCount; i++) {
+                    int idCol = cursorResults.getColumnIndex("_id");
                     int topicCol = cursorResults.getColumnIndex("topic");
                     int defCol = cursorResults.getColumnIndex("definition");
+                    int id = cursorResults.getInt(idCol);
                     String topic = cursorResults.getString(topicCol).trim();
                     String definition = cursorResults.getString(defCol).trim();
-                    results.add(new String[]{topic, definition});
-
+                    results.add(new SearchResult(id, topic, definition));
                     cursorResults.moveToNext();
                 }
             }

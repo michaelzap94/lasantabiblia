@@ -10,18 +10,19 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.michaelzap94.santabiblia.R;
+import com.michaelzap94.santabiblia.models.SearchResult;
 
 import java.util.ArrayList;
 
 public class SearchResultsRecyclerView extends RecyclerView.Adapter<SearchResultsRecyclerView.ViewHolder> {
     private static final String TAG = "SearchResultsRecyclerVi";
-    ArrayList<String[]> results;
-    public SearchResultsRecyclerView(ArrayList<String[]> results){
+    ArrayList<SearchResult> results;
+    public SearchResultsRecyclerView(ArrayList<SearchResult> results){
         Log.d(TAG, "SearchResultsRecyclerView: " + results.size());
         this.results = results;
     }
 
-    public void refreshSearchResults(ArrayList<String[]> _results){
+    public void refreshSearchResults(ArrayList<SearchResult> _results){
         Log.d(TAG, "SearchResultsRecyclerView: " + _results.size());
         results.clear();
         results.addAll(_results);
@@ -55,10 +56,10 @@ public class SearchResultsRecyclerView extends RecyclerView.Adapter<SearchResult
         }
         void bind() {
             //Bind data to layout elements
-            int i = getAdapterPosition();
-            Log.d(TAG, "bind: " + i + " " + results.get(i)[0]);
-            txtView_title.setText(results.get(i)[0]);
-            txtView_content.setText(results.get(i)[1]);
+            SearchResult result = results.get(getAdapterPosition());
+            Log.d(TAG, "bind: " + getAdapterPosition() + " " + result.getTitle());
+            txtView_title.setText(result.getTitle());
+            txtView_content.setText(result.getContent());
 
         }
     }
