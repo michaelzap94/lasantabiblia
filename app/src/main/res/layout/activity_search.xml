@@ -22,6 +22,9 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/search_card_conc"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:onClick="goToSearchSpecific"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -76,6 +79,9 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/search_card_dict"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:onClick="goToSearchSpecific"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -131,6 +137,9 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/search_card_text"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:onClick="goToSearchSpecific"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -186,6 +195,9 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/search_card_label"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:onClick="goToSearchSpecific"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
