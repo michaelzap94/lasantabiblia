@@ -12,6 +12,7 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.BackgroundColorSpan;
+import android.util.Log;
 
 import com.michaelzap94.santabiblia.models.Book;
 import com.michaelzap94.santabiblia.models.Concordance;
@@ -23,6 +24,7 @@ import com.michaelzap94.santabiblia.utilities.BookHelper;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
@@ -439,12 +441,55 @@ public class BibleDBHelper {
         return SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
     }
 
-    //CONCORDANCE========================================================================================
-    public ArrayList<String[]> searchInConcordance(String input) {
+    //SEARCH IN BIBLE=================================================================================================
+    public ArrayList<String[]> searchInBible(String input) {
+        Log.d(TAG, "searchInBible: " + input);
+        Log.d(TAG, "searchInBible: " + input.toUpperCase(Locale.getDefault()));
+        Log.d(TAG, "searchInBible: " + input.toUpperCase());
         ArrayList<String[]> results = new ArrayList<>();
         int labelSpecificRowsCount;
         try {
-            String query = "SELECT * FROM dictionary WHERE topic LIKE '%" + input + "%' ORDER BY topic, definition";
+            String query = "SELECT topic, definition FROM dictionary d " +
+                    " WHERE REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(topic,'\u00C1','A'), '\u00C9','E'),'\u00CD','I'),'\u00D3','O'),'\u00DA','U'),'.',''),',',''),' ',''),':',''),';',''),'?',''),'\u00bf',''),'\u00a1',''),'!',''),'(',''),')','') " +
+                    " LIKE '%" + input.toUpperCase(Locale.getDefault()) + "%' ORDER BY topic, definition";
+            //String query = "SELECT * FROM dictionary WHERE topic LIKE '%" + input.toUpperCase() + "%' ORDER BY topic, definition COLLATE UNICODE";
+            Log.d(TAG, "searchInBible: " + query);
+            Cursor cursorResults = openDataBaseNoHelper(DB_NAME_BIBLE_CONCORDANCE).rawQuery(query, null);
+            if (cursorResults.moveToFirst()) {
+                labelSpecificRowsCount = cursorResults.getCount();
+                for (int i = 0; i < labelSpecificRowsCount; i++) {
+                    int topicCol = cursorResults.getColumnIndex("topic");
+                    int defCol = cursorResults.getColumnIndex("definition");
+                    String topic = cursorResults.getString(topicCol).trim();
+                    String definition = cursorResults.getString(defCol).trim();
+                    results.add(new String[]{topic, definition});
+
+                    cursorResults.moveToNext();
+                }
+            }
+            cursorResults.close();
+        } catch (Exception e) {
+        }
+        return results;
+    }
+
+    //CONCORDANCE========================================================================================
+    public ArrayList<String[]> searchInConcordance(String input) {
+        Log.d(TAG, "searchInConcordance: " + input);
+        Log.d(TAG, "searchInConcordance: " + input.toUpperCase(Locale.getDefault()));
+        Log.d(TAG, "searchInConcordance: " + input.toUpperCase());
+        ArrayList<String[]> results = new ArrayList<>();
+        int labelSpecificRowsCount;
+        try {
+            String query = "SELECT topic, definition FROM dictionary d " +
+                    " WHERE REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(topic,'\u00C1','A'), '\u00C9','E'),'\u00CD','I'),'\u00D3','O'),'\u00DA','U'),'.',''),':',''),';',''),'?',''),'\u00bf',''),'\u00a1',''),'!',''),'(',''),')','') " +
+                    " LIKE '%" + input.trim().toUpperCase() + "%' ORDER BY topic, definition";
+//            String query = "SELECT topic, definition FROM dictionary d " +
+//                    " WHERE REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(topic,'\u00C1','A'), '\u00C9','E'),'\u00CD','I'),'\u00D3','O'),'\u00DA','U'),'.',''),',',''),' ',''),':',''),';',''),'?',''),'\u00bf',''),'\u00a1',''),'!',''),'(',''),')','') " +
+//                    " LIKE '%" + input.toUpperCase() + "%' ORDER BY topic, definition";
+            //String query = "SELECT * FROM dictionary WHERE topic LIKE '%" + input.toUpperCase() + "%' ORDER BY topic, definition COLLATE UNICODE";
+            Log.d(TAG, "searchInConcordance: " + query);
+
             Cursor cursorResults = openDataBaseNoHelper(DB_NAME_BIBLE_CONCORDANCE).rawQuery(query, null);
             if (cursorResults.moveToFirst()) {
                 labelSpecificRowsCount = cursorResults.getCount();
