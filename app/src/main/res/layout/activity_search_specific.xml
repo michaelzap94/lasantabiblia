@@ -8,39 +8,30 @@
     tools:context=".SearchSpecific"
     android:baselineAligned="false">
 
-
-    <LinearLayout
-        android:id="@+id/linearlayout_search"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="0"
-        android:orientation="horizontal">
-
-        <SearchView
-            android:id="@+id/search_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:queryHint="Search ..."
-            android:iconifiedByDefault="false"/>
-
-    </LinearLayout>
-
     <LinearLayout
         android:id="@+id/linearlayout_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="2"
         android:orientation="vertical">
+
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/search_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:queryHint="Search ..."
+            app:iconifiedByDefault="false"/>
 
         <TextView
             android:id="@+id/search_results_counter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
             android:text="No Results Found" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/search_results_recyclerview"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:layout_margin="8dp"/>
     </LinearLayout>
 </LinearLayout>

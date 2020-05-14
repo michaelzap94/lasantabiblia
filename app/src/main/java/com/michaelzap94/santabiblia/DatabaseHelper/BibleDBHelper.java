@@ -33,6 +33,7 @@ public class BibleDBHelper {
     private static final String TAG = "BibleDBHelper";
 
     public static final String DB_NAME_BIBLE_CONTENT = "RVR60.db";
+    public static final String DB_NAME_BIBLE_CONCORDANCE = "concordance.db";
     public static final String DB_NAME_BIBLE_COMMENTARIES = "RVR60commentaries.db";
     public static final int DB_VERSION = 1;
     private Context myContext;
@@ -437,6 +438,32 @@ public class BibleDBHelper {
         String myPath = this.myContext.getDatabasePath(db_name).getPath();
         return SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
     }
+
+    //CONCORDANCE========================================================================================
+    public ArrayList<String[]> searchInConcordance(String input) {
+        ArrayList<String[]> results = new ArrayList<>();
+        int labelSpecificRowsCount;
+        try {
+            String query = "SELECT * FROM dictionary WHERE topic LIKE '%" + input + "%' ORDER BY topic, definition";
+            Cursor cursorResults = openDataBaseNoHelper(DB_NAME_BIBLE_CONCORDANCE).rawQuery(query, null);
+            if (cursorResults.moveToFirst()) {
+                labelSpecificRowsCount = cursorResults.getCount();
+                for (int i = 0; i < labelSpecificRowsCount; i++) {
+                    int topicCol = cursorResults.getColumnIndex("topic");
+                    int defCol = cursorResults.getColumnIndex("definition");
+                    String topic = cursorResults.getString(topicCol).trim();
+                    String definition = cursorResults.getString(defCol).trim();
+                    results.add(new String[]{topic, definition});
+
+                    cursorResults.moveToNext();
+                }
+            }
+            cursorResults.close();
+        } catch (Exception e) {
+        }
+        return results;
+    }
+
 
     public Cursor query(String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy, String limit) {
         return myDataBase.query(table, columns, selection, selectionArgs, groupBy, having, orderBy, limit);

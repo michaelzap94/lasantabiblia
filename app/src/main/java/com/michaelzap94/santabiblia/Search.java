@@ -31,20 +31,6 @@ public class Search extends AppCompatActivity {
         Intent myIntent = new Intent(Search.this, SearchSpecific.class);
         myIntent.putExtra("id", view.getId());
         startActivity(myIntent);
-        //activity.startActivity(new Intent(activity, Bible.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
-        //activity.overridePendingTransition(0,0);
-//        switch (view.getId()){
-//            case R.id.search_card_conc:
-//                break;
-//            case R.id.search_card_dict:
-//                break;
-//            case R.id.search_card_label:
-//                break;
-//            case R.id.search_card_text:
-//                break;
-//            default:
-//                break;
-//        }
     }
 
 

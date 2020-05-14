@@ -2,17 +2,32 @@ package com.michaelzap94.santabiblia;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.TextView;
 
+import com.michaelzap94.santabiblia.DatabaseHelper.BibleDBHelper;
+import com.michaelzap94.santabiblia.adapters.SearchResultsRecyclerView;
+import com.michaelzap94.santabiblia.adapters.VersesRecyclerViewAdapter;
 import com.michaelzap94.santabiblia.models.Book;
 import com.michaelzap94.santabiblia.utilities.BookHelper;
 
-public class SearchSpecific extends AppCompatActivity {
+import java.util.ArrayList;
 
+public class SearchSpecific extends AppCompatActivity {
+    private static final String TAG = "SearchSpecific";
     private int _id;
     private String title;
+    private SearchView searchView;
+    private TextView resultsCounter;
+    private RecyclerView rvView;
+    private SearchResultsRecyclerView rvAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,13 +49,35 @@ public class SearchSpecific extends AppCompatActivity {
                     break;
             }
         }
-        // my_child_toolbar is defined in the layout file
-//        Toolbar myChildToolbar = (Toolbar) findViewById(R.id.my_child_toolbar);
-//        setSupportActionBar(myChildToolbar);
-        // Get a support ActionBar corresponding to this toolbar
         ActionBar ab = getSupportActionBar();
         ab.setTitle(title);
-        // Enable the Up button
         ab.setDisplayHomeAsUpEnabled(true);
+        searchView = (SearchView) findViewById(R.id.search_bar);
+        resultsCounter = (TextView) findViewById(R.id.search_results_counter);
+
+        //=========================================================================================
+        this.rvView = (RecyclerView) findViewById(R.id.search_results_recyclerview);
+        rvView.setLayoutManager(new LinearLayoutManager(this));
+        rvAdapter = new SearchResultsRecyclerView(new ArrayList<String[]>());
+        rvView.setAdapter(rvAdapter);//attach the RecyclerView adapter to the RecyclerView View
+        //=========================================================================================
+
+        // perform set on query text listener event
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                ArrayList<String[]> results = BibleDBHelper.getInstance(SearchSpecific.this).searchInConcordance(query);
+                resultsCounter.setText("Results: " + results.size());
+                rvAdapter.refreshSearchResults(results);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                // do something when text changes
+                return false;
+            }
+        });
+
     }
 }
