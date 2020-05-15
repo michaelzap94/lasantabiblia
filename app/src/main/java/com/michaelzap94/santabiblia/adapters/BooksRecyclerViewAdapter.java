@@ -51,7 +51,7 @@ public class BooksRecyclerViewAdapter extends RecyclerView.Adapter<BooksRecycler
         holder.mView.setOnClickListener(v -> {
             Log.d(TAG, "onBindViewHolder: CLICK "+position);
             Log.d(TAG, "onBindViewHolder: CLICK "+holder.getAdapterPosition());
-            BaseActivityTopDrawer.onChapterClickedFromDrawer(this.activity.getApplicationContext(), book.getBookNumber());
+            BaseActivityTopDrawer.onChapterClickedFromDrawer(this.activity, book.getBookNumber());
         });
     }
 

@@ -1,14 +1,16 @@
 package com.michaelzap94.santabiblia.models;
 
+import android.text.Spanned;
+
 public class SearchResult {
     private int _id;
     private String title;
-    private String content;
+    private Spanned contentSpanned;
 
-    public SearchResult(int _id, String title, String content) {
+    public SearchResult(int _id, String title, Spanned contentSpanned) {
         this._id = _id;
         this.title = title;
-        this.content = content;
+        this.contentSpanned = contentSpanned;
     }
 
     public int get_id() {
@@ -17,8 +19,8 @@ public class SearchResult {
     public String getTitle() {
         return title;
     }
-    public String getContent() {
-        return content;
+    public Spanned getContent() {
+        return contentSpanned;
     }
 
 }

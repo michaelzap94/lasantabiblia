@@ -499,7 +499,15 @@ public class BibleDBHelper {
                     int id = cursorResults.getInt(idCol);
                     String topic = cursorResults.getString(topicCol).trim();
                     String definition = cursorResults.getString(defCol).trim();
-                    results.add(new SearchResult(id, topic, definition));
+
+                    Spanned definitionSpanned;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        definitionSpanned = Html.fromHtml(definition, Html.FROM_HTML_MODE_COMPACT);
+                    } else {
+                        definitionSpanned = Html.fromHtml(definition);
+                    }
+
+                    results.add(new SearchResult(id, topic, definitionSpanned));
                     cursorResults.moveToNext();
                 }
             }

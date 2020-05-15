@@ -1,5 +1,6 @@
 package com.michaelzap94.santabiblia;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
@@ -84,7 +85,7 @@ public abstract class BaseActivityTopDrawer extends AppCompatActivity {
 
     }
 
-    public static void onChapterClickedFromDrawer(Context ct, int position) {
+    public static void onChapterClickedFromDrawer(Activity ct, int position) {
         Log.d(TAG, "onBindViewHolder: CLICK RECEIVED "+position);
 
         Book book = (Book) BookHelper.getBook(position);

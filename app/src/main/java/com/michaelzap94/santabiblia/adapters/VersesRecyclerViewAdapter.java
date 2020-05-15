@@ -178,6 +178,7 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
                     @Override
                     public void onClick(DialogInterface dialog, int position) {
                         Log.d(TAG, "onClick: position dialog: " + position);
+                        //TODO: MOVE IT TO THE BACKGROUND
                         HashMap<String, ArrayList<Verse>> versesFromCommentaries = BibleDBHelper.getInstance(ctx).getVersesFromCommentaries(arrReturned[position]);
                         Log.d(TAG,"Created hashmap size: " + versesFromCommentaries.size());
                         openDialogVerses2(arrToShow[position], versesFromCommentaries);
