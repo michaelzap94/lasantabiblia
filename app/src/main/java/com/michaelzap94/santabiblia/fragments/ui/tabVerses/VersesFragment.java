@@ -278,6 +278,7 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
         //===============================================================
         Toast.makeText(mActivity, "onItemLongClick" + position, Toast.LENGTH_SHORT).show();
         if(arrLabels == null){
+            //TODO: move it to the background
             arrLabels = ContentDBHelper.getInstance(mActivity).getAllLabels();
         }
 //        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
