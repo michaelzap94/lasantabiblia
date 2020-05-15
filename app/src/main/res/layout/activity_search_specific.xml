@@ -33,5 +33,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="8dp"/>
+        <ProgressBar
+            android:id="@+id/search_results_spinner"
+            android:visibility="gone"
+            android:layout_margin="24dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+         />
     </LinearLayout>
 </LinearLayout>

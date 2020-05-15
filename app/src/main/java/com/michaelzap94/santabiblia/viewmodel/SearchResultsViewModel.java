@@ -19,6 +19,7 @@ public class SearchResultsViewModel extends AndroidViewModel {
         private static final String TAG = "SearchResultsViewModel";
 
         private MutableLiveData<ArrayList<SearchResult>> searchResultsList;
+        public MutableLiveData<Boolean> loading = new MutableLiveData<Boolean>();
 
         public SearchResultsViewModel(@NonNull Application application) {
             super(application);
@@ -29,11 +30,12 @@ public class SearchResultsViewModel extends AndroidViewModel {
             return searchResultsList;
         }
         //PUBLIC SO we can refresh the list for some reason from the OUTSIDE
-        public void refreshsearchResultsList(String title, String type){
-            fetchData(title, type);
-        }
+//        public void refreshsearchResultsList(String title, String type){
+//            fetchData(title, type);
+//        }
 
         public void fetchData(String title, String type){
+            loading.setValue(true);
             loadVerses(title, type);
         }
         public void loadVerses(String title, String type){new SearchResultsViewModel.GetVersesMarked().execute(title, type);}
@@ -44,6 +46,7 @@ public class SearchResultsViewModel extends AndroidViewModel {
                 ArrayList<SearchResult> results = BibleDBHelper.getInstance(getApplication()).searchInConcordanceOrDictionary(args[0], args[1]);
                 Log.d(TAG, "doInBackground: result " + results.size());
                 searchResultsList.postValue(results);
+                loading.postValue(false);
                 return null;
             }
         }

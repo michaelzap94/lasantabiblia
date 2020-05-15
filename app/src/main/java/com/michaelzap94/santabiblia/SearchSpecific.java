@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.michaelzap94.santabiblia.DatabaseHelper.BibleDBHelper;
@@ -30,6 +32,7 @@ public class SearchSpecific extends AppCompatActivity {
     private SearchView searchView;
     private TextView resultsCounter;
     ///////////////////////////////////////////////////////////
+    private ProgressBar loadingView;
     private ArrayList<SearchResult> results = new ArrayList();
     private RecyclerView rvView;
     private SearchResultsViewModel viewModel;
@@ -67,6 +70,7 @@ public class SearchSpecific extends AppCompatActivity {
         ab.setDisplayHomeAsUpEnabled(true);
         searchView = (SearchView) findViewById(R.id.search_bar);
         resultsCounter = (TextView) findViewById(R.id.search_results_counter);
+        loadingView = (ProgressBar) findViewById(R.id.search_results_spinner);
         //=========================================================================================
         // get viewmodel class and properties, pass this context so LifeCycles are handled by ViewModel,
         // in case the Activity is destroyed and recreated(screen roation)
@@ -108,6 +112,17 @@ public class SearchSpecific extends AppCompatActivity {
             //WHEN data is created  pass data and set it in the recyclerview VIEW
             resultsCounter.setText("Results: " + results.size());
             rvAdapter.refreshSearchResults(results);
+            rvView.setVisibility(View.VISIBLE);
+        });
+
+        viewModel.loading.observe(this, isLoading -> {
+            if(isLoading != null) {
+                loadingView.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+                if(isLoading) {
+                    resultsCounter.setText("Loading...");
+                    rvView.setVisibility(View.GONE);
+                }
+            }
         });
     }
 }
