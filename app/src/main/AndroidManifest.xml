@@ -19,7 +19,8 @@
         </activity>
         <activity
             android:name=".Settings"
-            android:label="@string/settings" />
+            android:label="@string/settings"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".Dashboard"
             android:label="@string/dashboard" />

@@ -3,6 +3,7 @@ package com.michaelzap94.santabiblia;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -20,10 +21,14 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
     private BottomNavigationView bottomNavigationView;
     private static final String CAN_GO_BACK = "CAN_GO_BACK";
     private boolean canGoBack;
+    private Toolbar mToolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
 
         updateCanGoBack(canGoBack, Settings.this);
         //Populate one Fragment to cover the WHOLE settings screen
