@@ -1,6 +1,9 @@
 package com.michaelzap94.santabiblia.adapters;
 
 import android.content.Context;
+import android.os.Build;
+import android.text.Html;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,21 +17,25 @@ import androidx.viewpager.widget.PagerAdapter;
 
 import com.google.android.material.card.MaterialCardView;
 import com.michaelzap94.santabiblia.interfaces.CardAdapter;
-import com.michaelzap94.santabiblia.models.MainCardContent;
+import com.michaelzap94.santabiblia.models.VersesMarked;
 import com.michaelzap94.santabiblia.R;
+import com.michaelzap94.santabiblia.utilities.BookHelper;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class MainCardViewPagerAdapter extends PagerAdapter  implements CardAdapter {
-    private static final String TAG = "Adapter";
-    private List<MainCardContent> mainCardContents;
+    private static final String TAG = "MainCardViewPager";
+    private List<VersesMarked> mainCardContents;
     private List<CardView> mViews;
     private float mBaseElevation;
     private LayoutInflater layoutInflater;
     private Context context;
 
-    public MainCardViewPagerAdapter(List<MainCardContent> mainCardContents, Context context) {
+    public MainCardViewPagerAdapter(List<VersesMarked> mainCardContents, Context context) {
         if(mainCardContents != null){
             this.mainCardContents = mainCardContents;
         } else {
@@ -38,7 +45,15 @@ public class MainCardViewPagerAdapter extends PagerAdapter  implements CardAdapt
         mViews = new ArrayList<>();
     }
 
-    public void addCardItem(MainCardContent item) {
+    public void updateVersesMarkedViewPager(List<VersesMarked> _versesMarkedArrayList){
+        mainCardContents.clear();
+        mainCardContents.addAll(_versesMarkedArrayList);
+        mViews.clear();
+        mViews.addAll(Collections.nCopies( _versesMarkedArrayList.size(), null));
+        notifyDataSetChanged();
+    }
+
+    public void addCardItem(VersesMarked item) {
         mViews.add(null);
         mainCardContents.add(item);
     }
@@ -56,6 +71,12 @@ public class MainCardViewPagerAdapter extends PagerAdapter  implements CardAdapt
     @Override
     public int getCount() {
         return mainCardContents.size();
+    }
+
+    //so that notifyDataSetChanged refreshes
+    @Override
+    public int getItemPosition(Object object){
+        return PagerAdapter.POSITION_NONE;
     }
 
     @Override
@@ -85,12 +106,45 @@ public class MainCardViewPagerAdapter extends PagerAdapter  implements CardAdapt
         return view;
     }
 
-    private void bind(MainCardContent item, View view) {
-        TextView title, desc;
-        title = view.findViewById(R.id.verses_marked_cardview_title);
-        desc = view.findViewById(R.id.verses_marked_cardview_content);
-        title.setText(item.getTitle());
-        desc.setText(item.getDesc());
+    private void bind(VersesMarked versesMarked, View view) {
+        TextView txtView_title, txtView_content;
+        txtView_title = view.findViewById(R.id.verses_marked_cardview_title);
+        txtView_content = view.findViewById(R.id.verses_marked_cardview_content);
+
+//            Label label = versesMarked.getLabel();
+        String bookName = versesMarked.getBook().getName();
+//            int book_number = versesMarked.getBook().getBookNumber();
+//            int id = versesMarked.getIdVerseMarked();
+        int chapter = versesMarked.getChapter();
+        boolean hasNote = versesMarked.hasNote();
+//            String note = versesMarked.getNote();
+        TreeMap<Integer, String> verseTextDict = versesMarked.getVerseTextDict();
+        String content = "";
+//            int verseFrom = 1000;//no chapter has more than 1000 verses, therefore this is enough: Infinity
+//            int verseTo = 0;
+        List<Integer> selectedItems = new ArrayList<>();
+        for (Map.Entry<Integer, String> mapElement : verseTextDict.entrySet()) {
+            int verseNumber = (Integer) mapElement.getKey();
+            selectedItems.add(verseNumber - 1);
+            String text = (String) mapElement.getValue();
+            content = content + " <b>" + verseNumber + "</b>"  + ". " + text;
+        }
+
+        Spanned contentSpanned;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            contentSpanned = Html.fromHtml(content, Html.FROM_HTML_MODE_COMPACT);
+        } else {
+            contentSpanned = Html.fromHtml(content);
+        }
+
+        //String title = bookName + " " + chapter + ":" + verseFrom  + (verseFrom < verseTo ? "-" + verseTo : BuildConfig.FLAVOR);
+        String titleChapterVerses = BookHelper.getTitleBookAndCaps(chapter, selectedItems);
+        String title = bookName + " " + titleChapterVerses;
+        txtView_title.setText(title);
+        txtView_content.setText(contentSpanned);
+//        if(hasNote) {
+//            txtView_note.setText(versesMarked.getNote());
+//        }
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override

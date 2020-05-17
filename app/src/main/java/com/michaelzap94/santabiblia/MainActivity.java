@@ -1,25 +1,38 @@
 package com.michaelzap94.santabiblia;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.michaelzap94.santabiblia.adapters.MainCardViewPagerAdapter;
+import com.michaelzap94.santabiblia.adapters.VersesMarkedRecyclerViewAdapter;
 import com.michaelzap94.santabiblia.models.MainCardContent;
+import com.michaelzap94.santabiblia.models.VersesMarked;
 import com.michaelzap94.santabiblia.utilities.CommonMethods;
 import com.michaelzap94.santabiblia.utilities.ShadowTransformer;
+import com.michaelzap94.santabiblia.viewmodel.VersesMarkedViewModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends BaseActivityTopDrawer  {
+    private static final String TAG = "MainActivity";
     public static final String MY_PREFS_NAME = "MyPrefsFile";
     private BottomNavigationView bottomNavigationView;
 //    Integer[] colors = null;
     //    ArgbEvaluator argbEvaluator = new ArgbEvaluator();
     ViewPager viewPager;
     MainCardViewPagerAdapter mainCardViewPagerAdapter;
-    List<MainCardContent> mainCardContents;
+    ///////////////////////////////////////////////////////////
+    private final int label_id_memorize = 1;
+    private ArrayList<VersesMarked> list = new ArrayList();
+    private VersesMarkedViewModel viewModel;
     private ShadowTransformer mCardShadowTransformer;
+    //==========================================================
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,32 +43,12 @@ public class MainActivity extends BaseActivityTopDrawer  {
 
         //===================================================================================
         viewPager = findViewById(R.id.main_card_mem_viewpager);
+        mainCardViewPagerAdapter = new MainCardViewPagerAdapter(list, this);
 
-        mainCardViewPagerAdapter = new MainCardViewPagerAdapter(null, this);
-
-//        models = new ArrayList<>();
-//        models.add(new Model(R.drawable.ic_bookmark, "Brochure", "Brochure is an informative paper document (often also used for advertising) that can be folded into a template"));
-//        models.add(new Model(R.drawable.ic_compare_arrows, "Sticker", "Sticker is a type of label: a piece of printed paper, plastic, vinyl, or other material with pressure sensitive adhesive on one side"));
-//        models.add(new Model(R.drawable.ic_copy, "Poster", "Poster is any piece of printed paper designed to be attached to a wall or vertical surface."));
-//        models.add(new Model(R.drawable.ic_check_circle, "Namecard", "Business cards are cards bearing business information about a company or individual."));
-//        models.add(new Model(R.drawable.ic_check_circle, "Namecard", "Business cards are cards bearing business information about a company or individual."));
-//        models.add(new Model(R.drawable.ic_check_circle, "Namecard", "Business cards are cards bearing business information about a company or individual."));
-//        models.add(new Model(R.drawable.ic_check_circle, "Namecard", "Business cards are cards bearing business information about a company or individual."));
-//        models.add(new Model(R.drawable.ic_check_circle, "Namecard", "Business cards are cards bearing business information about a company or individual."));
-//        models.add(new Model(R.drawable.ic_check_circle, "Namecard", "Business cards are cards bearing business information about a company or individual."));
-//        models.add(new Model(R.drawable.ic_check_circle, "Namecard", "Business cards are cards bearing business information about a company or individual."));
-//        models = new ArrayList<>();
-        mainCardViewPagerAdapter.addCardItem(new MainCardContent(R.drawable.ic_bookmark, "Brochure", "Brochure is an informative paper document (often also used for advertising) that can be folded into a template Brochure is an informative paper document (often also used for advertising) that can be folded into a template Brochure is an informative paper document (often also used for advertising) that can be folded into a template Brochure is an informative paper document (often also used for advertising) that can be folded into a template Brochure is an informative paper document (often also used for advertising) that can be folded into a template Brochure is an informative paper document (often also used for advertising) that can be folded into a template Brochure is an informative paper document (often also used for advertising) that can be folded into a template Brochure is an informative paper document (often also used for advertising) that can be folded into a template Brochure is an informative paper document (often also used for advertising) that can be folded into a template Brochure is an informative paper document (often also used for advertising) that can be folded into a template Brochure is an informative paper document (often also used for advertising) that can be folded into a template Brochure is an informative paper document (often also used for advertising) that can be folded into a template "));
-        mainCardViewPagerAdapter.addCardItem(new MainCardContent(R.drawable.ic_compare_arrows, "Sticker", "Sticker is a type of label: a piece of printed paper, plastic, vinyl, or other material with pressure sensitive adhesive on one side"));
-        mainCardViewPagerAdapter.addCardItem(new MainCardContent(R.drawable.ic_copy, "Poster", "Poster is any piece of printed paper designed to be attached to a wall or vertical surface."));
-        mainCardViewPagerAdapter.addCardItem(new MainCardContent(R.drawable.ic_check_circle, "Namecard", "Business cards are cards bearing business information about a company or individual."));
-        mainCardViewPagerAdapter.addCardItem(new MainCardContent(R.drawable.ic_check_circle, "Namecard", "Business cards are cards bearing business information about a company or individual."));
-        mainCardViewPagerAdapter.addCardItem(new MainCardContent(R.drawable.ic_check_circle, "Namecard", "Business cards are cards bearing business information about a company or individual."));
-        mainCardViewPagerAdapter.addCardItem(new MainCardContent(R.drawable.ic_check_circle, "Namecard", "Business cards are cards bearing business information about a company or individual."));
-        mainCardViewPagerAdapter.addCardItem(new MainCardContent(R.drawable.ic_check_circle, "Namecard", "Business cards are cards bearing business information about a company or individual."));
-        mainCardViewPagerAdapter.addCardItem(new MainCardContent(R.drawable.ic_check_circle, "Namecard", "Business cards are cards bearing business information about a company or individual."));
-        mainCardViewPagerAdapter.addCardItem(new MainCardContent(R.drawable.ic_check_circle, "Namecard", "Business cards are cards bearing business information about a company or individual."));
-
+        viewModel = new ViewModelProvider(this).get(VersesMarkedViewModel.class);
+        //Use when we need to reload data
+        viewModel.fetchData(label_id_memorize);//refresh -> load data
+        //viewModel.getUserMutableLiveData().observe(context, verseListUpdateObserver);
 
         mCardShadowTransformer = new ShadowTransformer(viewPager, mainCardViewPagerAdapter);
 
@@ -107,15 +100,25 @@ public class MainActivity extends BaseActivityTopDrawer  {
 //        });
 
         //===================================================================================
-
+        observerViewModel();
+        //===================================================================================
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
         CommonMethods.bottomBarActionHandler(bottomNavigationView, R.id.bnav_home, MainActivity.this);
+    }
+
+    private void observerViewModel() {
+        viewModel.getUserMutableLiveData().observe(this, (versesMarkedArrayList) -> {
+            Log.d(TAG, "observerViewModel: LABEL GOT DATA" + versesMarkedArrayList.size() + "in label: Mem");
+            //WHEN data is created  pass data and set it in the updateVersesMarkedViewPager VIEW
+            mainCardViewPagerAdapter.updateVersesMarkedViewPager(versesMarkedArrayList);
+        });
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         bottomNavigationView.setSelectedItemId(R.id.bnav_home);
+        viewModel.fetchData(label_id_memorize);//refresh -> load data
     }
 
     @Override

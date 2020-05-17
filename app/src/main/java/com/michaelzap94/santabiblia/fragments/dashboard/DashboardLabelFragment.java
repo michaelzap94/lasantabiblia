@@ -65,7 +65,9 @@ public class DashboardLabelFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+        if(this.mLabel.getPermanent() != 1){
+            setHasOptionsMenu(true);
+        }
         rvAdapter = new VersesMarkedRecyclerViewAdapter(this.ctx, new ArrayList<>());
         //get viewmodel class and properties, pass this context so LifeCycles are handled by ViewModel,
         // in case the Activity is destroyed and recreated(screen roation)
