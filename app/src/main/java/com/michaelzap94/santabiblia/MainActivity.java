@@ -121,7 +121,7 @@ public class MainActivity extends BaseActivityTopDrawer  {
         super.onResume();
         bottomNavigationView.setSelectedItemId(R.id.bnav_home);
         viewModel.fetchData(label_id_memorize);//refresh -> load data
-        main_card_mem_number.setText((viewPager.getCurrentItem()+1)+"/"+versesMarkedArrayListSize);
+//        main_card_mem_number.setText((viewPager.getCurrentItem()+1)+"/"+versesMarkedArrayListSize);
     }
 
     @Override

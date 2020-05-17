@@ -441,7 +441,12 @@ public class BibleDBHelper {
 
     public SQLiteDatabase openDataBaseNoHelper(String db_name) throws SQLException {
         String myPath = this.myContext.getDatabasePath(db_name).getPath();
-        return SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
+        if(myDataBase == null){
+            myDataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
+            return myDataBase;
+        } else {
+            return myDataBase;
+        }
     }
 
     //SEARCH IN BIBLE=================================================================================================
