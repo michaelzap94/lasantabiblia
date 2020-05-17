@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -84,7 +85,7 @@ public class SearchSpecific extends AppCompatActivity {
         //=========================================================================================
         this.rvView = (RecyclerView) findViewById(R.id.search_results_recyclerview);
         rvView.setLayoutManager(new LinearLayoutManager(this));
-        rvAdapter = new SearchResultsRecyclerView(new ArrayList<>());
+        rvAdapter = new SearchResultsRecyclerView(new ArrayList<>(), SearchSpecific.this);
         rvView.setAdapter(rvAdapter);//attach the RecyclerView adapter to the RecyclerView View
         //=========================================================================================
         searchView.clearFocus();
@@ -108,6 +109,16 @@ public class SearchSpecific extends AppCompatActivity {
 
         ///////////////////////////////////////
         observerViewModel();
+    }
+
+    public void onClickSearchSpecific(SearchResult result){
+        Intent myIntent = new Intent(SearchSpecific.this, Bible.class);
+        myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        myIntent.putExtra("book", result.getBook_number());
+        myIntent.putExtra("chapter", result.getChapter_number());
+        myIntent.putExtra("verse", result.getVerse());
+        startActivity(myIntent);
+        finish();
     }
 
     private void observerViewModel() {

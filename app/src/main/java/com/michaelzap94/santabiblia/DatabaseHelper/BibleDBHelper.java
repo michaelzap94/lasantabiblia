@@ -463,7 +463,7 @@ public class BibleDBHelper {
         int innerCursorRowsCount;
         try {
             String query = "SELECT _id, book_number, chapter, verse, text FROM verses " +
-                    " WHERE REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(text,'\u00C1','A'), '\u00C9','E'),'\u00CD','I'),'\u00D3','O'),'\u00DA','U'),'\u00e1','a'), '\u00e9','e'),'\u00ed','i'),'\u00f3','o'),'\u00fa','u'),'.',''),':',''),';',''),'?',''),'\u00bf',''),'\u00a1',''),'!',''),'(',''),')','') " +
+                    " WHERE REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(text,'\u00C1','A'), '\u00C9','E'),'\u00CD','I'),'\u00D3','O'),'\u00DA','U'),'\u00e1','a'), '\u00e9','e'),'\u00ed','i'),'\u00f3','o'),'\u00fa','u'),'.',''),',',''),':',''),';',''),'?',''),'\u00bf',''),'\u00a1',''),'!',''),'(',''),')','') " +
                     " LIKE '%" + input.trim() + "%' ORDER BY book_number, chapter, verse";
             Log.d(TAG, "searchInBible: " + query);
             Cursor innerCursor = openDataBaseNoHelper(DB_NAME_BIBLE_CONTENT).rawQuery(query, null);
