@@ -158,6 +158,8 @@ public class MainCardViewPagerAdapter extends PagerAdapter  implements CardAdapt
     public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
         Log.d(TAG, "newadapter destroyItem: " + position);
         container.removeView((View)object);
-        mViews.set(position, null);
+        if(mViews.size() > 0){
+            mViews.set(position, null);
+        }
     }
 }

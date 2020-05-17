@@ -456,9 +456,6 @@ public class BibleDBHelper {
 
     //SEARCH IN BIBLE=================================================================================================
     public ArrayList<SearchResult> searchInBible(String input) {
-        Log.d(TAG, "searchInBible: " + input);
-        Log.d(TAG, "searchInBible: " + input.toUpperCase(Locale.getDefault()));
-        Log.d(TAG, "searchInBible: " + input.toUpperCase());
         ArrayList<SearchResult> results = new ArrayList<>();
         int innerCursorRowsCount;
         try {
@@ -529,5 +526,5 @@ public class BibleDBHelper {
         }
         return results;
     }
-
+    
 }

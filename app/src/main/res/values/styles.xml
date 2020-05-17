@@ -12,6 +12,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorAccent</item>
         <item name="colorAccent">@color/colorPrimaryDark</item>
+        <item name="actionBarSize">48dp</item>
     </style>
 
     <style name="AppTheme.NoActionBar">

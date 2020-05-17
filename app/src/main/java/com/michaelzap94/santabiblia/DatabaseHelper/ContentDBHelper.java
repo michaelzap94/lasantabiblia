@@ -5,10 +5,14 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Build;
+import android.text.Html;
+import android.text.Spanned;
 
 import com.michaelzap94.santabiblia.BuildConfig;
 import com.michaelzap94.santabiblia.models.Book;
 import com.michaelzap94.santabiblia.models.Label;
+import com.michaelzap94.santabiblia.models.SearchResult;
 import com.michaelzap94.santabiblia.models.VersesMarked;
 import com.michaelzap94.santabiblia.utilities.BookHelper;
 
@@ -84,8 +88,6 @@ public class ContentDBHelper extends SQLiteOpenHelper {
     public boolean deleteOneLabel(int id){
          return this.getWritableDatabase().delete("labels", "_id =" + id, null) > 0;
     }
-
-
     public boolean insertSelectedItemsBulkTransaction(Label label, int book_number, int chapter_number, String note, List<Integer> selectedItems) {
         boolean success = true;
         int label_id = label.getId();
@@ -127,8 +129,6 @@ public class ContentDBHelper extends SQLiteOpenHelper {
 
         return success;
     }
-
-
     public boolean insertSelectedItems(Label label, int book_number, int chapter_number, String note, List<Integer> selectedItems) {
         int label_id = label.getId();
         String label_name = label.getName();
@@ -157,7 +157,6 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         cv.put("note", (!note.equals(BuildConfig.FLAVOR) ?  note : "NULL"));
         return this.getWritableDatabase().insert("verses_marked",null, cv) > 0;
     }
-
     public ArrayList<VersesMarked> getVersesMarked(int label_id) {
         int labelSpecificRowsCount;
         int i;
@@ -233,11 +232,9 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         }
         return list;
     }
-
     public boolean deleteVersesMarkedGroup(int label_id, String uuid){
         return this.getWritableDatabase().delete("verses_marked", "label_id = ? AND UUID = ?", new String[]{String.valueOf(label_id), uuid}) > 0;
     }
-
     public int getVersesMarkedNumber(int label_id) {
         try {
             String query = "SELECT * FROM verses_marked WHERE label_id=" + label_id;
@@ -247,6 +244,85 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         }
         return -1;
     }
+
+    //SEARCH IN NOTES========================================================================================
+//    public ArrayList<SearchResult> searchInNotes(String input) {
+//        ArrayList<SearchResult> results = new ArrayList<>();
+//        int labelSpecificRowsCount;
+//        try {
+//            String query = "SELECT * FROM verses_marked " +
+//                    " WHERE REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(note,'\u00C1','A'), '\u00C9','E'),'\u00CD','I'),'\u00D3','O'),'\u00DA','U'),'\u00e1','a'), '\u00e9','e'),'\u00ed','i'),'\u00f3','o'),'\u00fa','u'),'.',''),':',''),';',''),'?',''),'\u00bf',''),'\u00a1',''),'!',''),'(',''),')','') " +
+//                    " LIKE '%" + input.trim() + "%' ORDER BY topic, definition";
+//            //String query = "SELECT * FROM dictionary WHERE topic LIKE '%" + input.toUpperCase() + "%' ORDER BY topic, definition COLLATE UNICODE";
+//            Cursor labelSpecificRows = this.getReadableDatabase().rawQuery(query, null);
+//            if (labelSpecificRows.moveToFirst()) {
+//                labelSpecificRowsCount = labelSpecificRows.getCount();
+//                for (int i = 0; i < labelSpecificRowsCount; i++) {
+//                    int _idCol= labelSpecificRows.getColumnIndex("_id");
+//                    int uuidCol = labelSpecificRows.getColumnIndex("UUID");
+//                    int label_nameCol= labelSpecificRows.getColumnIndex("label_name");
+//                    int label_colorCol= labelSpecificRows.getColumnIndex("label_color");
+//                    int label_perCol= labelSpecificRows.getColumnIndex("label_permanent");
+//                    int book_numberCol= labelSpecificRows.getColumnIndex("book_number");
+//                    int chapterCol= labelSpecificRows.getColumnIndex("chapter");
+//                    int verseFromCol= labelSpecificRows.getColumnIndex("verseFrom");
+//                    int verseToCol= labelSpecificRows.getColumnIndex("verseTo");
+//                    int noteCol= labelSpecificRows.getColumnIndex("note");
+//                    int _id = labelSpecificRows.getInt(_idCol);
+//                    String uuid = labelSpecificRows.getString(uuidCol);
+//                    String label_name = labelSpecificRows.getString(label_nameCol);
+//                    String label_color = labelSpecificRows.getString(label_colorCol);
+//                    int label_permanent = labelSpecificRows.getInt(label_perCol);
+//                    int book_number = labelSpecificRows.getInt(book_numberCol);
+//                    int chapter = labelSpecificRows.getInt(chapterCol);
+//                    int verseFrom = labelSpecificRows.getInt(verseFromCol);
+//                    int verseTo = labelSpecificRows.getInt(verseToCol);
+//                    String note = null;
+//                    if(!labelSpecificRows.isNull(noteCol)){
+//                        note = labelSpecificRows.getString(noteCol);
+//                    }
+//
+//                    Label specificLabel = new Label(label_id, label_name, label_color, label_permanent);
+//                    Book specificBook = BookHelper.getBook(book_number);
+//                    String innerQuery = "SELECT verse , text FROM verses WHERE " +
+//                            "book_number = "+book_number+" AND " +
+//                            "chapter = "+chapter+" AND " +
+//                            "verse BETWEEN "+verseFrom+" AND "+verseTo+" " +
+//                            "ORDER BY book_number, chapter, verse";
+////                    if(verseFrom == verseTo){
+////                        innerQuery = "SELECT verse , text FROM verses WHERE book_number = ? AND chapter = ? ORDER BY book_number, chapter, verse";
+////                    } else {
+////                        innerQuery = "SELECT verse , text FROM verses WHERE book_number = ? AND chapter = ? ORDER BY book_number, chapter, verse";
+////                    }
+////                    Cursor innerCursor = this.getReadableDatabase().rawQuery(innerQuery, null);
+//                    Integer  indexIfInHistory = history.get(uuid);
+//                    Cursor innerCursor = BibleDBHelper.getInstance(context).openDataBaseNoHelper(BibleDBHelper.DB_NAME_BIBLE_CONTENT).rawQuery(innerQuery, null);
+//                    if (innerCursor.moveToFirst()) {
+//                        do{
+//                            int verseCol = innerCursor.getColumnIndex(BibleContracts.VersesContract.COL_VERSE);
+//                            int textCol = innerCursor.getColumnIndex(BibleContracts.VersesContract.COL_TEXT);
+//                            int verse = innerCursor.getInt(verseCol);
+//                            String text = innerCursor.getString(textCol).trim();
+//                            //if one verse only OR this is the first verse from the query results.
+//                            //therefore, we'll only create one VersesMarked object and then add to it the rest of the verses.
+//                            if ((verseFrom == verseTo || verseFrom == verse) && (indexIfInHistory == null)) {
+//                                VersesMarked innerVerseMarked = new VersesMarked(_id, uuid, specificBook, specificLabel, chapter, verse, text, note);
+//                                list.add(innerVerseMarked);
+//                                history.put(uuid, (list.size() - 1));//put this as seen and the index where inserted in HISTORY
+//                            } else {//if more than one verse and this is not the first verse
+//                                ((VersesMarked) list.get(history.get(uuid))).addToVerseTextDict(verse, text);
+//                            }
+//                        } while(innerCursor.moveToNext());
+//                    }
+//
+//                    labelSpecificRows.moveToNext();
+//                }
+//            }
+//            labelSpecificRows.close();
+//        } catch (Exception e) {
+//        }
+//        return results;
+//    }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
