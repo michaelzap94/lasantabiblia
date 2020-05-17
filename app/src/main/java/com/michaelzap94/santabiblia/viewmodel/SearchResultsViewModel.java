@@ -43,7 +43,12 @@ public class SearchResultsViewModel extends AndroidViewModel {
             //get data and populate the list
             protected Void doInBackground(String... args) {
                 Log.d(TAG, "doInBackground: " + args[0]);
-                ArrayList<SearchResult> results = BibleDBHelper.getInstance(getApplication()).searchInConcordanceOrDictionary(args[0], args[1]);
+                ArrayList<SearchResult> results = null;
+                if(args[1] == "bible") {
+                    results = BibleDBHelper.getInstance(getApplication()).searchInBible(args[0]);
+                } else {
+                    results = BibleDBHelper.getInstance(getApplication()).searchInConcordanceOrDictionary(args[0], args[1]);
+                }
                 Log.d(TAG, "doInBackground: result " + results.size());
                 searchResultsList.postValue(results);
                 loading.postValue(false);

@@ -44,7 +44,7 @@ public class BibleDBHelper {
     private Context myContext;
     String DB_PATH = null;
     String DB_NAME = null;
-    private SQLiteDatabase myDataBase;
+    private HashMap<String, SQLiteDatabase> existingDBs = new HashMap<>();
     private static BibleDBHelper dbHelperSingleton = null;
 
     public static synchronized BibleDBHelper getInstance(Context context) {
@@ -440,46 +440,57 @@ public class BibleDBHelper {
     }
 
     public SQLiteDatabase openDataBaseNoHelper(String db_name) throws SQLException {
-        String myPath = this.myContext.getDatabasePath(db_name).getPath();
-        if(myDataBase == null){
-            myDataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
-            return myDataBase;
+
+        //db connection exists(was openned) so reuse it
+        if(existingDBs.containsKey(db_name)){
+            return existingDBs.get(db_name);
         } else {
+            String myPath = this.myContext.getDatabasePath(db_name).getPath();
+            SQLiteDatabase myDataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
+            existingDBs.put(db_name, myDataBase);
             return myDataBase;
         }
+
+
     }
 
     //SEARCH IN BIBLE=================================================================================================
-//    public ArrayList<String[]> searchInBible(String input) {
-//        Log.d(TAG, "searchInBible: " + input);
-//        Log.d(TAG, "searchInBible: " + input.toUpperCase(Locale.getDefault()));
-//        Log.d(TAG, "searchInBible: " + input.toUpperCase());
-//        ArrayList<String[]> results = new ArrayList<>();
-//        int labelSpecificRowsCount;
-//        try {
-//            String query = "SELECT topic, definition FROM dictionary d " +
-//                    " WHERE REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(topic,'\u00C1','A'), '\u00C9','E'),'\u00CD','I'),'\u00D3','O'),'\u00DA','U'),'.',''),',',''),' ',''),':',''),';',''),'?',''),'\u00bf',''),'\u00a1',''),'!',''),'(',''),')','') " +
-//                    " LIKE '%" + input.toUpperCase(Locale.getDefault()) + "%' ORDER BY topic, definition";
-//            //String query = "SELECT * FROM dictionary WHERE topic LIKE '%" + input.toUpperCase() + "%' ORDER BY topic, definition COLLATE UNICODE";
-//            Log.d(TAG, "searchInBible: " + query);
-//            Cursor cursorResults = openDataBaseNoHelper(DB_NAME_BIBLE_CONCORDANCE).rawQuery(query, null);
-//            if (cursorResults.moveToFirst()) {
-//                labelSpecificRowsCount = cursorResults.getCount();
-//                for (int i = 0; i < labelSpecificRowsCount; i++) {
-//                    int topicCol = cursorResults.getColumnIndex("topic");
-//                    int defCol = cursorResults.getColumnIndex("definition");
-//                    String topic = cursorResults.getString(topicCol).trim();
-//                    String definition = cursorResults.getString(defCol).trim();
-//                    results.add(new String[]{topic, definition});
-//
-//                    cursorResults.moveToNext();
-//                }
-//            }
-//            cursorResults.close();
-//        } catch (Exception e) {
-//        }
-//        return results;
-//    }
+    public ArrayList<SearchResult> searchInBible(String input) {
+        Log.d(TAG, "searchInBible: " + input);
+        Log.d(TAG, "searchInBible: " + input.toUpperCase(Locale.getDefault()));
+        Log.d(TAG, "searchInBible: " + input.toUpperCase());
+        ArrayList<SearchResult> results = new ArrayList<>();
+        int innerCursorRowsCount;
+        try {
+            String query = "SELECT _id, book_number, chapter, verse, text FROM verses " +
+                    " WHERE REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(text,'\u00C1','A'), '\u00C9','E'),'\u00CD','I'),'\u00D3','O'),'\u00DA','U'),'\u00e1','a'), '\u00e9','e'),'\u00ed','i'),'\u00f3','o'),'\u00fa','u'),'.',''),':',''),';',''),'?',''),'\u00bf',''),'\u00a1',''),'!',''),'(',''),')','') " +
+                    " LIKE '%" + input.trim() + "%' ORDER BY book_number, chapter, verse";
+            Log.d(TAG, "searchInBible: " + query);
+            Cursor innerCursor = openDataBaseNoHelper(DB_NAME_BIBLE_CONTENT).rawQuery(query, null);
+            if (innerCursor.moveToFirst()) {
+                innerCursorRowsCount = innerCursor.getCount();
+                for (int i = 0; i < innerCursorRowsCount; i++) {
+                    int verse = innerCursor.getInt(innerCursor.getColumnIndex(BibleContracts.VersesContract.COL_VERSE));
+                    String text = innerCursor.getString(innerCursor.getColumnIndex(BibleContracts.VersesContract.COL_TEXT)).trim();
+                    int book_number = innerCursor.getInt(innerCursor.getColumnIndex(BibleContracts.VersesContract.COL_BOOK_ID));
+                    int chapter_number = innerCursor.getInt(innerCursor.getColumnIndex(BibleContracts.VersesContract.COL_CHAPTER));
+
+                    Spanned definitionSpanned;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        definitionSpanned = Html.fromHtml(text, Html.FROM_HTML_MODE_COMPACT);
+                    } else {
+                        definitionSpanned = Html.fromHtml(text);
+                    }
+                    results.add(new SearchResult(book_number, chapter_number, verse, definitionSpanned));
+
+                    innerCursor.moveToNext();
+                }
+            }
+            innerCursor.close();
+        } catch (Exception e) {
+        }
+        return results;
+    }
 
     //CONCORDANCE OR DICTIONARY========================================================================================
     public ArrayList<SearchResult> searchInConcordanceOrDictionary(String input, String type) {
@@ -487,12 +498,9 @@ public class BibleDBHelper {
         ArrayList<SearchResult> results = new ArrayList<>();
         int labelSpecificRowsCount;
         try {
-            String query = "SELECT _id, topic, definition FROM dictionary d " +
-                    " WHERE REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(topic,'\u00C1','A'), '\u00C9','E'),'\u00CD','I'),'\u00D3','O'),'\u00DA','U'),'.',''),':',''),';',''),'?',''),'\u00bf',''),'\u00a1',''),'!',''),'(',''),')','') " +
-                    " LIKE '%" + input.trim().toUpperCase() + "%' ORDER BY topic, definition";
-//            String query = "SELECT topic, definition FROM dictionary d " +
-//                    " WHERE REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(topic,'\u00C1','A'), '\u00C9','E'),'\u00CD','I'),'\u00D3','O'),'\u00DA','U'),'.',''),',',''),' ',''),':',''),';',''),'?',''),'\u00bf',''),'\u00a1',''),'!',''),'(',''),')','') " +
-//                    " LIKE '%" + input.toUpperCase() + "%' ORDER BY topic, definition";
+            String query = "SELECT _id, topic, definition FROM dictionary " +
+                    " WHERE REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(topic,'\u00C1','A'), '\u00C9','E'),'\u00CD','I'),'\u00D3','O'),'\u00DA','U'),'\u00e1','a'), '\u00e9','e'),'\u00ed','i'),'\u00f3','o'),'\u00fa','u'),'.',''),':',''),';',''),'?',''),'\u00bf',''),'\u00a1',''),'!',''),'(',''),')','') " +
+                    " LIKE '%" + input.trim() + "%' ORDER BY topic, definition";
             //String query = "SELECT * FROM dictionary WHERE topic LIKE '%" + input.toUpperCase() + "%' ORDER BY topic, definition COLLATE UNICODE";
             Cursor cursorResults = openDataBaseNoHelper(dbName).rawQuery(query, null);
             if (cursorResults.moveToFirst()) {
@@ -502,7 +510,7 @@ public class BibleDBHelper {
                     int topicCol = cursorResults.getColumnIndex("topic");
                     int defCol = cursorResults.getColumnIndex("definition");
                     int id = cursorResults.getInt(idCol);
-                    String topic = cursorResults.getString(topicCol).trim();
+                    String title = cursorResults.getString(topicCol).trim();
                     String definition = cursorResults.getString(defCol).trim();
 
                     Spanned definitionSpanned;
@@ -512,7 +520,7 @@ public class BibleDBHelper {
                         definitionSpanned = Html.fromHtml(definition);
                     }
 
-                    results.add(new SearchResult(id, topic, definitionSpanned));
+                    results.add(new SearchResult(id, title, definitionSpanned));
                     cursorResults.moveToNext();
                 }
             }
@@ -522,7 +530,4 @@ public class BibleDBHelper {
         return results;
     }
 
-    public Cursor query(String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy, String limit) {
-        return myDataBase.query(table, columns, selection, selectionArgs, groupBy, having, orderBy, limit);
-    }
 }

@@ -61,6 +61,10 @@ public class SearchResultsRecyclerView extends RecyclerView.Adapter<SearchResult
             txtView_title.setText(result.getTitle());
             txtView_content.setText(result.getContent());
 
+            if(result.getIsClickable()){
+
+            }
+
         }
     }
 }
