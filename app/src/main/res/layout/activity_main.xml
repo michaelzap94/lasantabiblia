@@ -19,24 +19,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Title, secondary and supporting text -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:paddingRight="8dp"
-                android:paddingLeft="8dp"
-                android:text="@string/home_last_seen_text"
-                android:textAppearance="?attr/textAppearanceHeadline6" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:background="@android:color/darker_gray" />
-
             <!-- Buttons -->
             <LinearLayout
                 android:layout_width="match_parent"
@@ -47,45 +29,61 @@
                 android:weightSum="2">
 
                 <com.google.android.material.button.MaterialButton
-                    style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:gravity="start"
-                    android:text="Salmos 2"
+                    android:gravity="center"
+                    android:text="1 Tesalonicenses 124"
+                    android:minHeight="0dp"
+                    android:minWidth="0dp"
+                    android:minLines="2"
+                    android:maxLines="2"
+                    android:textAllCaps="false"
+                    android:letterSpacing="0.0"
+                    app:iconPadding="1dp"
+                    android:paddingTop="1dp"
+                    android:paddingBottom="1dp"
+                    android:paddingRight="1dp"
+                    android:paddingLeft="2dp"
+                    app:elevation="2dp"
                     app:icon="@drawable/ic_bookmark"
-                    app:iconGravity="start" />
+                    app:iconGravity="start"
+                    app:strokeColor="?attr/colorOnSurface"
+                    app:strokeWidth="1dp" />
 
                 <com.google.android.material.button.MaterialButton
-                    style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                    app:strokeColor="?attr/colorOnSurface"
+                    app:strokeWidth="1dp"
+                    app:elevation="2dp"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:gravity="start"
-                    android:text="Juan 1"
+                    android:gravity="center"
+                    android:text="Juan 124"
+                    android:minHeight="0dp"
+                    android:minWidth="0dp"
+                    android:minLines="2"
+                    android:maxLines="2"
+                    android:textAllCaps="false"
+                    android:letterSpacing="0.0"
+                    app:iconPadding="1dp"
+                    android:paddingTop="1dp"
+                    android:paddingBottom="1dp"
+                    android:paddingRight="1dp"
+                    android:paddingLeft="2dp"
                     app:icon="@drawable/ic_eye"
                     app:iconGravity="start" />
             </LinearLayout>
-
-        </LinearLayout>
-
-    </com.google.android.material.card.MaterialCardView>
-
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/main_card_mem"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
+<!--            <View-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="0.5dp"-->
+<!--                android:layout_marginLeft="16dp"-->
+<!--                android:layout_marginRight="16dp"-->
+<!--                android:background="@android:color/darker_gray" />-->
             <com.google.android.material.button.MaterialButton
+                android:insetTop="0dp"
                 android:id="@+id/dash_new_button"
                 app:icon="@drawable/ic_add_circle_outline"
                 app:iconGravity="textStart"
@@ -95,28 +93,23 @@
                 app:elevation="2dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:text="To Learn" />
-<!--            <View-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="0.5dp"-->
-<!--                android:layout_marginLeft="16dp"-->
-<!--                android:layout_marginRight="16dp"-->
-<!--                android:background="@android:color/darker_gray" />-->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:padding="8dp"
-                android:text="Learned: 12/15"
-                android:textAppearance="?attr/textAppearanceHeadline6" />
+                android:layout_marginTop="0dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="Verses Learned" />
 
         </LinearLayout>
 
     </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="8dp"
+        android:text="Verses Marked To Learn: 12/15"
+        android:textAppearance="?attr/textAppearanceHeadline6" />
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/main_card_mem_viewpager"
