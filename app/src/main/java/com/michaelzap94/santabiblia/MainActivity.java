@@ -6,6 +6,7 @@ import androidx.viewpager.widget.ViewPager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.michaelzap94.santabiblia.adapters.MainCardViewPagerAdapter;
@@ -23,15 +24,17 @@ public class MainActivity extends BaseActivityTopDrawer  {
     private static final String TAG = "MainActivity";
     public static final String MY_PREFS_NAME = "MyPrefsFile";
     private BottomNavigationView bottomNavigationView;
+    private TextView main_card_mem_number;
 //    Integer[] colors = null;
     //    ArgbEvaluator argbEvaluator = new ArgbEvaluator();
-    ViewPager viewPager;
-    MainCardViewPagerAdapter mainCardViewPagerAdapter;
+    private ViewPager viewPager;
+    private MainCardViewPagerAdapter mainCardViewPagerAdapter;
     ///////////////////////////////////////////////////////////
     private final int label_id_memorize = 1;
     private ArrayList<VersesMarked> list = new ArrayList();
     private VersesMarkedViewModel viewModel;
     private ShadowTransformer mCardShadowTransformer;
+    int versesMarkedArrayListSize = 0;
     //==========================================================
 
     @Override
@@ -42,6 +45,7 @@ public class MainActivity extends BaseActivityTopDrawer  {
         CommonMethods.checkDatabaseExistLoad(MainActivity.this);
 
         //===================================================================================
+        main_card_mem_number = findViewById(R.id.main_card_mem_number);
         viewPager = findViewById(R.id.main_card_mem_viewpager);
         mainCardViewPagerAdapter = new MainCardViewPagerAdapter(list, this);
 
@@ -68,10 +72,10 @@ public class MainActivity extends BaseActivityTopDrawer  {
 //
 //        colors = colors_temp;
 
-//        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-//            @Override
-//            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-//
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                main_card_mem_number.setText((viewPager.getCurrentItem()+1)+"/"+versesMarkedArrayListSize);
 //                if (position < (adapter.getCount() -1) && position < (colors.length - 1)) {
 //                    viewPager.setBackgroundColor(
 //
@@ -86,18 +90,14 @@ public class MainActivity extends BaseActivityTopDrawer  {
 //                else {
 //                    viewPager.setBackgroundColor(colors[colors.length - 1]);
 //                }
-//            }
-//
-//            @Override
-//            public void onPageSelected(int position) {
-//
-//            }
-//
-//            @Override
-//            public void onPageScrollStateChanged(int state) {
-//
-//            }
-//        });
+            }
+            @Override
+            public void onPageSelected(int position) {
+            }
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
 
         //===================================================================================
         observerViewModel();
@@ -109,8 +109,10 @@ public class MainActivity extends BaseActivityTopDrawer  {
     private void observerViewModel() {
         viewModel.getUserMutableLiveData().observe(this, (versesMarkedArrayList) -> {
             Log.d(TAG, "observerViewModel: LABEL GOT DATA" + versesMarkedArrayList.size() + "in label: Mem");
+            versesMarkedArrayListSize = versesMarkedArrayList.size();
             //WHEN data is created  pass data and set it in the updateVersesMarkedViewPager VIEW
             mainCardViewPagerAdapter.updateVersesMarkedViewPager(versesMarkedArrayList);
+            main_card_mem_number.setText((viewPager.getCurrentItem()+1)+"/"+versesMarkedArrayListSize);
         });
     }
 
@@ -119,6 +121,7 @@ public class MainActivity extends BaseActivityTopDrawer  {
         super.onResume();
         bottomNavigationView.setSelectedItemId(R.id.bnav_home);
         viewModel.fetchData(label_id_memorize);//refresh -> load data
+        main_card_mem_number.setText((viewPager.getCurrentItem()+1)+"/"+versesMarkedArrayListSize);
     }
 
     @Override

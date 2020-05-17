@@ -102,14 +102,26 @@
 
     </com.google.android.material.card.MaterialCardView>
 
-    <TextView
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginTop="8dp"
-        android:text="Verses Marked To Learn: 12/15"
-        android:textAppearance="?attr/textAppearanceHeadline6" />
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Verses Marked To Learn: "
+            android:textAppearance="?attr/textAppearanceHeadline6" />
+        <TextView
+            android:id="@+id/main_card_mem_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textAppearance="?attr/textAppearanceSubtitle1"/>
+    </LinearLayout>
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/main_card_mem_viewpager"

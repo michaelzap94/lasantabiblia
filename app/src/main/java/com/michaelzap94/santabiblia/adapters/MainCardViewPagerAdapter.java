@@ -87,12 +87,12 @@ public class MainCardViewPagerAdapter extends PagerAdapter  implements CardAdapt
     @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, final int position) {
+        Log.d(TAG, "newadapter instantiateItem: " + position);
+
         layoutInflater = LayoutInflater.from(context);
         View view = layoutInflater.inflate(R.layout.main_mem_cardview, container, false);
-
         bind(mainCardContents.get(position), view);
         container.addView(view, 0);
-        Log.d(TAG, "newadapter instantiateItem: " + position);
 
         MaterialCardView cardView = (MaterialCardView) view.findViewById(R.id.main_card_mem_cardview);
 
