@@ -22,6 +22,10 @@
             android:label="@string/settings"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity
+            android:name=".LanguageChangeLoader"
+            android:label="@string/title_activity_language_change_loader"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".Dashboard"
             android:label="@string/dashboard" />
         <activity

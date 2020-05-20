@@ -3,6 +3,13 @@
     <string name="preferences">Preferences</string>
     <string name="bible_exist">Bible Exist</string>
 
+    <string name="lang_es" translatable="false">Spanish</string>
+    <string name="lang_en" translatable="false">English</string>
+    <string name="flag_menu" translatable="false">Flag</string>
+    <string name="title_activity_language_change_loader" translatable="false">LanguageChangeLoader</string>
+    <string name="success_lang_change">Success! Let\'s go.</string>
+
+
     <string name="chapter_old">ANTIGUO</string>
     <string name="chapter_new">NUEVO</string>
     <string name="chapter_labels">ETIQUETAS</string>

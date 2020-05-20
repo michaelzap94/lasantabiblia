@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MyChurch</string>
+    <string name="manager">Manager</string>
+    <string name="member">Miembro</string>
+    <string name="register">Registra tu Iglesia</string>
+    <string name="password">Contraseña</string>
+    <string name="username">Usuario/Email</string>
+    <string name="login_btn">iniciar sesion</string>
+    <string name="forgot_password">Olvidaste tu contraseña?</string>
+    <string name="back_button">Volver</string>
+    <string name="success_lang_change">Exito! Vamos alla.</string>
+    <string name="dashboard">Panel</string>
+    <string name="members">Miembros</string>
+    <string name="messages">Mensajes</string>
+    <string name="about">Sobre</string>
+    <string name="polls">Votación</string>
+    <string name="settings">Ajustes</string>
+</resources>

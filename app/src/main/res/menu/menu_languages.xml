@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:title="@string/flag_menu"
+        app:showAsAction="always" >
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/lang_es"
+                    android:icon="@drawable/flag_es"
+                    android:title="@string/lang_es" />
+                <item
+                    android:id="@+id/lang_en"
+                    android:icon="@drawable/flag_gb"
+                    android:title="@string/lang_en"
+                    />
+            </group>
+        </menu>
+    </item>
+</menu>
