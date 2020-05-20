@@ -36,6 +36,8 @@ public class CommonMethods {
     public static final String BIBLE_EXIST = "Bible_exist";
     public static final String CHAPTER_BOOKMARKED = "CHAPTER_BOOKMARKED";
     public static final String BOOK_BOOKMARKED = "BOOK_BOOKMARKED";
+    public static final String CHAPTER_LASTSEEN = "CHAPTER_LASTSEEN";
+    public static final String BOOK_LASTSEEN = "BOOK_LASTSEEN";
     public static void checkDatabaseExistLoad(Context context){
 
         SharedPreferences prefs = context.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
@@ -51,6 +53,28 @@ public class CommonMethods {
             } catch (Exception e){
             }
         }
+    }
+    public static void setBookmark(Object object, int book_number, int chapter_number){
+        SharedPreferences.Editor editor;
+        if(object instanceof SharedPreferences){
+            editor = ((SharedPreferences) object).edit();
+        } else {
+            editor = ((Context) object).getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+        }
+        editor.putInt(BOOK_BOOKMARKED, book_number);
+        editor.putInt(CHAPTER_BOOKMARKED, chapter_number);
+        editor.apply();
+    }
+    public static void setLastSeen(Object object, int book_number, int chapter_number){
+        SharedPreferences.Editor editor;
+        if(object instanceof SharedPreferences){
+            editor = ((SharedPreferences) object).edit();
+        } else {
+            editor = ((Context) object).getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+        }
+        editor.putInt(BOOK_LASTSEEN, book_number);
+        editor.putInt(CHAPTER_LASTSEEN, chapter_number);
+        editor.apply();
     }
     private static boolean loadBibles(Context context) throws ExecutionException, InterruptedException {
         return new ImportBibles().execute(context).get();
@@ -69,7 +93,6 @@ public class CommonMethods {
             return success;
         }
     }
-
     public static void bottomBarActionHandler(BottomNavigationView bottomNavigationView, final int itemId, final AppCompatActivity activity){
         //Set item selected
         bottomNavigationView.setSelectedItemId(itemId);
@@ -109,7 +132,6 @@ public class CommonMethods {
             }
         });
     }
-
     public static void copyText(Context context, String title, String text){
         String content = title + "\n" + text;
         ((ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE)).setPrimaryClip(ClipData.newPlainText("Bible content", content));

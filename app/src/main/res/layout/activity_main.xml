@@ -29,12 +29,13 @@
                 android:weightSum="2">
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/bookmark_button"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="1 Tesalonicenses 124"
+                    android:text="None"
                     android:minHeight="0dp"
                     android:minWidth="0dp"
                     android:minLines="2"
@@ -53,6 +54,7 @@
                     app:strokeWidth="1dp" />
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/last_seen_button"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
                     app:strokeColor="?attr/colorOnSurface"
                     app:strokeWidth="1dp"
@@ -61,7 +63,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="Juan 124"
+                    android:text="None"
                     android:minHeight="0dp"
                     android:minWidth="0dp"
                     android:minLines="2"

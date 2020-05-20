@@ -207,9 +207,9 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        SharedPreferences prefs = getActivity().getSharedPreferences(CommonMethods.MY_PREFS_NAME, MODE_PRIVATE);
-        int chapter_bookmarked = prefs.getInt(CommonMethods.CHAPTER_BOOKMARKED, -1);
+        SharedPreferences prefs = mActivity.getSharedPreferences(CommonMethods.MY_PREFS_NAME, MODE_PRIVATE);
         int book_bookmarked = prefs.getInt(CommonMethods.BOOK_BOOKMARKED, -1);
+        int chapter_bookmarked = prefs.getInt(CommonMethods.CHAPTER_BOOKMARKED, -1);
         MenuItem item = menu.add(Menu.NONE, 1, Menu.NONE, "Bookmark");
         if((chapter_bookmarked != -1 && book_bookmarked != -1) && (chapter_bookmarked == chapter_number && book_bookmarked == book_number)){
             item.setIcon(R.drawable.ic_bookmarked);
@@ -225,11 +225,11 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
                 int book_bookmarked = prefs.getInt(CommonMethods.BOOK_BOOKMARKED, -1);
                 Log.d(TAG, "onMenuItemClick: chapter_bookmarked: " + chapter_bookmarked + " book_bookmarked: " + book_bookmarked);
                 if((chapter_bookmarked != -1 && book_bookmarked != -1) && (chapter_bookmarked == chapter_number && book_bookmarked == book_number)) {
-                    bookmarkHelper(prefs, -1, -1);
+                    CommonMethods.setBookmark(prefs, -1, -1);
                     item.setIcon(R.drawable.ic_notbookmarked);
                 } else {
                     //when clicked it was not bookmarked, so bookmark it
-                    bookmarkHelper(prefs, chapter_number, book_number);
+                    CommonMethods.setBookmark(prefs, book_number, chapter_number);
                     item.setIcon(R.drawable.ic_bookmarked);
                 }
                 return true;
@@ -238,13 +238,7 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    public void bookmarkHelper(SharedPreferences prefs, int chapter_number, int book_number){
-        //when clicked it was not bookmarked, so bookmark it
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putInt(CommonMethods.CHAPTER_BOOKMARKED, chapter_number);
-        editor.putInt(CommonMethods.BOOK_BOOKMARKED, book_number);
-        editor.apply();
-    }
+
 
 //    @Override
 //    public boolean onOptionsItemSelected(MenuItem item) {

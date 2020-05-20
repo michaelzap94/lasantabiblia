@@ -123,6 +123,12 @@ public class Bible extends BaseActivityTopDrawer{
         bottomNavigationView.setSelectedItemId(R.id.bnav_bible);
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        CommonMethods.setLastSeen(this, this.book_number, this.viewPager.getCurrentItem() + 1);
+    }
+
     public void openChapterSelector() {
         LayoutInflater inflater = this.getLayoutInflater();
         // Dialog layout

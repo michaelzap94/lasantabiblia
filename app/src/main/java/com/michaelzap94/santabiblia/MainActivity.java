@@ -4,15 +4,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.button.MaterialButton;
 import com.michaelzap94.santabiblia.adapters.MainCardViewPagerAdapter;
 import com.michaelzap94.santabiblia.adapters.VersesMarkedRecyclerViewAdapter;
+import com.michaelzap94.santabiblia.models.Book;
 import com.michaelzap94.santabiblia.models.MainCardContent;
 import com.michaelzap94.santabiblia.models.VersesMarked;
+import com.michaelzap94.santabiblia.utilities.BookHelper;
 import com.michaelzap94.santabiblia.utilities.CommonMethods;
 import com.michaelzap94.santabiblia.utilities.ShadowTransformer;
 import com.michaelzap94.santabiblia.viewmodel.VersesMarkedViewModel;
@@ -34,6 +38,8 @@ public class MainActivity extends BaseActivityTopDrawer  {
     private ArrayList<VersesMarked> list = new ArrayList();
     private VersesMarkedViewModel viewModel;
     private ShadowTransformer mCardShadowTransformer;
+    private MaterialButton bookmark_button;
+    private MaterialButton last_seen_button;
     int versesMarkedArrayListSize = 0;
     //==========================================================
 
@@ -43,12 +49,14 @@ public class MainActivity extends BaseActivityTopDrawer  {
 //        super.onCreate(savedInstanceState);
 //        setContentView(R.layout.activity_main);
         CommonMethods.checkDatabaseExistLoad(MainActivity.this);
-
-        //===================================================================================
+        //INIT VIEWS===================================================================================
         main_card_mem_number = findViewById(R.id.main_card_mem_number);
         viewPager = findViewById(R.id.main_card_mem_viewpager);
-        mainCardViewPagerAdapter = new MainCardViewPagerAdapter(list, this);
+        bookmark_button = findViewById(R.id.bookmark_button);
+        last_seen_button = findViewById(R.id.last_seen_button);
 
+
+        mainCardViewPagerAdapter = new MainCardViewPagerAdapter(list, this);
         viewModel = new ViewModelProvider(this).get(VersesMarkedViewModel.class);
         //Use when we need to reload data
         viewModel.fetchData(label_id_memorize);//refresh -> load data
@@ -116,12 +124,39 @@ public class MainActivity extends BaseActivityTopDrawer  {
         });
     }
 
+
+    @Override
+    protected void onStart() {
+        Log.d(TAG, "onStart: ");
+        super.onStart();
+    }
+
     @Override
     protected void onResume() {
+        Log.d(TAG, "onResume: ");
         super.onResume();
         bottomNavigationView.setSelectedItemId(R.id.bnav_home);
         viewModel.fetchData(label_id_memorize);//refresh -> load data
-//        main_card_mem_number.setText((viewPager.getCurrentItem()+1)+"/"+versesMarkedArrayListSize);
+        //INIT BUTTONS LAST SEEN AND BOOKMARK=================================================================================
+        SharedPreferences prefs = getSharedPreferences(CommonMethods.MY_PREFS_NAME, MODE_PRIVATE);
+        int book_bookmarked = prefs.getInt(CommonMethods.BOOK_BOOKMARKED, -1);
+        int chapter_bookmarked = prefs.getInt(CommonMethods.CHAPTER_BOOKMARKED, -1);
+        if(chapter_bookmarked != -1 && book_bookmarked != -1) {
+            String book = BookHelper.getBook(book_bookmarked).getName();
+            bookmark_button.setText(book + " " + chapter_bookmarked);
+        } else {
+            bookmark_button.setText("None");
+        }
+
+        int book_lastseen = prefs.getInt(CommonMethods.BOOK_LASTSEEN, -1);
+        int chapter_lastseen = prefs.getInt(CommonMethods.CHAPTER_LASTSEEN, -1);
+        if(chapter_lastseen != -1 && book_lastseen != -1) {
+            String book = BookHelper.getBook(book_lastseen).getName();
+            last_seen_button.setText(book + " " + chapter_lastseen);
+        } else {
+            last_seen_button.setText("None");
+        }
+        //=================================================================================
     }
 
     @Override
