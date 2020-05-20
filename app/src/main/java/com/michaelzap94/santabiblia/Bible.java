@@ -79,31 +79,27 @@ public class Bible extends BaseActivityTopDrawer{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState, R.layout.activity_bible);
         Log.d(TAG, "onCreate: CLICK ");
+        //init views====================================================
+        this.viewPager = (ViewPager) findViewById(R.id.pager_view_chapters);
+        this.viewPager.setOffscreenPageLimit(1);
 
         Bundle extras = getIntent().getExtras();
+        Log.d(TAG, "onCreate: BEFORE");
         if (extras != null) {
+
             this.book_number = extras.getInt("book");
             this.chapter_number = extras.getInt("chapter");
             this.verse_number = extras.getInt("verse");
+            Log.d(TAG, "onCreate: AFTER " + this.book_number + " " + this.chapter_number);
             Book libro = BookHelper.getBook(this.book_number);
             if (libro != null) {
                 this.bookName = libro.getName();
                 this.totalChapters = libro.getNumCap();
                 setTitle(this.bookName);
             }
+            setBibleState();
         }
-        this.viewPager = (ViewPager) findViewById(R.id.pager_view_chapters);
-        this.viewPager.setOffscreenPageLimit(1);
-        this.adapter = new VersesPagerAdapter(getSupportFragmentManager(), this.book_number, this.chapter_number, this.verse_number, this.totalChapters);
-        viewPager.setAdapter(this.adapter);
-//        this.tabLayout = (TabLayout) findViewById(R.id.tabs_chapters);
-//        this.tabLayout.setupWithViewPager(this.viewPager);
 
-        if (savedInstanceState != null) {
-            //this.viewPager.onRestoreInstanceState(savedInstanceState.getParcelable("vp"));
-        } else {
-            this.viewPager.setCurrentItem(this.chapter_number - 1);
-        }
 
         fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -117,10 +113,43 @@ public class Bible extends BaseActivityTopDrawer{
         CommonMethods.bottomBarActionHandler(bottomNavigationView, R.id.bnav_bible, Bible.this);
     }
 
+    private void setBibleState(){
+        this.adapter = new VersesPagerAdapter(getSupportFragmentManager(), this.book_number, this.chapter_number, this.verse_number, this.totalChapters);
+        viewPager.setAdapter(this.adapter);
+//        this.tabLayout = (TabLayout) findViewById(R.id.tabs_chapters);
+//        this.tabLayout.setupWithViewPager(this.viewPager);
+
+//        if (savedInstanceState != null) {
+//            //this.viewPager.onRestoreInstanceState(savedInstanceState.getParcelable("vp"));
+//        } else {
+            this.viewPager.setCurrentItem(this.chapter_number - 1);
+//        }
+    }
+
+
     @Override
     protected void onResume() {
         super.onResume();
         bottomNavigationView.setSelectedItemId(R.id.bnav_bible);
+
+//        Bundle extras = getIntent().getExtras();
+//        Log.d(TAG, "onResume: BEFORE");
+
+//        if (extras != null) {
+//            if(extras.getBoolean("resetstate")) {
+//                this.book_number = extras.getInt("book");
+//                this.chapter_number = extras.getInt("chapter");
+//                this.verse_number = extras.getInt("verse");
+//                Log.d(TAG, "onResume: AFTER " + this.book_number + " " + this.chapter_number);
+//                Book libro = BookHelper.getBook(this.book_number);
+//                if (libro != null) {
+//                    this.bookName = libro.getName();
+//                    this.totalChapters = libro.getNumCap();
+//                    setTitle(this.bookName);
+//                }
+//                setBibleState();
+//            }
+//        }
     }
 
     @Override
@@ -156,6 +185,23 @@ public class Bible extends BaseActivityTopDrawer{
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         overridePendingTransition(0, 0);
+        Bundle extras = intent.getExtras();
+        if (extras != null) {
+            Log.d(TAG, "onNewIntent:    before: " + extras.getBoolean("resetstate"));
+            if(extras.getBoolean("resetstate")){
+                this.book_number = extras.getInt("book");
+                this.chapter_number = extras.getInt("chapter");
+                this.verse_number = extras.getInt("verse");
+                Log.d(TAG, "onNewIntent: AFTER " + this.book_number + " " + this.chapter_number);
+                Book libro = BookHelper.getBook(this.book_number);
+                if (libro != null) {
+                    this.bookName = libro.getName();
+                    this.totalChapters = libro.getNumCap();
+                    setTitle(this.bookName);
+                }
+                setBibleState();
+            }
+        }
     }
 
     @Override

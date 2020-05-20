@@ -190,15 +190,17 @@ public class MainActivity extends BaseActivityTopDrawer  {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         overridePendingTransition(0, 0);
+
     }
 
     protected void goToBible(int book, int chapter){
         if(book != -1 && chapter != -1){
             Intent myIntent = new Intent(MainActivity.this, Bible.class);
-            myIntent.setFlags(FLAG_ACTIVITY_CLEAR_TOP);
+            myIntent.setFlags(FLAG_ACTIVITY_REORDER_TO_FRONT);
             myIntent.putExtra("book", book);
             myIntent.putExtra("chapter", chapter);
             myIntent.putExtra("verse", 0);
+            myIntent.putExtra("resetstate", true);
             startActivity(myIntent);
             overridePendingTransition(0,0);
         }
