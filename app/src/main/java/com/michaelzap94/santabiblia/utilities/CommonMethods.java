@@ -34,7 +34,8 @@ import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
 public class CommonMethods {
     public static final String MY_PREFS_NAME = "MyPrefsFile";
     public static final String BIBLE_EXIST = "Bible_exist";
-
+    public static final String CHAPTER_BOOKMARKED = "CHAPTER_BOOKMARKED";
+    public static final String BOOK_BOOKMARKED = "BOOK_BOOKMARKED";
     public static void checkDatabaseExistLoad(Context context){
 
         SharedPreferences prefs = context.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);

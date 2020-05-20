@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -12,6 +13,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,11 +50,14 @@ import com.michaelzap94.santabiblia.models.Book;
 import com.michaelzap94.santabiblia.models.Label;
 import com.michaelzap94.santabiblia.models.Verse;
 import com.michaelzap94.santabiblia.utilities.BookHelper;
+import com.michaelzap94.santabiblia.utilities.CommonMethods;
 import com.michaelzap94.santabiblia.utilities.RecyclerItemClickListener;
 import com.michaelzap94.santabiblia.viewmodel.VersesViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class VersesFragment extends Fragment implements RecyclerItemClickListener.OnRecyclerClickListener {
     private static final String TAG = "VersesFragment";
@@ -94,6 +99,7 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         mActivity = getActivity();
         this.book_number = getArguments().getInt("book");
         this.chapter_number = getArguments().getInt("chapter");
@@ -198,6 +204,60 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
         observerViewModel();
 
     }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        SharedPreferences prefs = getActivity().getSharedPreferences(CommonMethods.MY_PREFS_NAME, MODE_PRIVATE);
+        int chapter_bookmarked = prefs.getInt(CommonMethods.CHAPTER_BOOKMARKED, -1);
+        int book_bookmarked = prefs.getInt(CommonMethods.BOOK_BOOKMARKED, -1);
+        MenuItem item = menu.add(Menu.NONE, 1, Menu.NONE, "Bookmark");
+        if((chapter_bookmarked != -1 && book_bookmarked != -1) && (chapter_bookmarked == chapter_number && book_bookmarked == book_number)){
+            item.setIcon(R.drawable.ic_bookmarked);
+        } else {
+            item.setIcon(R.drawable.ic_notbookmarked);
+        }
+        item.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        item.setOnMenuItemClickListener (new MenuItem.OnMenuItemClickListener(){
+            @Override
+            public boolean onMenuItemClick (MenuItem item){
+                Log.d(TAG, "onMenuItemClick: " + item.getIcon().toString());
+                int chapter_bookmarked = prefs.getInt(CommonMethods.CHAPTER_BOOKMARKED, -1);
+                int book_bookmarked = prefs.getInt(CommonMethods.BOOK_BOOKMARKED, -1);
+                Log.d(TAG, "onMenuItemClick: chapter_bookmarked: " + chapter_bookmarked + " book_bookmarked: " + book_bookmarked);
+                if((chapter_bookmarked != -1 && book_bookmarked != -1) && (chapter_bookmarked == chapter_number && book_bookmarked == book_number)) {
+                    bookmarkHelper(prefs, -1, -1);
+                    item.setIcon(R.drawable.ic_notbookmarked);
+                } else {
+                    //when clicked it was not bookmarked, so bookmark it
+                    bookmarkHelper(prefs, chapter_number, book_number);
+                    item.setIcon(R.drawable.ic_bookmarked);
+                }
+                return true;
+            }
+        });
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    public void bookmarkHelper(SharedPreferences prefs, int chapter_number, int book_number){
+        //when clicked it was not bookmarked, so bookmark it
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(CommonMethods.CHAPTER_BOOKMARKED, chapter_number);
+        editor.putInt(CommonMethods.BOOK_BOOKMARKED, book_number);
+        editor.apply();
+    }
+
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        Log.d(TAG, "onOptionsItemSelected: " + item.getItemId());
+//        // Handle item selection
+//        switch (item.getItemId()) {
+//            case R.id.dash_label_menu_edit:
+//                goToEdit();
+//                return true;
+//            default:
+//                return super.onOptionsItemSelected(item);
+//        }
+//    }
 
     @Override
     public void onResume() {

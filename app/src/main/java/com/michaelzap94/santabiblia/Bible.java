@@ -109,7 +109,7 @@ public class Bible extends BaseActivityTopDrawer{
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openDialog2();
+                openChapterSelector();
             }
         });
 
@@ -123,7 +123,7 @@ public class Bible extends BaseActivityTopDrawer{
         bottomNavigationView.setSelectedItemId(R.id.bnav_bible);
     }
 
-    public void openDialog2() {
+    public void openChapterSelector() {
         LayoutInflater inflater = this.getLayoutInflater();
         // Dialog layout
         View v = inflater.inflate(R.layout.dialog_chapters_grid, null);
