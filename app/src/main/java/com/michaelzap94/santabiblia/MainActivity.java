@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -23,6 +24,9 @@ import com.michaelzap94.santabiblia.viewmodel.VersesMarkedViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP;
+import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
 
 public class MainActivity extends BaseActivityTopDrawer  {
     private static final String TAG = "MainActivity";
@@ -41,7 +45,27 @@ public class MainActivity extends BaseActivityTopDrawer  {
     private MaterialButton bookmark_button;
     private MaterialButton last_seen_button;
     int versesMarkedArrayListSize = 0;
-    //==========================================================
+    //INIT BUTTON VALUES==========================================================
+    int book_bookmarked = -1;
+    int chapter_bookmarked = -1;
+    int book_lastseen = -1;
+    int chapter_lastseen = -1;
+    View.OnClickListener mClickListener = new View.OnClickListener(){
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()){
+                case R.id.last_seen_button:
+                    Log.d(TAG, "onClick: last_seen_button: " + book_lastseen + " " + chapter_lastseen);
+                    goToBible(book_lastseen, chapter_lastseen);
+                    break;
+                case R.id.bookmark_button:
+                    Log.d(TAG, "onClick: bookmark_button: " + book_bookmarked + " " + chapter_bookmarked);
+                    goToBible(book_bookmarked, chapter_bookmarked);
+                    break;
+                default: break;
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +78,9 @@ public class MainActivity extends BaseActivityTopDrawer  {
         viewPager = findViewById(R.id.main_card_mem_viewpager);
         bookmark_button = findViewById(R.id.bookmark_button);
         last_seen_button = findViewById(R.id.last_seen_button);
-
+        //BUTTON LISTENER=============================================================================
+        bookmark_button.setOnClickListener(mClickListener);
+        last_seen_button.setOnClickListener(mClickListener);
 
         mainCardViewPagerAdapter = new MainCardViewPagerAdapter(list, this);
         viewModel = new ViewModelProvider(this).get(VersesMarkedViewModel.class);
@@ -124,13 +150,6 @@ public class MainActivity extends BaseActivityTopDrawer  {
         });
     }
 
-
-    @Override
-    protected void onStart() {
-        Log.d(TAG, "onStart: ");
-        super.onStart();
-    }
-
     @Override
     protected void onResume() {
         Log.d(TAG, "onResume: ");
@@ -139,22 +158,26 @@ public class MainActivity extends BaseActivityTopDrawer  {
         viewModel.fetchData(label_id_memorize);//refresh -> load data
         //INIT BUTTONS LAST SEEN AND BOOKMARK=================================================================================
         SharedPreferences prefs = getSharedPreferences(CommonMethods.MY_PREFS_NAME, MODE_PRIVATE);
-        int book_bookmarked = prefs.getInt(CommonMethods.BOOK_BOOKMARKED, -1);
-        int chapter_bookmarked = prefs.getInt(CommonMethods.CHAPTER_BOOKMARKED, -1);
+        book_bookmarked = prefs.getInt(CommonMethods.BOOK_BOOKMARKED, -1);
+        chapter_bookmarked = prefs.getInt(CommonMethods.CHAPTER_BOOKMARKED, -1);
         if(chapter_bookmarked != -1 && book_bookmarked != -1) {
             String book = BookHelper.getBook(book_bookmarked).getName();
             bookmark_button.setText(book + " " + chapter_bookmarked);
+            bookmark_button.setEnabled(true);
         } else {
             bookmark_button.setText("None");
+            bookmark_button.setEnabled(false);
         }
 
-        int book_lastseen = prefs.getInt(CommonMethods.BOOK_LASTSEEN, -1);
-        int chapter_lastseen = prefs.getInt(CommonMethods.CHAPTER_LASTSEEN, -1);
+        book_lastseen = prefs.getInt(CommonMethods.BOOK_LASTSEEN, -1);
+        chapter_lastseen = prefs.getInt(CommonMethods.CHAPTER_LASTSEEN, -1);
         if(chapter_lastseen != -1 && book_lastseen != -1) {
             String book = BookHelper.getBook(book_lastseen).getName();
             last_seen_button.setText(book + " " + chapter_lastseen);
+            bookmark_button.setEnabled(true);
         } else {
             last_seen_button.setText("None");
+            bookmark_button.setEnabled(false);
         }
         //=================================================================================
     }
@@ -167,5 +190,17 @@ public class MainActivity extends BaseActivityTopDrawer  {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         overridePendingTransition(0, 0);
+    }
+
+    protected void goToBible(int book, int chapter){
+        if(book != -1 && chapter != -1){
+            Intent myIntent = new Intent(MainActivity.this, Bible.class);
+            myIntent.setFlags(FLAG_ACTIVITY_CLEAR_TOP);
+            myIntent.putExtra("book", book);
+            myIntent.putExtra("chapter", chapter);
+            myIntent.putExtra("verse", 0);
+            startActivity(myIntent);
+            overridePendingTransition(0,0);
+        }
     }
 }
