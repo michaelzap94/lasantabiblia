@@ -44,20 +44,6 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-//        sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-//        flagInSharedPref = sp.getString(FLAG_LANG, "");
-//
-//        if (!flagInSharedPref.equals("")) {
-//            Locale locale = new Locale(flagInSharedPref);
-//            Locale.setDefault(locale);
-//            Configuration config = new Configuration();
-//            config.locale = locale;
-//            getBaseContext().getResources().updateConfiguration(config,
-//                    getBaseContext().getResources().getDisplayMetrics());
-//
-//        }
-
         setContentView(R.layout.activity_settings);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
