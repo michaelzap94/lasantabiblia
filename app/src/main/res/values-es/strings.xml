@@ -1,19 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">MyChurch</string>
-    <string name="manager">Manager</string>
-    <string name="member">Miembro</string>
-    <string name="register">Registra tu Iglesia</string>
-    <string name="password">Contraseña</string>
-    <string name="username">Usuario/Email</string>
-    <string name="login_btn">iniciar sesion</string>
-    <string name="forgot_password">Olvidaste tu contraseña?</string>
-    <string name="back_button">Volver</string>
+    <string name="app_name">La Santa Biblia</string>
+    <string name="preferences">Preferencias</string>
+    <string name="bible_exist">Biblia Existe</string>
+
+    <!--    Titles-->
+    <string name="home">Casa</string>
+    <string name="search">Buscar</string>
+    <string name="dashboard">Escritorio</string>
+    <string name="settings">Ajustes</string>
+    <string name="bible">Biblia</string>
+
+    <string name="chapter_old">OLD.TEST</string>
+    <string name="chapter_new">NEW.TEST</string>
+    <string name="chapter_labels">ETIQUETAS</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="search_card_conc_title">Concordancia</string>
+    <string name="search_card_conc_desc">Find the concordances</string>
+    <string name="cardimage">Image</string>
+    <string name="search_card_dict_title">Dictionario</string>
     <string name="success_lang_change">Exito! Vamos alla.</string>
-    <string name="dashboard">Panel</string>
-    <string name="members">Miembros</string>
+
     <string name="messages">Mensajes</string>
     <string name="about">Sobre</string>
     <string name="polls">Votación</string>
-    <string name="settings">Ajustes</string>
 </resources>

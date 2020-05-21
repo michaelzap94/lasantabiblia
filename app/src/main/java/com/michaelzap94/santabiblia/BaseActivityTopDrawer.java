@@ -3,9 +3,14 @@ package com.michaelzap94.santabiblia;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -24,6 +29,8 @@ import com.michaelzap94.santabiblia.fragments.ui.tabBooks.BooksPagerAdapter;
 import com.michaelzap94.santabiblia.models.Book;
 import com.michaelzap94.santabiblia.utilities.BookHelper;
 
+import java.util.Locale;
+
 import static android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP;
 
 public abstract class BaseActivityTopDrawer extends AppCompatActivity {
@@ -35,8 +42,26 @@ public abstract class BaseActivityTopDrawer extends AppCompatActivity {
     private TabLayout tabsBooks;
     private Toolbar toolbar;
 
+    //FLAGS==========================
+    static final String FLAG_LANG = "Lang";
+    private String flagInSharedPref;
+    private SharedPreferences sp;
+
     protected void onCreate(Bundle savedInstanceState, int contentView) {
         super.onCreate(savedInstanceState);
+        //SET INITIAL LANGUAGE==============================================================
+        sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        flagInSharedPref = sp.getString(FLAG_LANG, "");
+        if (!flagInSharedPref.equals("")) {
+            Locale locale = new Locale(flagInSharedPref);
+            Locale.setDefault(locale);
+            Configuration config = new Configuration();
+            config.locale = locale;
+            getBaseContext().getResources().updateConfiguration(config,
+                    getBaseContext().getResources().getDisplayMetrics());
+        }
+        //======================================================================================
+
         setContentView(contentView);
         toolbar = findViewById(R.id.toolbar_books);
         setSupportActionBar(toolbar);

@@ -2,19 +2,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/bnav_home"
-        android:title="Home"
+        android:title="@string/home"
         android:icon="@drawable/ic_home"></item>
     <item
         android:id="@+id/bnav_dashboard"
-        android:title="Dashboard"
+        android:title="@string/dashboard"
         android:icon="@drawable/ic_dashboard"></item>
     <item
         android:id="@+id/bnav_bible"
-        android:title="Bible"
+        android:title="@string/bible"
         android:icon="@drawable/ic_library_books"></item>
     <item
         android:id="@+id/bnav_search"
-        android:title="Bible"
+        android:title="@string/search"
         android:icon="@drawable/ic_search"></item>
     <item
         android:id="@+id/bnav_settings"

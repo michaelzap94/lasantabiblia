@@ -44,6 +44,20 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+//        sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+//        flagInSharedPref = sp.getString(FLAG_LANG, "");
+//
+//        if (!flagInSharedPref.equals("")) {
+//            Locale locale = new Locale(flagInSharedPref);
+//            Locale.setDefault(locale);
+//            Configuration config = new Configuration();
+//            config.locale = locale;
+//            getBaseContext().getResources().updateConfiguration(config,
+//                    getBaseContext().getResources().getDisplayMetrics());
+//
+//        }
+
         setContentView(R.layout.activity_settings);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -52,9 +66,7 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
         //FLAGS================================================================================
         sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         flagInSharedPref = sp.getString(FLAG_LANG, "");
-//        if(flagInSharedPref.length()>0){
-//            setLocale(flagInSharedPref);
-//        }
+
         flag_gb = ContextCompat.getDrawable(getApplicationContext(),R.drawable.flag_gb);
         flag_es = ContextCompat.getDrawable(getApplicationContext(),R.drawable.flag_es);
         //=====================================================================================
@@ -193,6 +205,7 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
     private void setLocale(String lang) {
         //change language files===================
         Locale myLocale = new Locale(lang);
+        Locale.setDefault(myLocale);
         Resources res = getResources();
         DisplayMetrics dm = res.getDisplayMetrics();
         Configuration conf = res.getConfiguration();
