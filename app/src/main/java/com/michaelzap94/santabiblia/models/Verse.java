@@ -15,6 +15,8 @@ import android.util.TypedValue;
 
 import com.michaelzap94.santabiblia.R;
 
+import java.util.ArrayList;
+
 public class Verse implements Parcelable {
     public static final Creator<Verse> CREATOR = new Creator<Verse>() {
         public Verse createFromParcel(Parcel in) {
@@ -36,35 +38,36 @@ public class Verse implements Parcelable {
     protected String textTitle;
     protected Spanned textSpanned;
     protected SpannableString ssTextVerse;
+    protected ArrayList<Label> listOfLabels;
 
-    public Verse(int book_number, int chapter_number, int verse, Spanned text, SpannableString ssTextVerse, String textTitle, int is_fav) {
+    public Verse(int book_number, int chapter_number, int verse, Spanned text, SpannableString ssTextVerse, String textTitle, ArrayList<Label> listOfLabels) {
         this.book_number = book_number;
         this.chapter_number = chapter_number;
         this.verse = verse;
         //this.text = text;
         this.textSpanned = text;
         this.textTitle = textTitle;
-        this.is_fav = is_fav;
+        this.listOfLabels = listOfLabels;
         this.ssTextVerse = ssTextVerse;
     }
 
-    public Verse(int book_number, int chapter_number, int verse, Spanned text, String textTitle, int is_fav) {
+    public Verse(int book_number, int chapter_number, int verse, Spanned text, String textTitle, ArrayList<Label> listOfLabels) {
         this.book_number = book_number;
         this.chapter_number = chapter_number;
         this.verse = verse;
         //this.text = text;
         this.textSpanned = text;
         this.textTitle = textTitle;
-        this.is_fav = is_fav;
+        this.listOfLabels = listOfLabels;
     }
 
-    public Verse(int book_number, int chapter_number, int verse, Spanned text, int is_fav) {
+    public Verse(int book_number, int chapter_number, int verse, Spanned text, ArrayList<Label> listOfLabels) {
         this.book_number = book_number;
         this.chapter_number = chapter_number;
         this.verse = verse;
         this.textTitle = null;
         this.textSpanned = text;
-        this.is_fav = is_fav;
+        this.listOfLabels = listOfLabels;
     }
 
     public Verse(Parcel in) {
@@ -87,6 +90,8 @@ public class Verse implements Parcelable {
         dest.writeString(this.text);
         dest.writeInt(this.is_fav);
     }
+
+    public ArrayList<Label> getListOfLabels(){ return this.listOfLabels; }
 
     public int getBookNumber() {
         return this.book_number;

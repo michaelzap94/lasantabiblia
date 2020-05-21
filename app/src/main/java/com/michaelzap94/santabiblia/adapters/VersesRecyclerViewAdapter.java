@@ -37,7 +37,7 @@ import java.util.List;
 
 public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecyclerViewAdapter.VersesViewHolder> {
     private static final String TAG = "VersesRecyclerViewAdapt";
-    ArrayList<Verse> verseArrayList;
+    private ArrayList<Verse> verseArrayList;
     private Context ctx;
     private SparseBooleanArray selectedItems;
 
@@ -45,6 +45,10 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
         this.verseArrayList = verseArrayList;
         this.ctx = ctx;
         this.selectedItems = new SparseBooleanArray();
+    }
+
+    public Verse getVerseArrayListItem(int position){
+        return verseArrayList.get(position);
     }
 
     //function available so View can update the RecyclerView List once the information is available.

@@ -101,7 +101,7 @@ public class BibleDBHelper {
                     if(!labelSpecificRows.isNull(noteCol)){
                         note = labelSpecificRows.getString(noteCol);
                     }
-                    Label specificLabel = new Label(label_id, label_name, label_color, label_permanent);
+                    Label specificLabel = new Label(label_id, label_name, label_color, label_permanent, uuid);
                     Book specificBook = BookHelper.getBook(book_number);
 
 
@@ -223,8 +223,9 @@ public class BibleDBHelper {
                     SpannableString ssTextVerse = new SpannableString(textSpanned);
                     int ssTextVerseLength = ssTextVerse.length();
                     //CHECK IF THIS VERSE SHOULD HAVE A COLOR AND LABEL ASSIGNED TO IT.
+                    ArrayList<Label> listOfLabels = null;
                     if(labelsOfVersesMarked.containsKey(verse)){
-                        ArrayList<Label> listOfLabels = labelsOfVersesMarked.get(verse);
+                        listOfLabels = labelsOfVersesMarked.get(verse);
                         int labelsTotal = listOfLabels.size();
                         int temp = (int) Math.ceil(ssTextVerseLength / labelsTotal);
                         for (int j = 0; j < labelsTotal; j++) {
@@ -237,7 +238,7 @@ public class BibleDBHelper {
 
                     //If a Verse is in the array already and we see the same verse again, it's because there are 2+ titles
                     if(!history.containsKey(verse)){
-                        list.add(new Verse(book_number, chapter_number, verse, textSpanned, ssTextVerse, textTitle, 0));
+                        list.add(new Verse(book_number, chapter_number, verse, textSpanned, ssTextVerse, textTitle, listOfLabels));
                         history.put(verse, true);
                     } else {
                         Verse existingVerse = list.get(verse - 1);
@@ -332,7 +333,7 @@ public class BibleDBHelper {
                         textSpanned = Html.fromHtml(textToBeParsed);
                     }
 
-                    versesFound.add(new Verse(book_number, chapter_number, verse, textSpanned, 0));
+                    versesFound.add(new Verse(book_number, chapter_number, verse, textSpanned, null));
 
                     innerCursor.moveToNext();
                 }

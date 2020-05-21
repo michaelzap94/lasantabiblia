@@ -31,7 +31,7 @@ public class DialogRecyclerView extends RecyclerView.Adapter<DialogRecyclerView.
         for (Map.Entry mapElement : this.verseDialogHashMap.entrySet()) {
             String title = (String) mapElement.getKey();
             ArrayList<Verse> innerVersesArrayList = (ArrayList<Verse>) mapElement.getValue();
-            this.versesArrayList.add(new Verse(0, 0, 0, null, title, 0));
+            this.versesArrayList.add(new Verse(0, 0, 0, null, title, null));
             this.versesArrayList.addAll(innerVersesArrayList);
             //Log.d(TAG,title + " : " + verse.get(0).getTextSpanned().toString());
 //            Log.d(TAG, "SIZE: " + verse.size());

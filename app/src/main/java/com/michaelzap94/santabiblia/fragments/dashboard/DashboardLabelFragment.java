@@ -57,14 +57,19 @@ public class DashboardLabelFragment extends Fragment {
     private VersesMarkedRecyclerViewAdapter rvAdapter;
     //==========================================================
 
-    public DashboardLabelFragment(Context ctx, Label mLabel) {
-        this.ctx = ctx;
-        this.mLabel = mLabel;
+    public static DashboardLabelFragment newInstance(Label mLabel) {
+        Bundle args = new Bundle();
+        args.putParcelable("mLabel", mLabel);
+        DashboardLabelFragment fragment = new DashboardLabelFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.ctx = getActivity();
+        this.mLabel = (Label) getArguments().getParcelable("mLabel");
         if(this.mLabel.getPermanent() != 1){
             setHasOptionsMenu(true);
         }
