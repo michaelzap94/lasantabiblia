@@ -25,6 +25,7 @@ public class Dashboard extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
+        setTitle(R.string.dashboard);
 
         updateCanGoBack(canGoBack, Dashboard.this);
 
@@ -44,7 +45,7 @@ public class Dashboard extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         bottomNavigationView.setSelectedItemId(R.id.bnav_dashboard);
-        getSupportActionBar().setTitle("Dashboard");
+//        getSupportActionBar().setTitle(R.string.dashboard);
     }
 
     @Override

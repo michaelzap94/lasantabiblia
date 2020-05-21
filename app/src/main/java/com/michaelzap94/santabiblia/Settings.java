@@ -62,7 +62,7 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
-
+        setTitle(R.string.settings);
         //FLAGS================================================================================
         sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         flagInSharedPref = sp.getString(FLAG_LANG, "");

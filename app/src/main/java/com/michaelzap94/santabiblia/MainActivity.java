@@ -72,6 +72,8 @@ public class MainActivity extends BaseActivityTopDrawer  {
         super.onCreate(savedInstanceState, R.layout.activity_main_base);
 //        super.onCreate(savedInstanceState);
 //        setContentView(R.layout.activity_main);
+        setTitle(R.string.app_name);
+        //=============================================================================================
         CommonMethods.checkDatabaseExistLoad(MainActivity.this);
         //INIT VIEWS===================================================================================
         main_card_mem_number = findViewById(R.id.main_card_mem_number);

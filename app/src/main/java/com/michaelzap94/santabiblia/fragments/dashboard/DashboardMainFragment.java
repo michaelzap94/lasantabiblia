@@ -92,7 +92,7 @@ public class DashboardMainFragment extends Fragment {
     public void onResume() {
         super.onResume();
         if (getActivity() instanceof Dashboard) {
-            ((Dashboard) getActivity()).getSupportActionBar().setTitle("Dashboard");
+            ((Dashboard) getActivity()).getSupportActionBar().setTitle(R.string.dashboard);
         }
     }
 

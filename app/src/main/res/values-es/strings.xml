@@ -22,6 +22,8 @@
     <string name="search_card_dict_title">Dictionario</string>
     <string name="success_lang_change">Exito! Vamos alla.</string>
 
+    <string name="dash_new_value">Crear Etiqueta</string>
+
     <string name="messages">Mensajes</string>
     <string name="about">Sobre</string>
     <string name="polls">Votación</string>

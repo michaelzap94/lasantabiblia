@@ -20,7 +20,7 @@ public class Search extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-
+        setTitle(R.string.search);
 
 
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);

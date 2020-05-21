@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.os.ConfigurationCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
@@ -52,7 +54,10 @@ public abstract class BaseActivityTopDrawer extends AppCompatActivity {
         //SET INITIAL LANGUAGE==============================================================
         sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         flagInSharedPref = sp.getString(FLAG_LANG, "");
-        if (!flagInSharedPref.equals("")) {
+//        String defaultLang = Locale.getDefault().getLanguage();
+//        String currentLang = getResources().getConfiguration().locale.getLanguage();
+        //only change language if necessary
+        if (!flagInSharedPref.equals("") && !flagInSharedPref.equals(getResources().getConfiguration().locale.getLanguage())) {
             Locale locale = new Locale(flagInSharedPref);
             Locale.setDefault(locale);
             Configuration config = new Configuration();
@@ -60,6 +65,7 @@ public abstract class BaseActivityTopDrawer extends AppCompatActivity {
             getBaseContext().getResources().updateConfiguration(config,
                     getBaseContext().getResources().getDisplayMetrics());
         }
+
         //======================================================================================
 
         setContentView(contentView);
