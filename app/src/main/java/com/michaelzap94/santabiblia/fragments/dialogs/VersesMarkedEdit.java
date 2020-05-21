@@ -57,13 +57,11 @@ public class VersesMarkedEdit extends DialogFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         toolbar.setNavigationOnClickListener(v -> {
-                getActivity().getSupportFragmentManager().popBackStack();
                 dismiss();
         });
         toolbar.setTitle("Some Title");
         toolbar.inflateMenu(R.menu.menu_save);
         toolbar.setOnMenuItemClickListener(item -> {
-            getActivity().getSupportFragmentManager().popBackStack();
             dismiss();
             return true;
         });
