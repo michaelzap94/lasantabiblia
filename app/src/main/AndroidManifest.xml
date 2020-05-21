@@ -31,7 +31,8 @@
         <activity
             android:name=".Dashboard"
             android:configChanges="locale|layoutDirection"
-            android:label="@string/dashboard" />
+            android:label="@string/dashboard"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".Bible"
             android:configChanges="locale|layoutDirection"
