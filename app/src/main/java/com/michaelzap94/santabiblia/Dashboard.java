@@ -7,10 +7,13 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.inputmethod.InputMethodManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.michaelzap94.santabiblia.fragments.dashboard.DashboardMainFragment;
@@ -96,6 +99,15 @@ public class Dashboard extends AppCompatActivity {
         boolean canGoBack = getSupportFragmentManager().getBackStackEntryCount()>1;
         Dashboard.updateCanGoBack(canGoBack, Dashboard.this);
         super.onBackPressed();
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (getCurrentFocus() != null) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        }
+        return super.dispatchTouchEvent(ev);
     }
 
     protected void onNewIntent(Intent intent) {
