@@ -130,12 +130,18 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         return success;
     }
     public boolean updateSelectedItemsBulkTransaction(String uuid, Label label, int book_number, int chapter_number, String note, List<Integer> selectedItems){
+        //if user removed all verses in the Edit window, then delete and do not update.
+        boolean deletePermanently = (selectedItems.size() == 0) ? true : false;
         boolean deleteSuccess = deleteVersesMarkedGroup(label.getId(), uuid);
-        boolean insertSuccess = false;
+        boolean success = false;
         if(deleteSuccess){
-            insertSuccess = insertSelectedItemsBulkTransaction(uuid, label, book_number, chapter_number, note, selectedItems);
+            if(deletePermanently){
+                success = true;
+            } else {
+                success = insertSelectedItemsBulkTransaction(uuid, label, book_number, chapter_number, note, selectedItems);
+            }
         }
-        return insertSuccess;
+        return success;
     }
     public boolean insertSelectedItems(Label label, int book_number, int chapter_number, String note, List<Integer> selectedItems) {
         int label_id = label.getId();

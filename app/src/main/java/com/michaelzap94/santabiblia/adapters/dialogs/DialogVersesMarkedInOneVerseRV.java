@@ -28,6 +28,7 @@ import com.michaelzap94.santabiblia.utilities.BookHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class DialogVersesMarkedInOneVerseRV extends RecyclerView.Adapter<DialogVersesMarkedInOneVerseRV.VersesDialogViewHolder> {
     private static final String TAG = "DialogVersesMarkedInORV";
@@ -83,18 +84,30 @@ public class DialogVersesMarkedInOneVerseRV extends RecyclerView.Adapter<DialogV
         CardView cardview;
         MaterialButton labelButton;
         TextView txtView_verse_title;
+        TextView noteTextView;
 
         public VersesDialogViewHolder(@NonNull View itemView) {
             super(itemView);
             cardview = itemView.findViewById(R.id.verses_marked_in_one_cardview);
             labelButton = itemView.findViewById(R.id.verses_marked_in_one_label);
             txtView_verse_title = itemView.findViewById(R.id.verses_marked_in_one_tv);
+            noteTextView = itemView.findViewById(R.id.verses_marked_in_one_note);
             itemView.setOnClickListener(this);
         }
 
         void bind() {
             Log.d(TAG, "bind: position dialog "+ getAdapterPosition());
-            Label mLabel = listOfVersesMarked.get(getAdapterPosition()).getLabel();
+            VersesMarked versesMarked = listOfVersesMarked.get(getAdapterPosition());
+            if(versesMarked.hasNote()){
+                noteTextView.setText(versesMarked.getNote());
+            }
+            ArrayList<Integer> selectedItems = new ArrayList<>();
+            for (Integer key : versesMarked.getVerseTextDict().keySet()) {
+                selectedItems.add(key - 1);
+            }
+            String titleChapterVerses = BookHelper.getTitleBookAndCaps(versesMarked.getChapter(), selectedItems);
+            txtView_verse_title.setText(versesMarked.getBook().getName() + " " + titleChapterVerses);
+            Label mLabel = versesMarked.getLabel();
             labelButton.setText(mLabel.getName());
             try{
                 int color = Color.parseColor(mLabel.getColor());
