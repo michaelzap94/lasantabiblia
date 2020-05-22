@@ -71,26 +71,17 @@ public class VersesMarkedEdit extends DialogFragment {
         fragment.setArguments(args);
         return fragment;
     }
-//    public static VersesMarkedEdit newInstance(ArrayList<VersesMarked> versesMarked) {
-//        Bundle args = new Bundle();
-//        args.putParcelableArrayList("VersesMarked", versesMarked);
-//        VersesMarkedEdit fragment = new VersesMarkedEdit();
-//        fragment.setArguments(args);
-//        return fragment;
-//    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ctx = getActivity();
-//        list = (ArrayList) getArguments().getParcelableArrayList("VersesMarked");
         versesMarked = (VersesMarked) getArguments().getParcelable("VersesMarked");
 
         for (Map.Entry<Integer, String> mapElement : versesMarked.getVerseTextDict().entrySet()) {
             int verseNumber = (Integer) mapElement.getKey();
             selectedItems.add(verseNumber - 1);
-            String text = (String) mapElement.getValue();
-            list.add(" <b>" + verseNumber + "</b>"  + ". " + text);
+            list.add(" <b>" + verseNumber + "</b>"  + ". " + mapElement.getValue());
         }
         //itemTouchHelper = new ItemTouchHelper(SwipeToDelete);
         rvAdapter = new VersesMarkedEditRecyclerViewAdapter(this.ctx, list);

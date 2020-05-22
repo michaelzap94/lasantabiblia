@@ -5,6 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#ffffff"
     android:fitsSystemWindows="false">
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -19,12 +20,37 @@
             app:navigationIcon="@drawable/ic_close"
             app:popupTheme="@style/AppTheme.PopupOverlay"/>
     </com.google.android.material.appbar.AppBarLayout>
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/verses_marked_dialog_rv"
+    <LinearLayout
         android:layout_marginTop="?attr/actionBarSize"
-        android:background="#ffffff"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clickable="true"
-        android:focusable="true" />
+        android:orientation="vertical">
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/verses_marked_dialog_note"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            app:errorEnabled="true"
+            app:counterEnabled="true"
+            app:counterMaxLength="200"
+            app:helperTextEnabled="true"
+            app:helperText="Letters left"
+            android:hint="Note">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/verses_marked_dialog_rv"
+            app:layout_anchor="@+id/verses_marked_dialog_note"
+            app:layout_anchorGravity="bottom"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:focusable="true" />
+    </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
