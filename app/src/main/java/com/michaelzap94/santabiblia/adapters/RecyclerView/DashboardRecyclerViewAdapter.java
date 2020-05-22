@@ -51,6 +51,12 @@ public class DashboardRecyclerViewAdapter extends RecyclerView.Adapter<Dashboard
         this.viewModel = viewModel;
     }
 
+    public void refreshData(ArrayList<Label> _labelArrayList){
+        labelArrayList.clear();
+        labelArrayList.addAll(_labelArrayList);
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public DashboardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -108,22 +114,5 @@ public class DashboardRecyclerViewAdapter extends RecyclerView.Adapter<Dashboard
         }
     }
 
-//    ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT | ItemTouchHelper.DOWN | ItemTouchHelper.UP) {
-//
-//        @Override
-//        public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-//            Toast.makeText(ListActivity.this, "on Move", Toast.LENGTH_SHORT).show();
-//            return false;
-//        }
-//
-//        @Override
-//        public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
-//            Toast.makeText(ListActivity.this, "on Swiped ", Toast.LENGTH_SHORT).show();
-//            //Remove swiped item from list and notify the RecyclerView
-//            int position = viewHolder.getAdapterPosition();
-//            arrayList.remove(position);
-//            adapter.notifyDataSetChanged();
-//
-//        }
-//    };
+
 }

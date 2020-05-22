@@ -25,6 +25,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.michaelzap94.santabiblia.BaseActivityTopDrawer;
@@ -71,6 +72,8 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
     private ArrayList<Label> arrLabels;
     private DashboardRecyclerViewAdapter rvAdapterLabels;
     private RecyclerView rvViewLabels;
+    //=============================================================
+    private ViewPager viewPager;
 
     public static VersesFragment newInstance(int book, int chapter, int verse) {
         Log.d(TAG, "VersesFragment: newInstance" + + book + " " + chapter);
@@ -103,14 +106,16 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
         viewModel.fetchData(this.book_number, this.chapter_number);//refresh -> load data
         //viewModel.getUserMutableLiveData().observe(context, verseListUpdateObserver);
         //observerViewModel();
+        //=========================================================================================
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView: VersesFragment " + this.chapter_number);
-
         root = inflater.inflate(R.layout.verses_fragment, container, false);
+        viewPager = (ViewPager) container;
         return root;
     }
 
@@ -143,6 +148,25 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
         /////////////////////////////////////////
         ///////////////////////////////////////////////////////////
 
+        if(viewPager != null){
+            viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener(){
+                @Override
+                public void onPageScrolled ( int position, float positionOffset, int positionOffsetPixels){
+                    if(actionMode!=null){
+                        actionMode.finish();
+                    }
+                }
+                @Override
+                public void onPageSelected(int position) {
+
+                }
+                @Override
+                public void onPageScrollStateChanged(int state) {
+
+                }
+            });
+        }
+
         View bottomSheet = root.findViewById(R.id.bottom_sheet_nestedscrollview);
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
@@ -151,12 +175,13 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 switch (newState){
                     case BottomSheetBehavior.STATE_COLLAPSED:
-                        ((Bible) mActivity).hideBottomNavigationView();
-                        ((Bible) mActivity).hideFloatingActionButton();
                         if(rvAdapterLabels == null){
                             rvAdapterLabels = new DashboardRecyclerViewAdapter(mActivity, arrLabels, book_number, chapter_number, actionMode, rvAdapter, viewModel);
                         } else {
                             rvAdapterLabels.setActionMode(actionMode);
+//                            if(arrLabels != null && arrLabels.size() > 0){
+//                                rvAdapterLabels.refreshData(arrLabels);
+//                            }
                         }
                         if(rvViewLabels == null) {
                             rvViewLabels = (RecyclerView) view.findViewById(R.id.bottom_sheet_recycler_view);
@@ -175,11 +200,9 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
                     case BottomSheetBehavior.STATE_HIDDEN:
                         ((Bible) mActivity).showBottomNavigationView();
                         ((Bible) mActivity).showFloatingActionButton();
-                        arrLabels = null;
                         if(actionMode!=null){
                             actionMode.finish();
                         }
-
                         break;
                     case BottomSheetBehavior.STATE_HALF_EXPANDED:
                         break;
@@ -296,6 +319,7 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
             VersesFragment.this.actionMode = null;
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
             VersesFragment.this.rvAdapter.clearSelections();
+            //arrLabels = null;
         }
         @Override
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
@@ -310,7 +334,9 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
 //        arrLabels = ContentDBHelper.getInstance(mActivity).getAllLabels();
 //        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         //Only keep selecting items if actionMode exists.
-        myToggleSelection(position);
+        if (actionMode != null) {
+            myToggleSelection(position);
+        }
     }
     @Override
     public void onItemLongClick(View view, int position) {
@@ -326,8 +352,11 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
             //TODO: move it to the background
             arrLabels = ContentDBHelper.getInstance(mActivity).getAllLabels();
         }
-//        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        if(actionMode != null) {
+            ((Bible) mActivity).hideBottomNavigationView();
+            ((Bible) mActivity).hideFloatingActionButton();
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        }
     }
     private void myToggleSelection(int idx) {
         if(VersesFragment.this.actionMode != null){
@@ -343,9 +372,10 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
     }
     //===============================================================================================
     public static void onLabelClickedFromList(Context ctx, Label mLabel, int book_number, int chapter_number, ActionMode actionMode, VersesRecyclerViewAdapter rvAdapter, VersesViewModel viewModel) {
-
         VersesLabelNoteDialog vid = new VersesLabelNoteDialog(ctx, mLabel, book_number, chapter_number, actionMode, rvAdapter, viewModel);
         vid.setStyle(DialogFragment.STYLE_NORMAL, R.style.CustomDialog);
         vid.show(((AppCompatActivity) ctx).getSupportFragmentManager(),"anything");
     }
+    //=================================================================================================
+
 }
