@@ -96,7 +96,9 @@ public class Verse implements Parcelable {
     public int getBookNumber() {
         return this.book_number;
     }
-
+    public int getChapterNumber() {
+        return this.chapter_number;
+    }
     public int getVerse() {
         return this.verse;
     }

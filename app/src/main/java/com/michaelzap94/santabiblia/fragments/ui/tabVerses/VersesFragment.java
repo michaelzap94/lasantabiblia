@@ -35,6 +35,7 @@ import com.michaelzap94.santabiblia.R;
 import com.michaelzap94.santabiblia.adapters.RecyclerView.DashboardRecyclerViewAdapter;
 import com.michaelzap94.santabiblia.adapters.RecyclerView.VersesRecyclerViewAdapter;
 import com.michaelzap94.santabiblia.fragments.dialogs.VersesLabelNoteDialog;
+import com.michaelzap94.santabiblia.fragments.dialogs.VersesMarkedInOneVerse;
 import com.michaelzap94.santabiblia.models.Label;
 import com.michaelzap94.santabiblia.models.Verse;
 import com.michaelzap94.santabiblia.utilities.BookHelper;
@@ -330,12 +331,14 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
     public void onItemClick(View view, int position) {
         Log.d(TAG, "onItemClick: " + position);
 //        Toast.makeText(mActivity, "onItemClick" + position, Toast.LENGTH_SHORT).show();
-
-//        arrLabels = ContentDBHelper.getInstance(mActivity).getAllLabels();
-//        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        //Only keep selecting items if actionMode exists.
         if (actionMode != null) {
             myToggleSelection(position);
+        } else {
+            Verse verse = rvAdapter.getVerseArrayListItem(position);
+            ArrayList<Label> listOfLabels = verse.getListOfLabels();
+            if(listOfLabels != null && listOfLabels.size() > 0){
+                openDialogVersesMarkedInOneVerse(verse);
+            }
         }
     }
     @Override
@@ -370,12 +373,16 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
             }
         }
     }
+    //=================================================================================================
+    public void openDialogVersesMarkedInOneVerse(Verse verse){
+        VersesMarkedInOneVerse vid = new VersesMarkedInOneVerse(verse);
+        vid.setStyle(DialogFragment.STYLE_NORMAL, R.style.CustomDialog);
+        vid.show(((AppCompatActivity) mActivity).getSupportFragmentManager(),"anything");
+    }
     //===============================================================================================
     public static void onLabelClickedFromList(Context ctx, Label mLabel, int book_number, int chapter_number, ActionMode actionMode, VersesRecyclerViewAdapter rvAdapter, VersesViewModel viewModel) {
         VersesLabelNoteDialog vid = new VersesLabelNoteDialog(ctx, mLabel, book_number, chapter_number, actionMode, rvAdapter, viewModel);
         vid.setStyle(DialogFragment.STYLE_NORMAL, R.style.CustomDialog);
         vid.show(((AppCompatActivity) ctx).getSupportFragmentManager(),"anything");
     }
-    //=================================================================================================
-
 }
