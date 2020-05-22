@@ -88,17 +88,16 @@ public class ContentDBHelper extends SQLiteOpenHelper {
     public boolean deleteOneLabel(int id){
          return this.getWritableDatabase().delete("labels", "_id =" + id, null) > 0;
     }
-    public boolean insertSelectedItemsBulkTransaction(Label label, int book_number, int chapter_number, String note, List<Integer> selectedItems) {
+    public boolean insertSelectedItemsBulkTransaction(String uuid, Label label, int book_number, int chapter_number, String note, List<Integer> selectedItems) {
         boolean success = true;
         int label_id = label.getId();
         String label_name = label.getName();
         String label_color = label.getColor();
-
         List<List<Integer>> versesGroups = BookHelper.getVersesSelectedResults(selectedItems);//[[1,2,3],[6,7],[9]]
         SQLiteDatabase db = this.getWritableDatabase();
         db.beginTransaction();
         try{
-            String uniqueID = UUID.randomUUID().toString();
+            String uniqueID = (uuid != null) ? uuid : UUID.randomUUID().toString();
             ContentValues cv = new ContentValues();
             cv.put("label_id", label_id);
             cv.put("label_name", label_name);
@@ -126,8 +125,15 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         } finally {
             db.endTransaction();
         }
-
         return success;
+    }
+    public boolean updateSelectedItemsBulkTransaction(String uuid, Label label, int book_number, int chapter_number, String note, List<Integer> selectedItems){
+        boolean deleteSuccess = deleteVersesMarkedGroup(label.getId(), uuid);
+        boolean insertSuccess = false;
+        if(deleteSuccess){
+            insertSuccess = insertSelectedItemsBulkTransaction(uuid, label, book_number, chapter_number, note, selectedItems);
+        }
+        return insertSuccess;
     }
     public boolean insertSelectedItems(Label label, int book_number, int chapter_number, String note, List<Integer> selectedItems) {
         int label_id = label.getId();

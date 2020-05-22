@@ -65,7 +65,7 @@ public class VersesViewModel extends AndroidViewModel {
         //get data and populate the list
         protected Void doInBackground(Object... args) {
             Log.d(TAG, "MarkVerses doInBackground: " + args[0] + " " + args[1]);
-            boolean success = ContentDBHelper.getInstance(getApplication()).insertSelectedItemsBulkTransaction((Label) args[0], (int) args[1], (int) args[2], (String) args[3], (List<Integer>) args[4]);
+            boolean success = ContentDBHelper.getInstance(getApplication()).insertSelectedItemsBulkTransaction(null, (Label) args[0], (int) args[1], (int) args[2], (String) args[3], (List<Integer>) args[4]);
             Log.d(TAG, "MarkVerses doInBackground: result " + success);
             if(success){
                 loadVerses(book_number, chapter_number);

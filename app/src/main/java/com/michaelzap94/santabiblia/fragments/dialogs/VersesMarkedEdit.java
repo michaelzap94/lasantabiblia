@@ -58,6 +58,7 @@ public class VersesMarkedEdit extends DialogFragment {
     private ItemTouchHelper itemTouchHelper;
     private ArrayList<String> list = new ArrayList<>();
     private ArrayList<Integer> selectedItems = new ArrayList<>();
+    private int selectedItemsInitialSize = 0;
     private TextInputLayout note;
     private RecyclerView rvView;
     private VersesMarkedViewModel viewModel;
@@ -85,16 +86,10 @@ public class VersesMarkedEdit extends DialogFragment {
             selectedItems.add(verseNumber - 1);
             list.add(" <b>" + verseNumber + "</b>"  + ". " + mapElement.getValue());
         }
+        selectedItemsInitialSize = selectedItems.size();
         //itemTouchHelper = new ItemTouchHelper(SwipeToDelete);
         rvAdapter = new VersesMarkedEditRecyclerViewAdapter(this.ctx, list);
-        //get viewmodel class and properties, pass this context so LifeCycles are handled by ViewModel,
-        // in case the Activity is destroyed and recreated(screen roation)
-        //ViewModel will help us show the exact same data, and resume the application from when the user left last time.
-//        viewModel = new ViewModelProvider(this).get(VersesMarkedViewModel.class);
-//        //Use when we need to reload data
-//        viewModel.fetchData(this.mLabel.getId());//refresh -> load data
-//        //viewModel.getUserMutableLiveData().observe(context, verseListUpdateObserver);
-//        //observerViewModel();
+        viewModel = new ViewModelProvider(getActivity()).get(VersesMarkedViewModel.class);
     }
 
     @Override
@@ -128,14 +123,19 @@ public class VersesMarkedEdit extends DialogFragment {
 
         toolbar.inflateMenu(R.menu.menu_save);
         toolbar.setOnMenuItemClickListener(item -> {
-            boolean error = false;
-            if (note.getEditText().getText().toString().trim().equalsIgnoreCase("")) {
-                note.getEditText().setError("This field can not be blank");
-                error = true;
-            }
-            if(!error){
+//            boolean error = false;
+//            if (note.getEditText().getText().toString().trim().equalsIgnoreCase("")) {
+//                note.getEditText().setError("This field can not be blank");
+//                error = true;
+//            }
+//            if(!error){
+                //if something changed, update, otherwise do not
+                String noteValue = note.getEditText().getText().toString();
+                if(selectedItems.size() != selectedItemsInitialSize || !noteValue.equals(versesMarked.getNote())){
+                    viewModel.updateVersesMarked(versesMarked.getUuid(), versesMarked.getLabel(), versesMarked.getBook().getBookNumber(), versesMarked.getChapter(), noteValue , selectedItems);
+                }
                 dismiss();
-            }
+//            }
             return true;
         });
     }

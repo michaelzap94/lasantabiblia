@@ -68,7 +68,7 @@ public class DashboardLabelFragment extends Fragment {
         //get viewmodel class and properties, pass this context so LifeCycles are handled by ViewModel,
         // in case the Activity is destroyed and recreated(screen roation)
         //ViewModel will help us show the exact same data, and resume the application from when the user left last time.
-        viewModel = new ViewModelProvider(this).get(VersesMarkedViewModel.class);
+        viewModel = new ViewModelProvider(getActivity()).get(VersesMarkedViewModel.class);
         //Use when we need to reload data
         viewModel.fetchData(this.mLabel.getId());//refresh -> load data
         //viewModel.getUserMutableLiveData().observe(context, verseListUpdateObserver);
@@ -78,6 +78,8 @@ public class DashboardLabelFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView: DashboardLabelFragment");
+
         View view =  inflater.inflate(R.layout.dashboard_label_fragment, container, false);
         //============================================================================================
         boolean canGoBack = ((AppCompatActivity) this.ctx).getSupportFragmentManager().getBackStackEntryCount()>0;
