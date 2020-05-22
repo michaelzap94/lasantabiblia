@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -73,6 +74,7 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
     private ActionModeCallback actionModeCallback = new ActionModeCallback();
     private BottomSheetBehavior bottomSheetBehavior;
     private TextView bottomSheetTextview;
+    private ImageView bottomSheetIcon;
     ///////////////////////////////////////////////////////////
     private ArrayList<Verse> list = new ArrayList();
     private RecyclerView rvView;
@@ -177,8 +179,13 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
                             //rvViewLabels.addOnItemTouchListener(new RecyclerItemClickListener(mActivity, rvView, VersesFragment.this));
                             rvViewLabels.setAdapter(rvAdapterLabels);//attach the RecyclerView adapter to the RecyclerView View
                         }
+                        if(bottomSheetIcon == null){
+                            bottomSheetIcon = (ImageView) view.findViewById(R.id.bottom_sheet_arrow_icon);
+                        }
+                        bottomSheetIcon.setImageResource(R.drawable.ic_keyboard_arrow_up);
                         break;
                     case BottomSheetBehavior.STATE_EXPANDED:
+                        bottomSheetIcon.setImageResource(R.drawable.ic_keyboard_arrow_down);
                         break;
                     case BottomSheetBehavior.STATE_HIDDEN:
                         ((Bible) mActivity).showBottomNavigationView();
