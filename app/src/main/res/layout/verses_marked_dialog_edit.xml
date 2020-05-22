@@ -16,6 +16,8 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
+            app:titleTextAppearance="@style/ToolbarTitleAppearance"
+            app:subtitleTextAppearance="@style/ToolbarSubtitleAppearance"
             app:contentInsetStartWithNavigation="0dp"
             app:navigationIcon="@drawable/ic_close"
             app:popupTheme="@style/AppTheme.PopupOverlay"/>

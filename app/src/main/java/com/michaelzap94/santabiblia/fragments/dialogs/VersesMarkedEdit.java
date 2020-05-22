@@ -31,6 +31,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
 import com.michaelzap94.santabiblia.R;
 import com.michaelzap94.santabiblia.adapters.RecyclerView.VersesMarkedEditRecyclerViewAdapter;
 import com.michaelzap94.santabiblia.adapters.RecyclerView.VersesMarkedRecyclerViewAdapter;
@@ -57,6 +58,7 @@ public class VersesMarkedEdit extends DialogFragment {
     private ItemTouchHelper itemTouchHelper;
     private ArrayList<String> list = new ArrayList<>();
     private ArrayList<Integer> selectedItems = new ArrayList<>();
+    private TextInputLayout note;
     private RecyclerView rvView;
     private VersesMarkedViewModel viewModel;
     //Instantiate the RecyclerViewAdapter, passing an empty list initially.
@@ -100,6 +102,7 @@ public class VersesMarkedEdit extends DialogFragment {
         View rootView = inflater.inflate(R.layout.verses_marked_dialog_edit, container, false);
         toolbar = rootView.findViewById(R.id.toolbar);
         rvView = rootView.findViewById(R.id.verses_marked_dialog_rv);
+        note = rootView.findViewById(R.id.verses_marked_dialog_note);
         coordinatorLayout = rootView.findViewById(R.id.verses_marked_dialog_coordinatorLayout);
         setHasOptionsMenu(true);
         return rootView;
@@ -119,13 +122,20 @@ public class VersesMarkedEdit extends DialogFragment {
         });
 
 
-        String titleChapterVerses = BookHelper.getTitleBookAndCaps(versesMarked.getChapter(), selectedItems);
-        String title = versesMarked.getBook().getName() + " " + titleChapterVerses;
-        toolbar.setTitle(title);
+        updateTitle();
+
+        note.getEditText().setText(versesMarked.getNote());
 
         toolbar.inflateMenu(R.menu.menu_save);
         toolbar.setOnMenuItemClickListener(item -> {
-            dismiss();
+            boolean error = false;
+            if (note.getEditText().getText().toString().trim().equalsIgnoreCase("")) {
+                note.getEditText().setError("This field can not be blank");
+                error = true;
+            }
+            if(!error){
+                dismiss();
+            }
             return true;
         });
     }
@@ -152,13 +162,20 @@ public class VersesMarkedEdit extends DialogFragment {
 
                 //Remove swiped item from list and notify the RecyclerView
                 int position = viewHolder.getAdapterPosition();
+
                 final String item = rvAdapter.getData().get(position);
                 rvAdapter.removeItem(position);
+
+                final int verseNumber = selectedItems.get(position);
+                selectedItems.remove(position);
+                updateTitle();
 
                 Snackbar snackbar = Snackbar.make(coordinatorLayout, "Item was removed from the list.", Snackbar.LENGTH_LONG);
                 snackbar.setAction("UNDO", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        selectedItems.add(position, verseNumber);
+                        updateTitle();
                         rvAdapter.restoreItem(item, position);
                         rvView.scrollToPosition(position);
                     }
@@ -172,5 +189,11 @@ public class VersesMarkedEdit extends DialogFragment {
 
         ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeToDeleteCallback);
         itemTouchhelper.attachToRecyclerView(rvView);
+    }
+
+    private void updateTitle(){
+        String titleChapterVerses = BookHelper.getTitleBookAndCaps(versesMarked.getChapter(), selectedItems);
+        toolbar.setTitle(versesMarked.getBook().getName());
+        toolbar.setSubtitle(titleChapterVerses);
     }
 }
