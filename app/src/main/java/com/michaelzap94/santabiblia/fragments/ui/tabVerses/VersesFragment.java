@@ -305,7 +305,7 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
     @Override
     public void onItemClick(View view, int position) {
         Log.d(TAG, "onItemClick: " + position);
-        Toast.makeText(mActivity, "onItemClick" + position, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(mActivity, "onItemClick" + position, Toast.LENGTH_SHORT).show();
 
 //        arrLabels = ContentDBHelper.getInstance(mActivity).getAllLabels();
 //        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -322,7 +322,6 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
         }
         myToggleSelection(position);
         //===============================================================
-        Toast.makeText(mActivity, "onItemLongClick" + position, Toast.LENGTH_SHORT).show();
         if(arrLabels == null){
             //TODO: move it to the background
             arrLabels = ContentDBHelper.getInstance(mActivity).getAllLabels();

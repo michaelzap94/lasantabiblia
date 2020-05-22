@@ -187,7 +187,6 @@ public class DashboardCreatorFragment extends Fragment implements LabelColorCrea
                     } else {
                         insertSuccess = ContentDBHelper.getInstance(getActivity()).createLabel(nameValue, colorValue);
                     }
-                    Toast.makeText(getActivity(), nameValue+" "+colorValue, Toast.LENGTH_SHORT).show();
 
                     if(insertSuccess){
                         getActivity().getSupportFragmentManager().popBackStack();
