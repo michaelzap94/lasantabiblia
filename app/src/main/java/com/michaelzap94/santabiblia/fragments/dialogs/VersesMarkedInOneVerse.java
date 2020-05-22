@@ -2,22 +2,30 @@ package com.michaelzap94.santabiblia.fragments.dialogs;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.michaelzap94.santabiblia.DatabaseHelper.ContentDBHelper;
 import com.michaelzap94.santabiblia.R;
 import com.michaelzap94.santabiblia.adapters.dialogs.DialogVersesMarkedInOneVerseRV;
 import com.michaelzap94.santabiblia.models.Label;
 import com.michaelzap94.santabiblia.models.Verse;
+import com.michaelzap94.santabiblia.models.VersesMarked;
 import com.michaelzap94.santabiblia.utilities.BookHelper;
+import com.michaelzap94.santabiblia.viewmodel.SearchResultsViewModel;
+import com.michaelzap94.santabiblia.viewmodel.VersesMarkedViewModel;
 
 import java.util.ArrayList;
 
@@ -28,21 +36,29 @@ public class VersesMarkedInOneVerse extends DialogFragment {
     private DialogVersesMarkedInOneVerseRV adapter;
     private String title;
 
+    private VersesMarkedViewModel viewModel;
+
     public VersesMarkedInOneVerse(Verse verse){
         this.listOfLabels = verse.getListOfLabels();
         this.title = BookHelper.getBook(verse.getBookNumber()).getName() + " " + verse.getChapterNumber();
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        getDialog().getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        //ADAPTER
+        adapter = new DialogVersesMarkedInOneVerseRV(this.getContext(), null, null);
+        viewModel = new ViewModelProvider(getActivity()).get(VersesMarkedViewModel.class);
+        viewModel.getVersesMarkedByUUID(listOfLabels);//refresh -> load data
+        observerViewModel();
     }
 
-    @Override
-    public void onPause(){
-        super.onPause();
-        this.dismissAllowingStateLoss();
+    private void observerViewModel() {
+        viewModel.getVersesMarkedListByUUIDLiveData().observe(getActivity(), (versesMarkedArrayList) -> {
+            Log.d(TAG, "observerViewModel: LABEL GOT DATA DIALOG One verse: " + versesMarkedArrayList.size());
+            //WHEN data is created  pass data and set it in the recyclerview VIEW
+            adapter.updateVersesMarkedRecyclerView(versesMarkedArrayList);
+        });
     }
 
     @Override
@@ -53,8 +69,6 @@ public class VersesMarkedInOneVerse extends DialogFragment {
 
         //RECYCER
         rv= (RecyclerView) rootView.findViewById(R.id.verses_inside_fragment_rv);
-        //ADAPTER
-        adapter = new DialogVersesMarkedInOneVerseRV(this.getContext(), listOfLabels);
         rv.setAdapter(adapter);
         rv.setLayoutManager(new LinearLayoutManager(this.getContext()));
 
@@ -71,5 +85,23 @@ public class VersesMarkedInOneVerse extends DialogFragment {
                 .create();
     }
 
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        adapter.setDialog(getDialog());
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        getDialog().getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        this.dismissAllowingStateLoss();
+    }
 }
 

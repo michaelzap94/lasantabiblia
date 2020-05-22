@@ -145,17 +145,7 @@ public class VersesMarkedRecyclerViewAdapter extends RecyclerView.Adapter<Verses
             });
             btn_edit.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    FragmentManager fragmentManager = ((AppCompatActivity) ctx).getSupportFragmentManager();
-                    VersesMarkedEdit newFragment = VersesMarkedEdit.newInstance(versesMarked);
-//                    VersesMarkedEdit newFragment = VersesMarkedEdit.newInstance(versesMarkedArrayList);
-                    // fragment fullscreen
-                    FragmentTransaction transaction = fragmentManager.beginTransaction();
-                    // For a little polish, specify a transition animation
-                    transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                    // To make it fullscreen, use the 'content' root view as the container
-                    // for the fragment, which is always the root view for the activity
-                    transaction.add(android.R.id.content, newFragment)//R.id.dashboard_fragment-> remove margin in verses_marked_dialog_edit.xml
-                            .addToBackStack(null).commit();
+                    goToEditVersesMarked(versesMarked);
                 }
             });
             btn_delete.setOnClickListener(new View.OnClickListener() {
@@ -172,6 +162,19 @@ public class VersesMarkedRecyclerViewAdapter extends RecyclerView.Adapter<Verses
                 }
             });
         }
+    }
+
+    public void goToEditVersesMarked(VersesMarked versesMarked){
+        FragmentManager fragmentManager = ((AppCompatActivity) ctx).getSupportFragmentManager();
+        VersesMarkedEdit newFragment = VersesMarkedEdit.newInstance(versesMarked);
+        // fragment fullscreen
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        // For a little polish, specify a transition animation
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        // To make it fullscreen, use the 'content' root view as the container
+        // for the fragment, which is always the root view for the activity
+        transaction.add(android.R.id.content, newFragment)//R.id.dashboard_fragment-> remove margin in verses_marked_dialog_edit.xml
+                .addToBackStack(null).commit();
     }
 
     public void deleteOneFromVersesMarked(int label_id, String uuid, int position){new VersesMarkedRecyclerViewAdapter.RemoveVersesMarked(position).execute(String.valueOf(label_id), uuid);}

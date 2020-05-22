@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
 import android.text.Html;
 import android.text.Spanned;
+import android.util.Log;
 
 import com.michaelzap94.santabiblia.BuildConfig;
 import com.michaelzap94.santabiblia.models.Book;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class ContentDBHelper extends SQLiteOpenHelper {
+    private static final String TAG = "ContentDBHelper";
     private static int DATABASE_VERSION = 1;
     private static String DB_NAME = "content.db";
     private Context context;
@@ -163,13 +165,13 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         cv.put("note", (!note.equals(BuildConfig.FLAVOR) ?  note : "NULL"));
         return this.getWritableDatabase().insert("verses_marked",null, cv) > 0;
     }
-    public ArrayList<VersesMarked> getVersesMarked(int label_id) {
+    public ArrayList<VersesMarked> getVersesMarked(int label_id, String _uuid) {
         int labelSpecificRowsCount;
         int i;
         HashMap<String,Integer> history = new HashMap<>();
         ArrayList<VersesMarked> list = new ArrayList<>();
-        try {            //String query = "SELECT * FROM verses_marked " + "JOIN categories ON teams.cat = catagories.Id WHERE fav=0)";
-            String query = "SELECT * FROM verses_marked WHERE label_id=" + label_id;
+        try {
+            String query = (_uuid == null) ? "SELECT * FROM verses_marked WHERE label_id=" + label_id : "SELECT * FROM verses_marked WHERE label_id=" + label_id + " AND UUID ='" + _uuid + "'";
             Cursor labelSpecificRows = this.getReadableDatabase().rawQuery(query, null);
             if (labelSpecificRows.moveToFirst()) {
                 labelSpecificRowsCount = labelSpecificRows.getCount();
@@ -237,6 +239,14 @@ public class ContentDBHelper extends SQLiteOpenHelper {
             } catch (Exception e){
         }
         return list;
+    }
+    public ArrayList<VersesMarked> getVersesMarkedByUUID(ArrayList<Label> listOfLabels){
+        ArrayList<VersesMarked> finalArray = new ArrayList<>();
+        for (int x = 0; x < listOfLabels.size(); x++) {
+            Label oneLabel = listOfLabels.get(x);
+            finalArray.addAll(getVersesMarked(oneLabel.getId(), oneLabel.getUUID()));
+        }
+        return finalArray;
     }
     public boolean deleteVersesMarkedGroup(int label_id, String uuid){
         return this.getWritableDatabase().delete("verses_marked", "label_id = ? AND UUID = ?", new String[]{String.valueOf(label_id), uuid}) > 0;

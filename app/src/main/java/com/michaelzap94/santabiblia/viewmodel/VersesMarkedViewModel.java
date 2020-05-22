@@ -20,6 +20,7 @@ public class VersesMarkedViewModel extends AndroidViewModel {
     private static final String TAG = "VersesMarkedViewModel";
 
     private MutableLiveData<ArrayList<VersesMarked>> versesMarkedList;
+    private MutableLiveData<ArrayList<VersesMarked>> versesMarkedListByUUID;
     private int label_id;
 
     public VersesMarkedViewModel(@NonNull Application application) {
@@ -29,6 +30,9 @@ public class VersesMarkedViewModel extends AndroidViewModel {
     }
     public MutableLiveData<ArrayList<VersesMarked>> getUserMutableLiveData() {
         return versesMarkedList;
+    }
+    public MutableLiveData<ArrayList<VersesMarked>> getVersesMarkedListByUUIDLiveData() {
+        return versesMarkedListByUUID;
     }
     //PUBLIC SO we can refresh the list for some reason from the OUTSIDE
     public void refreshVersesMarkedList(int label_id){
@@ -44,7 +48,7 @@ public class VersesMarkedViewModel extends AndroidViewModel {
         //get data and populate the list
         protected Void doInBackground(Integer... args) {
             Log.d(TAG, "GetVersesMarked doInBackground: " + args[0]);
-            ArrayList<VersesMarked> result = ContentDBHelper.getInstance(getApplication()).getVersesMarked(args[0]);
+            ArrayList<VersesMarked> result = ContentDBHelper.getInstance(getApplication()).getVersesMarked(args[0], null);
             Log.d(TAG, "GetVersesMarked doInBackground: result " + result.size());
             versesMarkedList.postValue(result);
             return null;
@@ -66,6 +70,22 @@ public class VersesMarkedViewModel extends AndroidViewModel {
             return null;
         }
     }
-
+    //===============================================================================================
+    public void getVersesMarkedByUUID(ArrayList<Label> listOfLabels){
+        if(versesMarkedListByUUID == null){
+            this.versesMarkedListByUUID = new MutableLiveData<ArrayList<VersesMarked>>();
+        }
+        new VersesMarkedViewModel.VersesMarkedByUUID().execute(listOfLabels);
+    }
+    private class VersesMarkedByUUID extends AsyncTask<ArrayList<Label>, Void, Void> {
+        //get data and populate the list
+        protected Void doInBackground(ArrayList<Label>... args) {
+            Log.d(TAG, "GetVersesMarked doInBackground: " + args[0]);
+            ArrayList<VersesMarked> result = ContentDBHelper.getInstance(getApplication()).getVersesMarkedByUUID(args[0]);
+            Log.d(TAG, "GetVersesMarked doInBackground: result " + result.size());
+            versesMarkedListByUUID.postValue(result);
+            return null;
+        }
+    }
 
 }

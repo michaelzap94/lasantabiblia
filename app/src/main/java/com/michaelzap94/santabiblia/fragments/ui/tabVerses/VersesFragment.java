@@ -376,7 +376,7 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
     //=================================================================================================
     public void openDialogVersesMarkedInOneVerse(Verse verse){
         VersesMarkedInOneVerse vid = new VersesMarkedInOneVerse(verse);
-        vid.setStyle(DialogFragment.STYLE_NORMAL, R.style.CustomDialog);
+        vid.setStyle(DialogFragment.STYLE_NO_FRAME, R.style.CustomDialog);
         vid.show(((AppCompatActivity) mActivity).getSupportFragmentManager(),"anything");
     }
     //===============================================================================================
