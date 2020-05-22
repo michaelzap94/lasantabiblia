@@ -11,16 +11,6 @@ import java.util.List;
 import java.util.TreeMap;
 
 public class VersesMarked implements Parcelable {
-    public static final Creator<VersesMarked> CREATOR = new Creator<VersesMarked>() {
-        public VersesMarked createFromParcel(Parcel in) {
-            return new VersesMarked(in);
-        }
-
-        public VersesMarked[] newArray(int size) {
-            return new VersesMarked[size];
-        }
-    };
-    private int id;
     private Book book;
     private Label label;
     private int chapter;
@@ -28,10 +18,7 @@ public class VersesMarked implements Parcelable {
     private String uuid;
 //    protected List<String> textsGroup = new ArrayList();
     protected TreeMap<Integer, String> verseTextDict = new TreeMap<>();
-
-
-    public VersesMarked(int id, String uuid, Book book, Label label, int chapter, int verse, String text, String note) {
-        this.id = id;
+    public VersesMarked(String uuid, Book book, Label label, int chapter, int verse, String text, String note) {
         this.uuid = uuid;
         this.book = book;
         this.label = label;
@@ -40,11 +27,6 @@ public class VersesMarked implements Parcelable {
 //        this.verse = verse;
 //        this.text = text;
         verseTextDict.put(verse, text);
-    }
-
-    public VersesMarked(Parcel in) {
-        this.id = in.readInt();
-        this.note = in.readString();
     }
 
     public void addToVerseTextDict(int verse, String text){
@@ -56,9 +38,9 @@ public class VersesMarked implements Parcelable {
     public TreeMap<Integer, String> getVerseTextDict(){
         return this.verseTextDict;
     }
-    public int getIdVerseMarked() {
-        return this.id;
-    }
+//    public int getIdVerseMarked() {
+//        return this.id;
+//    }
     public Book getBook() {
         return book;
     }
@@ -75,6 +57,16 @@ public class VersesMarked implements Parcelable {
         return this.note;
     }
 
+
+    //PARCELABLE===========================================================================
+    public static final Creator<VersesMarked> CREATOR = new Creator<VersesMarked>() {
+        public VersesMarked createFromParcel(Parcel in) {
+            return new VersesMarked(in);
+        }
+        public VersesMarked[] newArray(int size) {
+            return new VersesMarked[size];
+        }
+    };
     @Override
     public int describeContents() {
         return 0;
@@ -82,5 +74,20 @@ public class VersesMarked implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeParcelable(this.book, flags);
+        dest.writeParcelable(this.label, flags);
+        dest.writeSerializable(this.verseTextDict);
+        dest.writeString(this.uuid);
+        dest.writeInt(this.chapter);
+        dest.writeString(this.note);
+    }
+
+    public VersesMarked(Parcel in) {
+        this.book = (Book) in.readParcelable(Book.class.getClassLoader());
+        this.label = (Label) in.readParcelable(Label.class.getClassLoader());
+        this.verseTextDict = (TreeMap<Integer, String>) in.readSerializable();
+        this.uuid = in.readString();
+        this.chapter = in.readInt();
+        this.note = in.readString();
     }
 }

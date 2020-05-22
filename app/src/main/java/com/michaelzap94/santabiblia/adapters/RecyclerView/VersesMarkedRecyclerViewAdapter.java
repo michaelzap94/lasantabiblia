@@ -146,7 +146,8 @@ public class VersesMarkedRecyclerViewAdapter extends RecyclerView.Adapter<Verses
             btn_edit.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     FragmentManager fragmentManager = ((AppCompatActivity) ctx).getSupportFragmentManager();
-                    VersesMarkedEdit newFragment = new VersesMarkedEdit();
+                    VersesMarkedEdit newFragment = VersesMarkedEdit.newInstance(versesMarked);
+//                    VersesMarkedEdit newFragment = VersesMarkedEdit.newInstance(versesMarkedArrayList);
                     // fragment fullscreen
                     FragmentTransaction transaction = fragmentManager.beginTransaction();
                     // For a little polish, specify a transition animation

@@ -1,6 +1,9 @@
 package com.michaelzap94.santabiblia.models;
 
-public class Book {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Book implements Parcelable {
     public static final int OLD_TESTAMENT = 1;
     public static final int NEW_TESTAMENT = 2;
     private int id;
@@ -44,5 +47,32 @@ public class Book {
 
     public int getNumCap() {
         return this.numcap;
+    }
+
+    //PARCELABLE===========================================================================
+    public static final Parcelable.Creator<Book> CREATOR = new Parcelable.Creator<Book>() {
+        public Book createFromParcel(Parcel in) {
+            return new Book(in);
+        }
+        public Book[] newArray(int size) {
+            return new Book[size];
+        }
+    };
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.id);
+        dest.writeInt(this.book_number);
+        dest.writeString(this.name);
+        dest.writeInt(this.numcap);
+    }
+    private Book(Parcel in) {
+        this.id = in.readInt();
+        this.book_number = in.readInt();
+        this.name = in.readString();
+        this.numcap = in.readInt();
     }
 }

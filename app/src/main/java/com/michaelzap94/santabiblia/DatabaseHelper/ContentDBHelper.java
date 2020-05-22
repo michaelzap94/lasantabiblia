@@ -168,7 +168,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
             if (labelSpecificRows.moveToFirst()) {
                 labelSpecificRowsCount = labelSpecificRows.getCount();
                 for (i = 0; i < labelSpecificRowsCount; i++) {
-                    int _idCol= labelSpecificRows.getColumnIndex("_id");
+                    //int _idCol= labelSpecificRows.getColumnIndex("_id");
                     int uuidCol = labelSpecificRows.getColumnIndex("UUID");
                     int label_nameCol= labelSpecificRows.getColumnIndex("label_name");
                     int label_colorCol= labelSpecificRows.getColumnIndex("label_color");
@@ -178,7 +178,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
                     int verseFromCol= labelSpecificRows.getColumnIndex("verseFrom");
                     int verseToCol= labelSpecificRows.getColumnIndex("verseTo");
                     int noteCol= labelSpecificRows.getColumnIndex("note");
-                    int _id = labelSpecificRows.getInt(_idCol);
+                    //int _id = labelSpecificRows.getInt(_idCol);
                     String uuid = labelSpecificRows.getString(uuidCol);
                     String label_name = labelSpecificRows.getString(label_nameCol);
                     String label_color = labelSpecificRows.getString(label_colorCol);
@@ -216,7 +216,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
                             //if one verse only OR this is the first verse from the query results.
                             //therefore, we'll only create one VersesMarked object and then add to it the rest of the verses.
                             if ((verseFrom == verseTo || verseFrom == verse) && (indexIfInHistory == null)) {
-                                VersesMarked innerVerseMarked = new VersesMarked(_id, uuid, specificBook, specificLabel, chapter, verse, text, note);
+                                VersesMarked innerVerseMarked = new VersesMarked(uuid, specificBook, specificLabel, chapter, verse, text, note);
                                 list.add(innerVerseMarked);
                                 history.put(uuid, (list.size() - 1));//put this as seen and the index where inserted in HISTORY
                             } else {//if more than one verse and this is not the first verse
