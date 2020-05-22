@@ -4,22 +4,19 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.text.Editable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.view.ActionMode;
 import androidx.fragment.app.DialogFragment;
 
-import com.michaelzap94.santabiblia.DatabaseHelper.ContentDBHelper;
 import com.michaelzap94.santabiblia.R;
-import com.michaelzap94.santabiblia.adapters.VersesRecyclerViewAdapter;
+import com.michaelzap94.santabiblia.adapters.RecyclerView.VersesRecyclerViewAdapter;
 import com.michaelzap94.santabiblia.models.Label;
 import com.michaelzap94.santabiblia.utilities.BookHelper;
 import com.michaelzap94.santabiblia.viewmodel.VersesViewModel;

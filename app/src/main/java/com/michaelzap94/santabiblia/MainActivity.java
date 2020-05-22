@@ -1,6 +1,5 @@
 package com.michaelzap94.santabiblia;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
@@ -12,10 +11,7 @@ import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
-import com.michaelzap94.santabiblia.adapters.MainCardViewPagerAdapter;
-import com.michaelzap94.santabiblia.adapters.VersesMarkedRecyclerViewAdapter;
-import com.michaelzap94.santabiblia.models.Book;
-import com.michaelzap94.santabiblia.models.MainCardContent;
+import com.michaelzap94.santabiblia.adapters.PagerAdapter.MainCardViewPagerAdapter;
 import com.michaelzap94.santabiblia.models.VersesMarked;
 import com.michaelzap94.santabiblia.utilities.BookHelper;
 import com.michaelzap94.santabiblia.utilities.CommonMethods;
@@ -23,9 +19,7 @@ import com.michaelzap94.santabiblia.utilities.ShadowTransformer;
 import com.michaelzap94.santabiblia.viewmodel.VersesMarkedViewModel;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import static android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP;
 import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
 
 public class MainActivity extends BaseActivityTopDrawer  {

@@ -1,16 +1,14 @@
-package com.michaelzap94.santabiblia.adapters;
+package com.michaelzap94.santabiblia.adapters.RecyclerView;
 
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.text.Html;
-import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
-import android.text.style.BackgroundColorSpan;
 import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.util.SparseBooleanArray;

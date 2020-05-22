@@ -1,4 +1,4 @@
-package com.michaelzap94.santabiblia.adapters;
+package com.michaelzap94.santabiblia.adapters.RecyclerView;
 
 import android.app.Activity;
 import android.util.Log;

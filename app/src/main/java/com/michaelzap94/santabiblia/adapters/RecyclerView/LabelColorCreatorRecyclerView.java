@@ -1,4 +1,4 @@
-package com.michaelzap94.santabiblia.adapters;
+package com.michaelzap94.santabiblia.adapters.RecyclerView;
 
 import android.content.Context;
 import android.content.res.ColorStateList;

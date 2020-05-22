@@ -1,31 +1,23 @@
-package com.michaelzap94.santabiblia.adapters;
+package com.michaelzap94.santabiblia.adapters.RecyclerView;
 
-import android.app.ListActivity;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.view.ActionMode;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
-import com.michaelzap94.santabiblia.BaseActivityTopDrawer;
 import com.michaelzap94.santabiblia.Bible;
 import com.michaelzap94.santabiblia.Dashboard;
 import com.michaelzap94.santabiblia.R;
 import com.michaelzap94.santabiblia.fragments.dashboard.DashboardMainFragment;
 import com.michaelzap94.santabiblia.fragments.ui.tabVerses.VersesFragment;
-import com.michaelzap94.santabiblia.models.Book;
 import com.michaelzap94.santabiblia.models.Label;
-import com.michaelzap94.santabiblia.models.Verse;
 import com.michaelzap94.santabiblia.viewmodel.VersesViewModel;
 
 import java.util.ArrayList;

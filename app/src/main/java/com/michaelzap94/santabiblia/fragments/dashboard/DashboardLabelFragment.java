@@ -1,7 +1,6 @@
 package com.michaelzap94.santabiblia.fragments.dashboard;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,7 +9,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -24,23 +22,16 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.michaelzap94.santabiblia.BaseActivityTopDrawer;
 import com.michaelzap94.santabiblia.Dashboard;
-import com.michaelzap94.santabiblia.DatabaseHelper.BibleDBHelper;
 import com.michaelzap94.santabiblia.DatabaseHelper.ContentDBHelper;
 import com.michaelzap94.santabiblia.R;
-import com.michaelzap94.santabiblia.adapters.DashboardRecyclerViewAdapter;
-import com.michaelzap94.santabiblia.adapters.VersesMarkedRecyclerViewAdapter;
-import com.michaelzap94.santabiblia.adapters.VersesRecyclerViewAdapter;
-import com.michaelzap94.santabiblia.fragments.ui.tabVerses.VersesFragment;
+import com.michaelzap94.santabiblia.adapters.RecyclerView.VersesMarkedRecyclerViewAdapter;
 import com.michaelzap94.santabiblia.models.Label;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.michaelzap94.santabiblia.models.Verse;
 import com.michaelzap94.santabiblia.models.VersesMarked;
 import com.michaelzap94.santabiblia.viewmodel.VersesMarkedViewModel;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 
 public class DashboardLabelFragment extends Fragment {

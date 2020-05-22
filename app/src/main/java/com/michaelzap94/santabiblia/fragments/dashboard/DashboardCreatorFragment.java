@@ -1,45 +1,26 @@
 package com.michaelzap94.santabiblia.fragments.dashboard;
 
-import android.app.Dialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager.widget.ViewPager;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputLayout;
-import com.michaelzap94.santabiblia.Bible;
 import com.michaelzap94.santabiblia.Dashboard;
-import com.michaelzap94.santabiblia.DatabaseHelper.BibleDBHelper;
 import com.michaelzap94.santabiblia.DatabaseHelper.ContentDBHelper;
 import com.michaelzap94.santabiblia.R;
-import com.michaelzap94.santabiblia.Settings;
-import com.michaelzap94.santabiblia.adapters.LabelColorCreatorRecyclerView;
-import com.michaelzap94.santabiblia.adapters.dialogs.GridAdapter;
-import com.michaelzap94.santabiblia.models.Label;
+import com.michaelzap94.santabiblia.adapters.RecyclerView.LabelColorCreatorRecyclerView;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 /**

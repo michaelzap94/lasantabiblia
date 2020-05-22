@@ -1,7 +1,6 @@
-package com.michaelzap94.santabiblia.adapters;
+package com.michaelzap94.santabiblia.adapters.RecyclerView;
 
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,17 +10,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.michaelzap94.santabiblia.BaseActivityTopDrawer;
-import com.michaelzap94.santabiblia.Bible;
 import com.michaelzap94.santabiblia.R;
 import com.michaelzap94.santabiblia.SearchSpecific;
-import com.michaelzap94.santabiblia.models.Book;
 import com.michaelzap94.santabiblia.models.SearchResult;
-import com.michaelzap94.santabiblia.utilities.BookHelper;
 
 import java.util.ArrayList;
-
-import static android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP;
 
 public class SearchResultsRecyclerView extends RecyclerView.Adapter<SearchResultsRecyclerView.ViewHolder> {
     private static final String TAG = "SearchResultsRecyclerVi";

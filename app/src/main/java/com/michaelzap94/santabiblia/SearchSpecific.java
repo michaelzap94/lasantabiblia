@@ -3,7 +3,6 @@ package com.michaelzap94.santabiblia;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,12 +14,8 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.michaelzap94.santabiblia.DatabaseHelper.BibleDBHelper;
-import com.michaelzap94.santabiblia.adapters.SearchResultsRecyclerView;
-import com.michaelzap94.santabiblia.adapters.VersesRecyclerViewAdapter;
-import com.michaelzap94.santabiblia.models.Book;
+import com.michaelzap94.santabiblia.adapters.RecyclerView.SearchResultsRecyclerView;
 import com.michaelzap94.santabiblia.models.SearchResult;
-import com.michaelzap94.santabiblia.utilities.BookHelper;
 import com.michaelzap94.santabiblia.viewmodel.SearchResultsViewModel;
 
 import java.util.ArrayList;

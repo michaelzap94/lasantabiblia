@@ -1,4 +1,4 @@
-package com.michaelzap94.santabiblia.adapters;
+package com.michaelzap94.santabiblia.adapters.PagerAdapter;
 
 import android.content.Context;
 import android.os.Build;

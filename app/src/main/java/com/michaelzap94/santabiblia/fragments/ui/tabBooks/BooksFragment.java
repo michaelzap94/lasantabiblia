@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.michaelzap94.santabiblia.R;
-import com.michaelzap94.santabiblia.adapters.BooksRecyclerViewAdapter;
+import com.michaelzap94.santabiblia.adapters.RecyclerView.BooksRecyclerViewAdapter;
 import com.michaelzap94.santabiblia.models.Book;
 import com.michaelzap94.santabiblia.utilities.BookHelper;
 

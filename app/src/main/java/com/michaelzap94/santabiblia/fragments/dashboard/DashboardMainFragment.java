@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -18,17 +17,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.michaelzap94.santabiblia.Dashboard;
 import com.michaelzap94.santabiblia.DatabaseHelper.ContentDBHelper;
 import com.michaelzap94.santabiblia.R;
-import com.michaelzap94.santabiblia.adapters.DashboardRecyclerViewAdapter;
-import com.michaelzap94.santabiblia.adapters.VersesRecyclerViewAdapter;
-import com.michaelzap94.santabiblia.fragments.ui.tabVerses.VersesFragment;
+import com.michaelzap94.santabiblia.adapters.RecyclerView.DashboardRecyclerViewAdapter;
 import com.michaelzap94.santabiblia.models.Label;
-import com.michaelzap94.santabiblia.utilities.RecyclerItemClickListener;
 
 import java.util.ArrayList;
 
