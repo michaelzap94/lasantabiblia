@@ -41,14 +41,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/design_default_color_on_secondary"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/verses_marked_in_one_note"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/design_default_color_on_secondary"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:text="No note" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>
