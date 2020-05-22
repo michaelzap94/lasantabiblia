@@ -175,7 +175,7 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
                     case BottomSheetBehavior.STATE_HIDDEN:
                         ((Bible) mActivity).showBottomNavigationView();
                         ((Bible) mActivity).showFloatingActionButton();
-
+                        arrLabels = null;
                         if(actionMode!=null){
                             actionMode.finish();
                         }
