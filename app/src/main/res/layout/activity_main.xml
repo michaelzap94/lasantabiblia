@@ -87,7 +87,7 @@
             <com.google.android.material.button.MaterialButton
                 android:insetTop="0dp"
                 android:id="@+id/verses_learned_button"
-                app:icon="@drawable/ic_add_circle_outline"
+                app:icon="@drawable/ic_brain_new"
                 app:iconGravity="textStart"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
                 app:strokeColor="?attr/colorOnSurface"

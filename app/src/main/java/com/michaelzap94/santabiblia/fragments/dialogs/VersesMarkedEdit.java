@@ -32,6 +32,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
+import com.michaelzap94.santabiblia.Bible;
+import com.michaelzap94.santabiblia.Dashboard;
 import com.michaelzap94.santabiblia.R;
 import com.michaelzap94.santabiblia.adapters.RecyclerView.VersesMarkedEditRecyclerViewAdapter;
 import com.michaelzap94.santabiblia.adapters.RecyclerView.VersesMarkedRecyclerViewAdapter;
@@ -41,6 +43,7 @@ import com.michaelzap94.santabiblia.models.VersesMarked;
 import com.michaelzap94.santabiblia.utilities.BookHelper;
 import com.michaelzap94.santabiblia.utilities.SwipeToDelete;
 import com.michaelzap94.santabiblia.viewmodel.VersesMarkedViewModel;
+import com.michaelzap94.santabiblia.viewmodel.VersesViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +64,8 @@ public class VersesMarkedEdit extends DialogFragment {
     private int selectedItemsInitialSize = 0;
     private TextInputLayout note;
     private RecyclerView rvView;
-    private VersesMarkedViewModel viewModel;
+    private VersesMarkedViewModel viewModelVersesMarked;
+    private VersesViewModel viewModelVerses;
     //Instantiate the RecyclerViewAdapter, passing an empty list initially.
     // this data will not be shown until you setAdapter to the RecyclerView view in the Layout
     private VersesMarkedEditRecyclerViewAdapter rvAdapter;
@@ -89,7 +93,10 @@ public class VersesMarkedEdit extends DialogFragment {
         selectedItemsInitialSize = selectedItems.size();
         //itemTouchHelper = new ItemTouchHelper(SwipeToDelete);
         rvAdapter = new VersesMarkedEditRecyclerViewAdapter(this.ctx, list);
-        viewModel = new ViewModelProvider(getActivity()).get(VersesMarkedViewModel.class);
+        viewModelVersesMarked = new ViewModelProvider(getActivity()).get(VersesMarkedViewModel.class);
+        if (getActivity() instanceof Bible) {
+            viewModelVerses = new ViewModelProvider(getActivity()).get(VersesViewModel.class);
+        }
     }
 
     @Override
@@ -133,7 +140,12 @@ public class VersesMarkedEdit extends DialogFragment {
                 //if something changed, update, otherwise do not
                 String noteValue = note.getEditText().getText().toString();
                 if(selectedItems.size() != selectedItemsInitialSize || !noteValue.equals(versesMarked.getNote())){
-                    viewModel.updateVersesMarked(versesMarked.getUuid(), versesMarked.getLabel(), versesMarked.getBook().getBookNumber(), versesMarked.getChapter(), noteValue , selectedItems);
+                    if(viewModelVerses != null){
+                        viewModelVersesMarked.updateVersesMarked(viewModelVerses, versesMarked.getUuid(), versesMarked.getLabel(), versesMarked.getBook().getBookNumber(), versesMarked.getChapter(), noteValue , selectedItems);
+                        //viewModelVerses.fetchData(versesMarked.getBook().getBookNumber(), versesMarked.getChapter());
+                    } else {
+                        viewModelVersesMarked.updateVersesMarked(null, versesMarked.getUuid(), versesMarked.getLabel(), versesMarked.getBook().getBookNumber(), versesMarked.getChapter(), noteValue , selectedItems);
+                    }
                 }
                 dismiss();
 //            }

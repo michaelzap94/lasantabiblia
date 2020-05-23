@@ -8,6 +8,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 
 import com.michaelzap94.santabiblia.DatabaseHelper.ContentDBHelper;
 import com.michaelzap94.santabiblia.adapters.RecyclerView.VersesLearnedRecyclerView;
@@ -65,15 +66,23 @@ public class VersesMarkedViewModel extends AndroidViewModel {
         }
     }
     //===============================================================================================
-    public void updateVersesMarked(String uuid, Label mLabel, int book_number, int chapter_number, String note, List<Integer> selectedItems){new VersesMarkedViewModel.UpdateVersesMarked().execute(uuid, mLabel, book_number, chapter_number, note, selectedItems);}
+    public void updateVersesMarked(AndroidViewModel vm, String uuid, Label mLabel, int book_number, int chapter_number, String note, List<Integer> selectedItems){new VersesMarkedViewModel.UpdateVersesMarked(vm).execute(uuid, mLabel, book_number, chapter_number, note, selectedItems);}
     private class UpdateVersesMarked extends AsyncTask<Object, Void, Void> {
+        AndroidViewModel vm;
+        UpdateVersesMarked(AndroidViewModel vm){
+            this.vm = vm;
+        }
         //get data and populate the list
         protected Void doInBackground(Object... args) {
             Log.d(TAG, "UpdateVersesMarked doInBackground: " + args[0]);
             boolean success = ContentDBHelper.getInstance(getApplication()).updateSelectedItemsBulkTransaction((String) args[0], (Label) args[1], (int) args[2], (int) args[3], (String) args[4], (List<Integer>) args[5]);
             Log.d(TAG, "UpdateVersesMarked doInBackground: result " + success);
             if(success){
-                fetchData(((Label) args[1]).getId());
+                if(vm == null){//viewmodel from Dashboard
+                    fetchData(((Label) args[1]).getId());
+                } else {//viewmodel from bible
+                    ((VersesViewModel) vm).fetchData((int) args[2], (int) args[3]);
+                }
             } else {
                 Log.d(TAG, "MarkVerses Not all elements could be inserted");
             }

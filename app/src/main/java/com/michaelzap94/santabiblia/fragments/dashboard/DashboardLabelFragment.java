@@ -69,8 +69,6 @@ public class DashboardLabelFragment extends Fragment {
         // in case the Activity is destroyed and recreated(screen roation)
         //ViewModel will help us show the exact same data, and resume the application from when the user left last time.
         viewModel = new ViewModelProvider(getActivity()).get(VersesMarkedViewModel.class);
-        //Use when we need to reload data
-        viewModel.fetchData(this.mLabel.getId());//refresh -> load data
         //viewModel.getUserMutableLiveData().observe(context, verseListUpdateObserver);
         //observerViewModel();
     }
@@ -113,6 +111,8 @@ public class DashboardLabelFragment extends Fragment {
         super.onResume();
         if (getActivity() instanceof Dashboard) {
             ((Dashboard) getActivity()).getSupportActionBar().setTitle(this.mLabel.getName());
+            //Use when we need to reload data
+            viewModel.fetchData(this.mLabel.getId());//refresh -> load data
         }
     }
 
