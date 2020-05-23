@@ -9,7 +9,9 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
+import android.text.style.BackgroundColorSpan;
 import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ContextThemeWrapper;
@@ -131,6 +133,7 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
                         }
                     };
                     ssTextVerse.setSpan(clickableSpan, start, end + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    ssTextVerse.setSpan(new ForegroundColorSpan(Color.BLUE), start, end + 1, 0);
                     txtView_verse.setMovementMethod(LinkMovementMethod.getInstance());
                     txtView_verse.setHighlightColor(Color.TRANSPARENT);
 
