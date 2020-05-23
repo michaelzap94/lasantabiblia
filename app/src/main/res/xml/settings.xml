@@ -1,27 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.preference.PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
-    <Preference
-        app:key="preferences_fragment"
-        app:title="@string/preferences"
-        app:icon="@drawable/ic_settings"
-        app:fragment="com.michaelzap94.santabiblia.fragments.settings.InnerPreferencesFragment"
-        />
-    <Preference
-        app:key="Bible_exist"
-        app:title="@string/bible_exist"
-        app:icon="@drawable/ic_library_books"
-        app:useSimpleSummaryProvider="true"
-        />
+
     <PreferenceCategory
-        app:key="sync"
-        app:title="Sync username">
-        <SwitchPreferenceCompat
-            app:key="enable_sync"
-            app:title="Enable username change"/>
-        <EditTextPreference
-            app:key="username"
-            app:title="Username"
+        app:key="syncf"
+        app:title="First">
+        <Preference
+            app:key="pref_notifications"
+            app:title="Notifications"
+            app:icon="@drawable/ic_notifications"
+            app:fragment="com.michaelzap94.santabiblia.fragments.settings.InnerPreferencesFragment"
+            />
+        <ListPreference
+            app:key="pref_bible_selected"
+            app:entries="@array/sizeletra"
+            app:entryValues="@array/valuesizeletra"
+            app:icon="@drawable/ic_library_books"
+            app:title="Bible Selected"
+            app:defaultValue="14"
             app:useSimpleSummaryProvider="true"
-            app:dependency="enable_sync"/>
+            />
+        <Preference
+            app:key="pref_manage_resources"
+            app:title="Manage Resources"
+            app:icon="@drawable/ic_local_library"
+            app:fragment="com.michaelzap94.santabiblia.fragments.settings.InnerPreferencesFragment"
+            />
     </PreferenceCategory>
+
+    <PreferenceCategory
+        app:key="syncs"
+        app:title="Second">
+        <Preference
+            app:key="pref_font"
+            app:title="Manage Font"
+            app:icon="@drawable/ic_text_format"
+            app:fragment="com.michaelzap94.santabiblia.fragments.settings.InnerPreferencesFragment"
+            />
+        <!--        <ListPreference-->
+        <!--            app:entries="@array/sizeletra"-->
+        <!--            app:title="Tamaño de Letra"-->
+        <!--            app:key="list_preference"-->
+        <!--            app:summary="Establecer tamaño de fuente."-->
+        <!--            app:defaultValue="2"-->
+        <!--            app:entryValues="@array/valuesizeletra" />-->
+        <CheckBoxPreference
+            app:key="pref_night_mode"
+            app:icon="@drawable/ic_moon"
+            app:title="Modo Nocturno"
+            app:summary="Reduce los colores claros, permitiendo una lectura cómoda en la noche."
+            app:defaultValue="false" />
+        <CheckBoxPreference
+            app:key="pref_active_screen"
+            app:icon="@drawable/ic_eye"
+            app:title="Pantalla Activa"
+            app:summary="Evita que la pantalla se apague durante la lectura."
+            app:defaultValue="false" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:key="synct"
+        app:title="Third">
+        <Preference
+            app:key="pref_sync_up"
+            app:title="Back up and Sync Up"
+            app:icon="@drawable/ic_sync"
+            app:useSimpleSummaryProvider="true"
+            />
+        <Preference
+            app:key="pref_clear_data"
+            app:title="Clear Data"
+            app:icon="@drawable/ic_delete"
+            />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:key="syncf"
+        app:title="Fourth">
+        <Preference
+            app:key="pref_share"
+            app:title="Share"
+            app:icon="@drawable/ic_share"
+            app:fragment="com.michaelzap94.santabiblia.fragments.settings.InnerPreferencesFragment"
+            />
+        <Preference
+            app:key="pref_about"
+            app:title="About"
+            app:icon="@drawable/ic_info"
+            app:useSimpleSummaryProvider="true"
+            />
+        <Preference
+            app:key="pref_help"
+            app:title="Help"
+            app:icon="@drawable/ic_help"
+            app:fragment="com.michaelzap94.santabiblia.fragments.settings.InnerPreferencesFragment"
+            />
+        <Preference
+            app:key="pref_sign_out"
+            app:title="Sign Out"
+            app:icon="@drawable/ic_exit"
+            app:summary="Come back soon!"/>
+    </PreferenceCategory>
+
 </androidx.preference.PreferenceScreen>

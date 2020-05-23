@@ -21,20 +21,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setPreferencesFromResource(R.xml.settings, rootKey);
 
-        final SwitchPreferenceCompat switchPreferenceCompat = (SwitchPreferenceCompat) getPreferenceManager().findPreference("enable_sync");
-        switchPreferenceCompat.setSummaryProvider(new Preference.SummaryProvider() {
-            @Override
-            public CharSequence provideSummary(Preference preference) {
-                if (switchPreferenceCompat.isChecked()) {
-                    return "Active";
-                }
-                return "Inactive";
-            }
-        });
 
-        final Preference bibleExistPrefs = (Preference) getPreferenceManager().findPreference(BIBLE_EXIST);
-        boolean exist = this.getActivity().getSharedPreferences(MY_PREFS_NAME, Context.MODE_PRIVATE).getBoolean(BIBLE_EXIST, false);
-        bibleExistPrefs.setSummary(String.valueOf(exist));
 
         }
 }

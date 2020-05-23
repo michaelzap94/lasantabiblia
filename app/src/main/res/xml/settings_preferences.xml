@@ -8,4 +8,26 @@
         app:key="feedback"
         app:title="Send feedback"
         app:summary="Report technical issues or suggest new features"/>
+
+    <PreferenceCategory
+        app:key="sync"
+        app:title="placeholders">
+        <SwitchPreferenceCompat
+            app:key="enable_sync"
+            app:title="Enable username change"/>
+        <EditTextPreference
+            app:key="username"
+            app:title="Username"
+            app:useSimpleSummaryProvider="true"
+            app:dependency="enable_sync"/>
+
+    </PreferenceCategory>
+
+
+    <Preference
+        app:key="Bible_exist"
+        app:title="@string/bible_exist"
+        app:icon="@drawable/ic_help"
+        app:useSimpleSummaryProvider="true"
+        />
 </androidx.preference.PreferenceScreen>

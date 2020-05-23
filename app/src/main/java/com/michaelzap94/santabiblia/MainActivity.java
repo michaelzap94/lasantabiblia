@@ -167,6 +167,7 @@ public class MainActivity extends BaseActivityTopDrawer  {
         book_bookmarked = prefs.getInt(CommonMethods.BOOK_BOOKMARKED, -1);
         chapter_bookmarked = prefs.getInt(CommonMethods.CHAPTER_BOOKMARKED, -1);
         if(chapter_bookmarked != -1 && book_bookmarked != -1) {
+            Log.d(TAG, "onResume: book_bookmarked " + book_bookmarked);
             String book = BookHelper.getBook(book_bookmarked).getName();
             bookmark_button.setText(book + " " + chapter_bookmarked);
             bookmark_button.setEnabled(true);

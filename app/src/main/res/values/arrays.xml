@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="colortema">
+        <item>Marrón</item>
+        <item>Naranja</item>
+        <item>Naranja Intenso</item>
+        <item>Gris</item>
+        <item>Gris Azulado</item>
+        <item>Verde</item>
+        <item>Ambar</item>
+        <item>Azul Indigo</item>
+        <item>Azul</item>
+        <item>Cyan</item>
+        <item>Verde Azulado</item>
+        <item>Rojo</item>
+        <item>Rosado</item>
+        <item>Púrpura</item>
+        <item>Púrpura Intenso</item>
+    </array>
+    <array name="sizeletra">
+        <item>Muy Pequeña</item>
+        <item>Pequeña</item>
+        <item>Normal</item>
+        <item>Grande</item>
+        <item>Muy Grande</item>
+        <item>Enorme</item>
+        <item>Muy Enorme</item>
+    </array>
+    <array name="valuescolortema">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+    </array>
+
+    <string-array name="valuesizeletra">
+        <item>14</item>
+        <item>16</item>
+        <item>18</item>
+        <item>22</item>
+        <item>26</item>
+        <item>28</item>
+        <item>32</item>
+    </string-array>
+</resources>
