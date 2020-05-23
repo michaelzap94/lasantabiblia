@@ -86,7 +86,7 @@
 <!--                android:background="@android:color/darker_gray" />-->
             <com.google.android.material.button.MaterialButton
                 android:insetTop="0dp"
-                android:id="@+id/dash_new_button"
+                android:id="@+id/verses_learned_button"
                 app:icon="@drawable/ic_add_circle_outline"
                 app:iconGravity="textStart"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"

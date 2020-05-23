@@ -76,7 +76,7 @@ public class BibleDBHelper {
             if (labelSpecificRows.moveToFirst()) {
                 labelSpecificRowsCount = labelSpecificRows.getCount();
                 for (i = 0; i < labelSpecificRowsCount; i++) {
-                    int _idCol= labelSpecificRows.getColumnIndex("_id");
+                    //int _idCol= labelSpecificRows.getColumnIndex("_id");
                     int uuidCol = labelSpecificRows.getColumnIndex("UUID");
                     int label_idCol = labelSpecificRows.getColumnIndex("label_id");
                     int label_nameCol= labelSpecificRows.getColumnIndex("label_name");
@@ -87,7 +87,7 @@ public class BibleDBHelper {
                     int verseFromCol= labelSpecificRows.getColumnIndex("verseFrom");
                     int verseToCol= labelSpecificRows.getColumnIndex("verseTo");
                     int noteCol= labelSpecificRows.getColumnIndex("note");
-                    int _id = labelSpecificRows.getInt(_idCol);
+                    //int _id = labelSpecificRows.getInt(_idCol);
                     String uuid = labelSpecificRows.getString(uuidCol);
                     int label_id = labelSpecificRows.getInt(label_idCol);
                     String label_name = labelSpecificRows.getString(label_nameCol);

@@ -38,6 +38,7 @@ public class CommonMethods {
     public static final String BOOK_BOOKMARKED = "BOOK_BOOKMARKED";
     public static final String CHAPTER_LASTSEEN = "CHAPTER_LASTSEEN";
     public static final String BOOK_LASTSEEN = "BOOK_LASTSEEN";
+    public static final int LABEL_ID_MEMORIZE = 1;
     public static void checkDatabaseExistLoad(Context context){
 
         SharedPreferences prefs = context.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);

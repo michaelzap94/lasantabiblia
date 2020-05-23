@@ -16,6 +16,7 @@ import com.michaelzap94.santabiblia.models.Label;
 import com.michaelzap94.santabiblia.models.SearchResult;
 import com.michaelzap94.santabiblia.models.VersesMarked;
 import com.michaelzap94.santabiblia.utilities.BookHelper;
+import com.michaelzap94.santabiblia.utilities.CommonMethods;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -98,8 +99,8 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         List<List<Integer>> versesGroups = BookHelper.getVersesSelectedResults(selectedItems);//[[1,2,3],[6,7],[9]]
         SQLiteDatabase db = this.getWritableDatabase();
         db.beginTransaction();
+        String uniqueID = (uuid != null) ? uuid : UUID.randomUUID().toString();
         try{
-            String uniqueID = (uuid != null) ? uuid : UUID.randomUUID().toString();
             ContentValues cv = new ContentValues();
             cv.put("label_id", label_id);
             cv.put("label_name", label_name);
@@ -126,6 +127,10 @@ public class ContentDBHelper extends SQLiteOpenHelper {
             success = false;
         } finally {
             db.endTransaction();
+        }
+        //insert uuid in verses_learned
+        if(success && label_id == CommonMethods.LABEL_ID_MEMORIZE){
+            insertVersesLearned(uniqueID, 0);
         }
         return success;
     }
@@ -171,13 +176,19 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         cv.put("note", (!note.equals(BuildConfig.FLAVOR) ?  note : "NULL"));
         return this.getWritableDatabase().insert("verses_marked",null, cv) > 0;
     }
-    public ArrayList<VersesMarked> getVersesMarked(int label_id, String _uuid) {
+    public ArrayList<VersesMarked> getVersesMarked(int label_id, String _uuid, int learned) {
         int labelSpecificRowsCount;
         int i;
         HashMap<String,Integer> history = new HashMap<>();
         ArrayList<VersesMarked> list = new ArrayList<>();
         try {
-            String query = (_uuid == null) ? "SELECT * FROM verses_marked WHERE label_id=" + label_id : "SELECT * FROM verses_marked WHERE label_id=" + label_id + " AND UUID ='" + _uuid + "'";
+            String query;
+            if(learned > -1){
+                query ="SELECT verses_marked.UUID, verses_marked.label_name,verses_marked.label_color,verses_marked.label_permanent,verses_marked.book_number,verses_marked.chapter,verses_marked.verseFrom,verses_marked.verseTo,verses_marked.note " +
+                        " FROM verses_marked LEFT JOIN verses_learned ON verses_marked.UUID = verses_learned.UUID WHERE verses_marked.label_id = " + CommonMethods.LABEL_ID_MEMORIZE + " AND verses_learned.learned=" + learned + " ORDER BY verses_learned.priority, verses_marked.date_updated";
+            } else {
+                query = (_uuid == null) ? "SELECT * FROM verses_marked WHERE label_id=" + label_id : "SELECT * FROM verses_marked WHERE label_id=" + label_id + " AND UUID ='" + _uuid + "'";
+            }
             Cursor labelSpecificRows = this.getReadableDatabase().rawQuery(query, null);
             if (labelSpecificRows.moveToFirst()) {
                 labelSpecificRowsCount = labelSpecificRows.getCount();
@@ -250,7 +261,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         ArrayList<VersesMarked> finalArray = new ArrayList<>();
         for (int x = 0; x < listOfLabels.size(); x++) {
             Label oneLabel = listOfLabels.get(x);
-            finalArray.addAll(getVersesMarked(oneLabel.getId(), oneLabel.getUUID()));
+            finalArray.addAll(getVersesMarked(oneLabel.getId(), oneLabel.getUUID(), -1));
         }
         return finalArray;
     }
@@ -266,6 +277,33 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         }
         return -1;
     }
+    public boolean editVersesLearned(String uuid, int learned){
+        ContentValues cv = new ContentValues();
+        cv.put("learned", learned);
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.update("verses_learned", cv, "UUID=?", new String[]{uuid}) > 0;
+    }
+    public boolean insertVersesLearned(String uuid, int learned){
+        ContentValues cv = new ContentValues();
+        cv.put("UUID", uuid);
+        cv.put("learned", learned);
+        cv.put("label_id", CommonMethods.LABEL_ID_MEMORIZE);
+        return this.getWritableDatabase().insert("verses_learned",null, cv) > 0;
+    }
+    public ArrayList<VersesMarked> getVersesMarkedLearned(int learned){
+        return getVersesMarked(CommonMethods.LABEL_ID_MEMORIZE, null, learned);
+    }
+
+    public int getVersesLearnedNumber() {
+        try {
+            String query = "SELECT * FROM verses_learned";
+            Cursor labelSpecificRows = this.getReadableDatabase().rawQuery(query, null);
+            return labelSpecificRows.getCount();
+        } catch (Exception e) {
+        }
+        return -1;
+    }
+
 
     //SEARCH IN NOTES========================================================================================
 //    public ArrayList<SearchResult> searchInNotes(String input) {
@@ -349,9 +387,12 @@ public class ContentDBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE labels (_id INTEGER PRIMARY KEY, name VARCHAR NOT NULL, color VARCHAR NOT NULL, permanent INTEGER DEFAULT 0)");
-        db.execSQL("CREATE TABLE verses_marked (_id INTEGER PRIMARY KEY, label_id INTEGER NOT NULL, book_number INTEGER NOT NULL, chapter INTEGER NOT NULL, verseFrom INTEGER NOT NULL, verseTo INTEGER NOT NULL, " +
+        db.execSQL("CREATE TABLE verses_marked (label_id INTEGER NOT NULL, book_number INTEGER NOT NULL, chapter INTEGER NOT NULL, verseFrom INTEGER NOT NULL, verseTo INTEGER NOT NULL, " +
                 "label_name VARCHAR NOT NULL, label_color VARCHAR NOT NULL, label_permanent INTEGER DEFAULT 0, note VARCHAR, date_created datetime DEFAULT current_timestamp, date_updated datetime DEFAULT current_timestamp, UUID VARCHAR NOT NULL, state INTEGER DEFAULT 0," +
-                "FOREIGN KEY (label_id) REFERENCES labels (_id) ON DELETE CASCADE)");
+                " PRIMARY KEY (UUID, label_id), FOREIGN KEY (label_id) REFERENCES labels (_id) ON DELETE CASCADE)");
+        db.execSQL("CREATE TABLE verses_learned (_id INTEGER PRIMARY KEY, UUID VARCHAR NOT NULL, label_id INTEGER NOT NULL, learned INTEGER DEFAULT 0, priority INTEGER DEFAULT 0, FOREIGN KEY (UUID, label_id) REFERENCES verses_marked (UUID, label_id) ON DELETE CASCADE)");
+
+
         db.execSQL("INSERT INTO labels (name,color,permanent) VALUES( \"Memorize\", \"#00ff00\", 1)");
         db.execSQL("INSERT INTO labels (name,color,permanent) VALUES( \"Favourites\", \"#ffd700\", 1)");
     }

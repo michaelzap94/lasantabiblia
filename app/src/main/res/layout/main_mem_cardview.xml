@@ -2,7 +2,7 @@
 <com.google.android.material.card.MaterialCardView
     android:id="@+id/main_card_mem_cardview"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:layout_gravity="center"
     app:cardUseCompatPadding="true"
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -78,6 +78,7 @@
                 android:layout_weight="1"
                 android:gravity="start"
                 android:clickable="true"
+                android:visibility="gone"
                 />
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/main_card_mem_content_learned"
@@ -93,6 +94,7 @@
                 android:gravity="center_horizontal"
                 android:layout_marginStart="24dp"
                 android:clickable="true"
+                android:visibility="gone"
                 />
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/main_card_mem_content_notlearned"
@@ -108,6 +110,7 @@
                 android:gravity="end"
                 android:layout_marginStart="24dp"
                 android:clickable="true"
+                android:visibility="gone"
                 />
         </LinearLayout>
 

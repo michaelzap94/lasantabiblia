@@ -106,6 +106,7 @@ public class VersesMarkedEdit extends DialogFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        note.setVisibility(View.VISIBLE);
         rvView.setLayoutManager(new LinearLayoutManager(this.getContext()));
 //        rvView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), rvView, VersesFragment.this));
         rvView.setAdapter(rvAdapter);//attach the RecyclerView adapter to the RecyclerView View

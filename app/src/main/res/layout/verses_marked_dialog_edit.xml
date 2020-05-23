@@ -38,7 +38,8 @@
             app:counterMaxLength="200"
             app:helperTextEnabled="true"
             app:helperText="Letters left"
-            android:hint="Note">
+            android:hint="Note"
+            android:visibility="gone">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
