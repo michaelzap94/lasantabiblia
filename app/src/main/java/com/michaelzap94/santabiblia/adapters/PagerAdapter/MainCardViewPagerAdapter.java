@@ -1,6 +1,7 @@
 package com.michaelzap94.santabiblia.adapters.PagerAdapter;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.text.Html;
 import android.text.Spanned;
@@ -16,6 +17,10 @@ import androidx.cardview.widget.CardView;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.michaelzap94.santabiblia.DatabaseHelper.ContentDBHelper;
+import com.michaelzap94.santabiblia.MainActivity;
+import com.michaelzap94.santabiblia.adapters.RecyclerView.VersesLearnedRecyclerView;
 import com.michaelzap94.santabiblia.interfaces.CardAdapter;
 import com.michaelzap94.santabiblia.models.VersesMarked;
 import com.michaelzap94.santabiblia.R;
@@ -34,14 +39,16 @@ public class MainCardViewPagerAdapter extends PagerAdapter  implements CardAdapt
     private float mBaseElevation;
     private LayoutInflater layoutInflater;
     private Context context;
+    MainActivity listener;
 
-    public MainCardViewPagerAdapter(List<VersesMarked> mainCardContents, Context context) {
+    public MainCardViewPagerAdapter(List<VersesMarked> mainCardContents, Context context, MainActivity listener) {
         if(mainCardContents != null){
             this.mainCardContents = mainCardContents;
         } else {
             this.mainCardContents = new ArrayList<>();
         }
         this.context = context;
+        this.listener = listener;
         mViews = new ArrayList<>();
     }
 
@@ -50,6 +57,12 @@ public class MainCardViewPagerAdapter extends PagerAdapter  implements CardAdapt
         mainCardContents.addAll(_versesMarkedArrayList);
         mViews.clear();
         mViews.addAll(Collections.nCopies( _versesMarkedArrayList.size(), null));
+        notifyDataSetChanged();
+    }
+
+    public void removeCardItem(int position){
+        mViews.remove(position);
+        mainCardContents.remove(position);
         notifyDataSetChanged();
     }
 
@@ -73,12 +86,6 @@ public class MainCardViewPagerAdapter extends PagerAdapter  implements CardAdapt
         return mainCardContents.size();
     }
 
-    //so that notifyDataSetChanged refreshes
-    @Override
-    public int getItemPosition(Object object){
-        return PagerAdapter.POSITION_NONE;
-    }
-
     @Override
     public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
         return view.equals(object);
@@ -91,7 +98,7 @@ public class MainCardViewPagerAdapter extends PagerAdapter  implements CardAdapt
 
         layoutInflater = LayoutInflater.from(context);
         View view = layoutInflater.inflate(R.layout.main_mem_cardview, container, false);
-        bind(mainCardContents.get(position), view);
+        bind(mainCardContents.get(position), view, position);
         container.addView(view, 0);
 
         MaterialCardView cardView = (MaterialCardView) view.findViewById(R.id.main_card_mem_cardview);
@@ -106,10 +113,18 @@ public class MainCardViewPagerAdapter extends PagerAdapter  implements CardAdapt
         return view;
     }
 
-    private void bind(VersesMarked versesMarked, View view) {
+    private void bind(VersesMarked versesMarked, View view, int position) {
         TextView txtView_title, txtView_content;
+        FloatingActionButton btn_learned;
+        //FloatingActionButton btn_doubt;
         txtView_title = view.findViewById(R.id.verses_marked_cardview_title);
         txtView_content = view.findViewById(R.id.verses_marked_cardview_content);
+
+        btn_learned = view.findViewById(R.id.main_card_mem_content_learned);
+        //btn_doubt = view.findViewById(R.id.main_card_mem_content_doubt);
+
+        btn_learned.setVisibility(View.VISIBLE);
+        //btn_doubt.setVisibility(View.VISIBLE);
 
 //            Label label = versesMarked.getLabel();
         String bookName = versesMarked.getBook().getName();
@@ -146,10 +161,9 @@ public class MainCardViewPagerAdapter extends PagerAdapter  implements CardAdapt
 //            txtView_note.setText(versesMarked.getNote());
 //        }
 
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
+        btn_learned.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Toast.makeText(context, "clicked", Toast.LENGTH_SHORT).show();
+                listener.markAsLearned(versesMarked.getUuid(), position);
             }
         });
     }
@@ -158,8 +172,13 @@ public class MainCardViewPagerAdapter extends PagerAdapter  implements CardAdapt
     public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
         Log.d(TAG, "newadapter destroyItem: " + position);
         container.removeView((View)object);
-        if(mViews.size() > 0){
+        if(mViews.size() > 0 && mViews.size() > position){
             mViews.set(position, null);
         }
+    }
+    //so that notifyDataSetChanged refreshes
+    @Override
+    public int getItemPosition(Object object){
+        return PagerAdapter.POSITION_NONE;
     }
 }

@@ -3,12 +3,14 @@ package com.michaelzap94.santabiblia.viewmodel;
 import android.app.Application;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
 import com.michaelzap94.santabiblia.DatabaseHelper.ContentDBHelper;
+import com.michaelzap94.santabiblia.adapters.RecyclerView.VersesLearnedRecyclerView;
 import com.michaelzap94.santabiblia.models.Label;
 import com.michaelzap94.santabiblia.models.VersesMarked;
 
@@ -21,6 +23,8 @@ public class VersesMarkedViewModel extends AndroidViewModel {
 
     private MutableLiveData<ArrayList<VersesMarked>> versesMarkedList;
     private MutableLiveData<ArrayList<VersesMarked>> versesMarkedListByUUID;
+    private MutableLiveData<ArrayList<VersesMarked>> versesMarkedListLearned;
+    private MutableLiveData<ArrayList<VersesMarked>> versesMarkedListNotLearned;
     private int label_id;
 
     public VersesMarkedViewModel(@NonNull Application application) {
@@ -33,6 +37,12 @@ public class VersesMarkedViewModel extends AndroidViewModel {
     }
     public MutableLiveData<ArrayList<VersesMarked>> getVersesMarkedListByUUIDLiveData() {
         return versesMarkedListByUUID;
+    }
+    public MutableLiveData<ArrayList<VersesMarked>> getVersesMarkedListLearned() {
+        return versesMarkedListLearned;
+    }
+    public MutableLiveData<ArrayList<VersesMarked>> getVersesMarkedListNotLearned() {
+        return versesMarkedListNotLearned;
     }
     //PUBLIC SO we can refresh the list for some reason from the OUTSIDE
     public void refreshVersesMarkedList(int label_id){
@@ -48,7 +58,7 @@ public class VersesMarkedViewModel extends AndroidViewModel {
         //get data and populate the list
         protected Void doInBackground(Integer... args) {
             Log.d(TAG, "GetVersesMarked doInBackground: " + args[0]);
-            ArrayList<VersesMarked> result = ContentDBHelper.getInstance(getApplication()).getVersesMarked(args[0], null);
+            ArrayList<VersesMarked> result = ContentDBHelper.getInstance(getApplication()).getVersesMarked(args[0], null, -1);
             Log.d(TAG, "GetVersesMarked doInBackground: result " + result.size());
             versesMarkedList.postValue(result);
             return null;
@@ -87,5 +97,54 @@ public class VersesMarkedViewModel extends AndroidViewModel {
             return null;
         }
     }
-
+    //===============================================================================================
+    public void getVersesLearned(int learned){
+        if(learned == 0){
+            if(versesMarkedListNotLearned == null){
+                this.versesMarkedListNotLearned = new MutableLiveData<>();
+            }
+        } else {
+            if(versesMarkedListLearned == null){
+                this.versesMarkedListLearned = new MutableLiveData<>();
+            }
+        }
+        new VersesMarkedViewModel.GetVersesMarkedLearned().execute(learned);
+    }
+    private class GetVersesMarkedLearned extends AsyncTask<Integer, Void, Void> {
+        //get data and populate the list
+        protected Void doInBackground(Integer... args) {
+            Log.d(TAG, "GetVersesMarkedLearned doInBackground: " + args[0]);
+            ArrayList<VersesMarked> result = ContentDBHelper.getInstance(getApplication()).getVersesMarkedLearned(args[0]);
+            Log.d(TAG, "GetVersesMarkedLearned doInBackground: result " + result.size());
+            if(args[0] == 0){
+                versesMarkedListNotLearned.postValue(result);
+            } else {
+                versesMarkedListLearned.postValue(result);
+            }
+            return null;
+        }
+    }
+    //===============================================================================================
+//    public void removeFromLearned(String uuid, int position){new VersesMarkedViewModel.RemoveVersesLearned(position).execute(uuid);}
+//    private class RemoveVersesLearned extends AsyncTask<String, Void, Boolean> {
+//        private int position;
+//        private RemoveVersesLearned(int position) {
+//            this.position = position;
+//        }
+//        protected Boolean doInBackground(String... args) {
+//            Log.d(TAG, "doInBackground: " + args[0]);
+//            return ContentDBHelper.getInstance(getApplication()).editVersesLearned(args[0], 0);
+//        }
+//        @Override
+//        protected void onPostExecute(Boolean success) {
+//            super.onPostExecute(success);
+//            if(success){
+//                versesMarkedArrayList.remove(this.position);
+//                notifyItemRemoved(this.position);
+//
+//            } else {
+//                Toast.makeText(VersesLearnedRecyclerView.this.ctx, "This item could not be deleted", Toast.LENGTH_SHORT).show();
+//            }
+//        }
+//    }
 }

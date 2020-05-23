@@ -1,17 +1,26 @@
 package com.michaelzap94.santabiblia;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
+import com.michaelzap94.santabiblia.DatabaseHelper.ContentDBHelper;
 import com.michaelzap94.santabiblia.adapters.PagerAdapter.MainCardViewPagerAdapter;
+import com.michaelzap94.santabiblia.adapters.RecyclerView.VersesLearnedRecyclerView;
+import com.michaelzap94.santabiblia.fragments.dialogs.VersesLearned;
+import com.michaelzap94.santabiblia.fragments.dialogs.VersesMarkedEdit;
 import com.michaelzap94.santabiblia.models.VersesMarked;
 import com.michaelzap94.santabiblia.utilities.BookHelper;
 import com.michaelzap94.santabiblia.utilities.CommonMethods;
@@ -32,12 +41,12 @@ public class MainActivity extends BaseActivityTopDrawer  {
     private ViewPager viewPager;
     private MainCardViewPagerAdapter mainCardViewPagerAdapter;
     ///////////////////////////////////////////////////////////
-    private final int label_id_memorize = 1;
     private ArrayList<VersesMarked> list = new ArrayList();
     private VersesMarkedViewModel viewModel;
     private ShadowTransformer mCardShadowTransformer;
     private MaterialButton bookmark_button;
     private MaterialButton last_seen_button;
+    private MaterialButton verses_learned_button;
     int versesMarkedArrayListSize = 0;
     //INIT BUTTON VALUES==========================================================
     int book_bookmarked = -1;
@@ -55,6 +64,9 @@ public class MainActivity extends BaseActivityTopDrawer  {
                 case R.id.bookmark_button:
                     Log.d(TAG, "onClick: bookmark_button: " + book_bookmarked + " " + chapter_bookmarked);
                     goToBible(book_bookmarked, chapter_bookmarked);
+                    break;
+                case R.id.verses_learned_button:
+                    goToVersesLearned();
                     break;
                 default: break;
             }
@@ -74,18 +86,18 @@ public class MainActivity extends BaseActivityTopDrawer  {
         viewPager = findViewById(R.id.main_card_mem_viewpager);
         bookmark_button = findViewById(R.id.bookmark_button);
         last_seen_button = findViewById(R.id.last_seen_button);
+        verses_learned_button = findViewById(R.id.verses_learned_button);
         //BUTTON LISTENER=============================================================================
         bookmark_button.setOnClickListener(mClickListener);
         last_seen_button.setOnClickListener(mClickListener);
+        verses_learned_button.setOnClickListener(mClickListener);
 
-        mainCardViewPagerAdapter = new MainCardViewPagerAdapter(list, this);
+        mainCardViewPagerAdapter = new MainCardViewPagerAdapter(list, this, this);
         viewModel = new ViewModelProvider(this).get(VersesMarkedViewModel.class);
         //Use when we need to reload data
-        viewModel.fetchData(label_id_memorize);//refresh -> load data
-        //viewModel.getUserMutableLiveData().observe(context, verseListUpdateObserver);
+        viewModel.getVersesLearned(0);//refresh -> load data
 
         mCardShadowTransformer = new ShadowTransformer(viewPager, mainCardViewPagerAdapter);
-
         viewPager.setPadding(68, 8, 68, 10);
 //        viewPager.setPageMargin(5);
         viewPager.setAdapter(mainCardViewPagerAdapter);
@@ -135,9 +147,8 @@ public class MainActivity extends BaseActivityTopDrawer  {
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
         CommonMethods.bottomBarActionHandler(bottomNavigationView, R.id.bnav_home, MainActivity.this);
     }
-
     private void observerViewModel() {
-        viewModel.getUserMutableLiveData().observe(this, (versesMarkedArrayList) -> {
+        viewModel.getVersesMarkedListNotLearned().observe(this, (versesMarkedArrayList) -> {
             Log.d(TAG, "observerViewModel: LABEL GOT DATA" + versesMarkedArrayList.size() + "in label: Mem");
             versesMarkedArrayListSize = versesMarkedArrayList.size();
             //WHEN data is created  pass data and set it in the updateVersesMarkedViewPager VIEW
@@ -145,13 +156,12 @@ public class MainActivity extends BaseActivityTopDrawer  {
             main_card_mem_number.setText((viewPager.getCurrentItem()+1)+"/"+versesMarkedArrayListSize);
         });
     }
-
     @Override
     protected void onResume() {
         Log.d(TAG, "onResume: ");
         super.onResume();
         bottomNavigationView.setSelectedItemId(R.id.bnav_home);
-        viewModel.fetchData(label_id_memorize);//refresh -> load data
+        viewModel.getVersesLearned(0);//refresh -> load data
         //INIT BUTTONS LAST SEEN AND BOOKMARK=================================================================================
         SharedPreferences prefs = getSharedPreferences(CommonMethods.MY_PREFS_NAME, MODE_PRIVATE);
         book_bookmarked = prefs.getInt(CommonMethods.BOOK_BOOKMARKED, -1);
@@ -182,13 +192,11 @@ public class MainActivity extends BaseActivityTopDrawer  {
     protected void onSaveInstanceState(Bundle outState){
         super.onSaveInstanceState(outState);
     }
-
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         overridePendingTransition(0, 0);
 
     }
-
     protected void goToBible(int book, int chapter){
         if(book != -1 && chapter != -1){
             Intent myIntent = new Intent(MainActivity.this, Bible.class);
@@ -199,6 +207,41 @@ public class MainActivity extends BaseActivityTopDrawer  {
             myIntent.putExtra("resetstate", true);
             startActivity(myIntent);
             overridePendingTransition(0,0);
+        }
+    }
+    public void goToVersesLearned(){
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        VersesLearned newFragment = VersesLearned.newInstance();
+        // fragment fullscreen
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        // For a little polish, specify a transition animation
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        // To make it fullscreen, use the 'content' root view as the container
+        // for the fragment, which is always the root view for the activity
+        transaction.add(android.R.id.content, newFragment)//R.id.dashboard_fragment-> remove margin in verses_marked_dialog_edit.xml
+                .addToBackStack(null).commit();
+    }
+    //=================================================================================
+    public void markAsLearned(String uuid, int position){new MainActivity.AddVersesLearned(position).execute(uuid);}
+    private class AddVersesLearned extends AsyncTask<String, Void, Boolean> {
+        private int position;
+        private AddVersesLearned(int position) {
+            this.position = position;
+        }
+        protected Boolean doInBackground(String... args) {
+            Log.d(TAG, "doInBackground: " + position);
+            return ContentDBHelper.getInstance(MainActivity.this).editVersesLearned(args[0], 1);
+        }
+        @Override
+        protected void onPostExecute(Boolean success) {
+            super.onPostExecute(success);
+            if(success){
+                mainCardViewPagerAdapter.removeCardItem(this.position);
+                versesMarkedArrayListSize--;
+                main_card_mem_number.setText((viewPager.getCurrentItem()+1)+"/"+versesMarkedArrayListSize);
+            } else {
+                Toast.makeText(MainActivity.this, "This item could not be deleted", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }
