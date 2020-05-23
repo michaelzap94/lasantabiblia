@@ -10,6 +10,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.michaelzap94.santabiblia.Bible;
 import com.michaelzap94.santabiblia.DatabaseHelper.ContentDBHelper;
 import com.michaelzap94.santabiblia.adapters.RecyclerView.VersesLearnedRecyclerView;
 import com.michaelzap94.santabiblia.models.Label;
@@ -66,11 +67,11 @@ public class VersesMarkedViewModel extends AndroidViewModel {
         }
     }
     //===============================================================================================
-    public void updateVersesMarked(AndroidViewModel vm, String uuid, Label mLabel, int book_number, int chapter_number, String note, List<Integer> selectedItems){new VersesMarkedViewModel.UpdateVersesMarked(vm).execute(uuid, mLabel, book_number, chapter_number, note, selectedItems);}
+    public void updateVersesMarked(Bible ctx, String uuid, Label mLabel, int book_number, int chapter_number, String note, List<Integer> selectedItems){new VersesMarkedViewModel.UpdateVersesMarked(ctx).execute(uuid, mLabel, book_number, chapter_number, note, selectedItems);}
     private class UpdateVersesMarked extends AsyncTask<Object, Void, Void> {
-        AndroidViewModel vm;
-        UpdateVersesMarked(AndroidViewModel vm){
-            this.vm = vm;
+        Bible ctx;
+        UpdateVersesMarked(Bible ctx){
+            this.ctx = ctx;
         }
         //get data and populate the list
         protected Void doInBackground(Object... args) {
@@ -78,10 +79,10 @@ public class VersesMarkedViewModel extends AndroidViewModel {
             boolean success = ContentDBHelper.getInstance(getApplication()).updateSelectedItemsBulkTransaction((String) args[0], (Label) args[1], (int) args[2], (int) args[3], (String) args[4], (List<Integer>) args[5]);
             Log.d(TAG, "UpdateVersesMarked doInBackground: result " + success);
             if(success){
-                if(vm == null){//viewmodel from Dashboard
+                if(ctx == null){//viewmodel from Dashboard
                     fetchData(((Label) args[1]).getId());
                 } else {//viewmodel from bible
-                    ((VersesViewModel) vm).fetchData((int) args[2], (int) args[3]);
+                    ((Bible) ctx).onVersesMarkedEditedFromDialog((int) args[2], (int) args[3]);
                 }
             } else {
                 Log.d(TAG, "MarkVerses Not all elements could be inserted");

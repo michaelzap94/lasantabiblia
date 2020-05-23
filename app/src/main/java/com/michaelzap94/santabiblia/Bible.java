@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.GridView;
 import android.widget.Toast;
@@ -28,6 +29,8 @@ import com.michaelzap94.santabiblia.fragments.ui.tabVerses.VersesFragment;
 import com.michaelzap94.santabiblia.models.Book;
 import com.michaelzap94.santabiblia.utilities.BookHelper;
 import com.michaelzap94.santabiblia.utilities.CommonMethods;
+
+import java.util.HashMap;
 
 public class Bible extends BaseActivityTopDrawer{
 
@@ -49,6 +52,7 @@ public class Bible extends BaseActivityTopDrawer{
         private int totalChapters;
         private int chapter_number;
         private int verse_number;
+        private HashMap<Integer, VersesFragment> mPageReferenceMap = new HashMap<>();
 
         public VersesPagerAdapter(FragmentManager fa, int book_number, int chapter_number, int verse_number, int totalChapters) {
             super(fa, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
@@ -70,7 +74,19 @@ public class Bible extends BaseActivityTopDrawer{
 
         @Override
         public Fragment getItem(int position) {
-            return VersesFragment.newInstance(this.book_number, position + 1, this.verse_number);
+            VersesFragment fragment = VersesFragment.newInstance(this.book_number, position + 1, this.verse_number);
+            mPageReferenceMap.put(position, fragment);
+            return fragment;
+        }
+
+        @Override
+        public void destroyItem (ViewGroup container, int position, Object object) {
+            super.destroyItem(container, position, object);
+            mPageReferenceMap.remove(position);
+        }
+
+        public VersesFragment getFragment(int key) {
+            return mPageReferenceMap.get(key);
         }
 
         @Override
@@ -185,6 +201,13 @@ public class Bible extends BaseActivityTopDrawer{
         dialog.show();
     }
 
+    //============================================================================================
+    public void onVersesMarkedEditedFromDialog(int _book_number, int _chapter_number){
+        VersesFragment currentFragmentInstance = this.adapter.getFragment(this.viewPager.getCurrentItem());
+//        currentFragmentInstance.getViewModel().fetchData(this.book_number, this.chapter_number);
+        currentFragmentInstance.getViewModel().fetchData(_book_number,  _chapter_number);
+    }
+    //============================================================================================
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         overridePendingTransition(0, 0);
@@ -206,7 +229,6 @@ public class Bible extends BaseActivityTopDrawer{
             }
         }
     }
-
     @Override
     protected void onSaveInstanceState(Bundle outState){
         super.onSaveInstanceState(outState);

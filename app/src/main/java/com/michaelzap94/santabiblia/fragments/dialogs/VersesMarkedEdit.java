@@ -65,7 +65,6 @@ public class VersesMarkedEdit extends DialogFragment {
     private TextInputLayout note;
     private RecyclerView rvView;
     private VersesMarkedViewModel viewModelVersesMarked;
-    private VersesViewModel viewModelVerses;
     //Instantiate the RecyclerViewAdapter, passing an empty list initially.
     // this data will not be shown until you setAdapter to the RecyclerView view in the Layout
     private VersesMarkedEditRecyclerViewAdapter rvAdapter;
@@ -94,9 +93,6 @@ public class VersesMarkedEdit extends DialogFragment {
         //itemTouchHelper = new ItemTouchHelper(SwipeToDelete);
         rvAdapter = new VersesMarkedEditRecyclerViewAdapter(this.ctx, list);
         viewModelVersesMarked = new ViewModelProvider(getActivity()).get(VersesMarkedViewModel.class);
-        if (getActivity() instanceof Bible) {
-            viewModelVerses = new ViewModelProvider(getActivity()).get(VersesViewModel.class);
-        }
     }
 
     @Override
@@ -140,9 +136,8 @@ public class VersesMarkedEdit extends DialogFragment {
                 //if something changed, update, otherwise do not
                 String noteValue = note.getEditText().getText().toString();
                 if(selectedItems.size() != selectedItemsInitialSize || !noteValue.equals(versesMarked.getNote())){
-                    if(viewModelVerses != null){
-                        viewModelVersesMarked.updateVersesMarked(viewModelVerses, versesMarked.getUuid(), versesMarked.getLabel(), versesMarked.getBook().getBookNumber(), versesMarked.getChapter(), noteValue , selectedItems);
-                        //viewModelVerses.fetchData(versesMarked.getBook().getBookNumber(), versesMarked.getChapter());
+                    if (ctx instanceof Bible) {
+                        viewModelVersesMarked.updateVersesMarked((Bible) ctx, versesMarked.getUuid(), versesMarked.getLabel(), versesMarked.getBook().getBookNumber(), versesMarked.getChapter(), noteValue , selectedItems);
                     } else {
                         viewModelVersesMarked.updateVersesMarked(null, versesMarked.getUuid(), versesMarked.getLabel(), versesMarked.getBook().getBookNumber(), versesMarked.getChapter(), noteValue , selectedItems);
                     }

@@ -21,8 +21,8 @@ public class VersesViewModel extends AndroidViewModel {
     private static final String TAG = "VersesViewModel";
 
     private MutableLiveData<ArrayList<Verse>> versesList;
-    private int book_number;
-    private int chapter_number;
+//    private int book_number;
+//    private int chapter_number;
 
 //    public VersesViewModel(@NonNull Application application, int... args) {
 //        super(application);
@@ -33,7 +33,7 @@ public class VersesViewModel extends AndroidViewModel {
 //    }
     public VersesViewModel(@NonNull Application application) {
         super(application);
-        this.versesList = new MutableLiveData<ArrayList<Verse>>();
+        this.versesList = new MutableLiveData<>();
         //fetchData(this.book_number, this.chapter_number);
     }
     public MutableLiveData<ArrayList<Verse>> getUserMutableLiveData() {
@@ -45,8 +45,8 @@ public class VersesViewModel extends AndroidViewModel {
     }
 
     public void fetchData(int book_number, int chapter_number){
-        this.book_number = book_number;
-        this.chapter_number = chapter_number;
+//        this.book_number = book_number;
+//        this.chapter_number = chapter_number;
         loadVerses(book_number, chapter_number);
     }
     private void loadVerses(int book_number, int chapter_number){new VersesViewModel.GetVerses().execute(book_number, chapter_number);}
@@ -68,7 +68,7 @@ public class VersesViewModel extends AndroidViewModel {
             boolean success = ContentDBHelper.getInstance(getApplication()).insertSelectedItemsBulkTransaction(null, (Label) args[0], (int) args[1], (int) args[2], (String) args[3], (List<Integer>) args[4]);
             Log.d(TAG, "MarkVerses doInBackground: result " + success);
             if(success){
-                loadVerses(book_number, chapter_number);
+                loadVerses((int) args[1], (int) args[2]);
             } else {
                 Log.d(TAG, "MarkVerses Not all elements could be inserted");
             }

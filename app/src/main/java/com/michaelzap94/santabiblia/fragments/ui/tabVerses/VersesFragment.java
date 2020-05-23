@@ -288,6 +288,9 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
             }
         });
     }
+    public VersesViewModel getViewModel(){
+        return viewModel;
+    }
     //==========================================================================================
     private class ActionModeCallback implements ActionMode.Callback {
         private ActionModeCallback() {
