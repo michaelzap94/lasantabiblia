@@ -65,7 +65,7 @@ public class ResourcesAvailableFragment extends Fragment {
     }
 
         private void setupViewPager(ViewPager viewPager) {
-            viewPagerAdapter = new ViewPagerAdapter(((Settings) getActivity()).getSupportFragmentManager());
+            viewPagerAdapter = new ViewPagerAdapter(getChildFragmentManager());
             viewPagerAdapter.addFragment(new ResourcesAvailableBiblesFragment(), "BIBLES");
             viewPagerAdapter.addFragment(new ResourcesAvailableExtrasFragment(), "EXTRAS");
             viewPager.setAdapter(viewPagerAdapter);
