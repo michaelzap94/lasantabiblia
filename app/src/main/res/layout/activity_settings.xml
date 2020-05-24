@@ -8,6 +8,7 @@
     tools:context=".Settings">
 
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/settings_appbarlayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="false"
@@ -75,9 +76,6 @@
                         tools:ignore="RtlCompat" />
 
                 </LinearLayout>
-
-
-
                 <androidx.appcompat.widget.Toolbar
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"

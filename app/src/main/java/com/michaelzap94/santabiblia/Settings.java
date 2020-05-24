@@ -21,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.michaelzap94.santabiblia.fragments.settings.SettingsFragment;
 import com.michaelzap94.santabiblia.utilities.CommonMethods;
@@ -33,6 +34,7 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
     private static final String CAN_GO_BACK = "CAN_GO_BACK";
     private boolean canGoBack;
     private Toolbar mToolbar;
+    private AppBarLayout mAppBarLayout;
     //FLAGS==========================
     static final String FLAG_LANG = "Lang";
     private Menu menu;
@@ -40,15 +42,20 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
     private Drawable flag_gb;
     private Drawable flag_es;
     private SharedPreferences sp;
+    //GETTERS=========================
+    public AppBarLayout getmAppBarLayout(){
+        return mAppBarLayout;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-
+        mAppBarLayout = (AppBarLayout) findViewById(R.id.settings_appbarlayout);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         setTitle(R.string.settings);
+
         //FLAGS================================================================================
         sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         flagInSharedPref = sp.getString(FLAG_LANG, "");
@@ -188,7 +195,7 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
         }
     }
 
-    private void setLocale(String lang) {
+    public void setLocale(String lang) {
         //change language files===================
         Locale myLocale = new Locale(lang);
         Locale.setDefault(myLocale);
