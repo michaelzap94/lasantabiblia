@@ -41,12 +41,10 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         }
         return dbHelperInner;
     }
-
     public ContentDBHelper(Context context) {
         super(context, DB_NAME, null, DATABASE_VERSION);
         this.context = context;
     }
-
     public boolean createLabel(String name, String color){
         ContentValues cv = new ContentValues();
         cv.put("name", name);
@@ -266,7 +264,15 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         return finalArray;
     }
     public boolean deleteVersesMarkedGroup(int label_id, String uuid){
-        return this.getWritableDatabase().delete("verses_marked", "label_id = ? AND UUID = ?", new String[]{String.valueOf(label_id), uuid}) > 0;
+        boolean success = false;
+        SQLiteDatabase db = this.getWritableDatabase();
+        int rowsDeletedVersesMarked = db.delete("verses_marked", "label_id = ? AND UUID = ?", new String[]{String.valueOf(label_id), uuid});
+        if(rowsDeletedVersesMarked > 0 && label_id == CommonMethods.LABEL_ID_MEMORIZE) {
+            success = deleteVersesLearned(db, uuid);
+        } else {
+            success = true;
+        }
+        return success;
     }
     public int getVersesMarkedNumber(int label_id) {
         try {
@@ -284,11 +290,23 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         return db.update("verses_learned", cv, "UUID=?", new String[]{uuid}) > 0;
     }
     public boolean insertVersesLearned(String uuid, int learned){
+        boolean success = false;
         ContentValues cv = new ContentValues();
         cv.put("UUID", uuid);
         cv.put("learned", learned);
         cv.put("label_id", CommonMethods.LABEL_ID_MEMORIZE);
-        return this.getWritableDatabase().insert("verses_learned",null, cv) > 0;
+        SQLiteDatabase db = this.getWritableDatabase();
+        int rowsUpdated = db.update("verses_learned", cv, "UUID=?", new String[]{uuid});
+        if(rowsUpdated <= 0) {
+            success = db.insert("verses_learned",null, cv) > 0;
+        } else {
+            success = true;
+        }
+        return success;
+    }
+    public boolean deleteVersesLearned(SQLiteDatabase _db, String uuid){
+        SQLiteDatabase db = (_db == null) ? this.getWritableDatabase() : _db;
+        return db.delete("verses_learned", "UUID='" + uuid + "'", null) > 0;
     }
     public ArrayList<VersesMarked> getVersesMarkedLearned(int learned){
         return getVersesMarked(CommonMethods.LABEL_ID_MEMORIZE, null, learned);
@@ -387,10 +405,10 @@ public class ContentDBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE labels (_id INTEGER PRIMARY KEY, name VARCHAR NOT NULL, color VARCHAR NOT NULL, permanent INTEGER DEFAULT 0)");
-        db.execSQL("CREATE TABLE verses_marked (label_id INTEGER NOT NULL, book_number INTEGER NOT NULL, chapter INTEGER NOT NULL, verseFrom INTEGER NOT NULL, verseTo INTEGER NOT NULL, " +
-                "label_name VARCHAR NOT NULL, label_color VARCHAR NOT NULL, label_permanent INTEGER DEFAULT 0, note VARCHAR, date_created datetime DEFAULT current_timestamp, date_updated datetime DEFAULT current_timestamp, UUID VARCHAR NOT NULL, state INTEGER DEFAULT 0," +
-                " PRIMARY KEY (UUID, label_id), FOREIGN KEY (label_id) REFERENCES labels (_id) ON DELETE CASCADE)");
-        db.execSQL("CREATE TABLE verses_learned (_id INTEGER PRIMARY KEY, UUID VARCHAR NOT NULL, label_id INTEGER NOT NULL, learned INTEGER DEFAULT 0, priority INTEGER DEFAULT 0, FOREIGN KEY (UUID, label_id) REFERENCES verses_marked (UUID, label_id) ON DELETE CASCADE)");
+        db.execSQL("CREATE TABLE verses_marked (_id INTEGER PRIMARY KEY, label_id INTEGER NOT NULL, book_number INTEGER NOT NULL, chapter INTEGER NOT NULL, verseFrom INTEGER NOT NULL, verseTo INTEGER NOT NULL, " +
+                " label_name VARCHAR NOT NULL, label_color VARCHAR NOT NULL, label_permanent INTEGER DEFAULT 0, note VARCHAR, date_created datetime DEFAULT current_timestamp, date_updated datetime DEFAULT current_timestamp, UUID VARCHAR NOT NULL, state INTEGER DEFAULT 0," +
+                " FOREIGN KEY (label_id) REFERENCES labels (_id) ON DELETE CASCADE)");
+        db.execSQL("CREATE TABLE verses_learned (_id INTEGER PRIMARY KEY, UUID VARCHAR NOT NULL, label_id INTEGER NOT NULL, learned INTEGER DEFAULT 0, priority INTEGER DEFAULT 0)");
 
 
         db.execSQL("INSERT INTO labels (name,color,permanent) VALUES( \"Memorize\", \"#00ff00\", 1)");
