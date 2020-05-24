@@ -83,7 +83,7 @@ public class CommonMethods {
         //get data and populate the list
         protected Boolean doInBackground(Context... arg) {
             boolean success = false;
-            BibleCreator bibleCreator = new BibleCreator(arg[0]);
+            BibleCreator bibleCreator = BibleCreator.getInstance(arg[0]);
             try {
                 bibleCreator.createDataBases();
                 success = true;

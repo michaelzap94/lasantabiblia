@@ -18,11 +18,24 @@ public class BibleCreator {
     private static final String TAG = "BibleDBHelper";
     public static final int DB_VERSION = 1;
     private final Context myContext;
-    String DB_PATH = null;
+    private static BibleCreator dbHelperSingleton;
+    private String DB_PATH = null;
 
     public BibleCreator(Context ct) {
         this.myContext = ct;
         this.DB_PATH = "/data/data/" + ct.getPackageName() + "/" + "databases/";
+    }
+
+    public static synchronized BibleCreator getInstance(Context context) {
+        BibleCreator dbHelperInner;
+        synchronized (BibleCreator.class) {
+            if (dbHelperSingleton == null) {
+                //if not singleton, create one.
+                dbHelperSingleton = new BibleCreator(context);
+            }// return existing one.
+            dbHelperInner = dbHelperSingleton;
+        }
+        return dbHelperInner;
     }
 
     public String[] listOfDBAssets(){
