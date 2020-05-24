@@ -3,6 +3,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
@@ -33,7 +34,6 @@ import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
 
 public class MainActivity extends BaseActivityTopDrawer  {
     private static final String TAG = "MainActivity";
-    public static final String MY_PREFS_NAME = "MyPrefsFile";
     private BottomNavigationView bottomNavigationView;
     private TextView main_card_mem_number;
 //    Integer[] colors = null;
@@ -163,7 +163,7 @@ public class MainActivity extends BaseActivityTopDrawer  {
         bottomNavigationView.setSelectedItemId(R.id.bnav_home);
         viewModel.getVersesLearned(0);//refresh -> load data
         //INIT BUTTONS LAST SEEN AND BOOKMARK=================================================================================
-        SharedPreferences prefs = getSharedPreferences(CommonMethods.MY_PREFS_NAME, MODE_PRIVATE);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         book_bookmarked = prefs.getInt(CommonMethods.BOOK_BOOKMARKED, -1);
         chapter_bookmarked = prefs.getInt(CommonMethods.CHAPTER_BOOKMARKED, -1);
         if(chapter_bookmarked != -1 && book_bookmarked != -1) {

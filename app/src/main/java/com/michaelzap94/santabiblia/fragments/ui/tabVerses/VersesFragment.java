@@ -23,6 +23,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
@@ -223,7 +224,7 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        SharedPreferences prefs = mActivity.getSharedPreferences(CommonMethods.MY_PREFS_NAME, MODE_PRIVATE);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mActivity);
         int book_bookmarked = prefs.getInt(CommonMethods.BOOK_BOOKMARKED, -1);
         int chapter_bookmarked = prefs.getInt(CommonMethods.CHAPTER_BOOKMARKED, -1);
         MenuItem item = menu.add(Menu.NONE, 1, Menu.NONE, "Bookmark");

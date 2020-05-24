@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.michaelzap94.santabiblia.Bible;
@@ -32,7 +33,6 @@ import static android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP;
 import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
 
 public class CommonMethods {
-    public static final String MY_PREFS_NAME = "MyPrefsFile";
     public static final String BIBLE_EXIST = "Bible_exist";
     public static final String CHAPTER_BOOKMARKED = "CHAPTER_BOOKMARKED";
     public static final String BOOK_BOOKMARKED = "BOOK_BOOKMARKED";
@@ -40,14 +40,13 @@ public class CommonMethods {
     public static final String BOOK_LASTSEEN = "BOOK_LASTSEEN";
     public static final int LABEL_ID_MEMORIZE = 1;
     public static void checkDatabaseExistLoad(Context context){
-
-        SharedPreferences prefs = context.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         boolean bibleExist = prefs.getBoolean(BIBLE_EXIST, false);
         if(!bibleExist){
             try {
                 boolean biblesLoaded = loadBibles(context);
                 if(biblesLoaded){
-                    SharedPreferences.Editor editor = context.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+                    SharedPreferences.Editor editor = prefs.edit();
                     editor.putBoolean(BIBLE_EXIST, true);
                     editor.apply();
                 }
@@ -60,7 +59,7 @@ public class CommonMethods {
         if(object instanceof SharedPreferences){
             editor = ((SharedPreferences) object).edit();
         } else {
-            editor = ((Context) object).getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+            editor = PreferenceManager.getDefaultSharedPreferences((Context) object).edit();
         }
         editor.putInt(BOOK_BOOKMARKED, book_number);
         editor.putInt(CHAPTER_BOOKMARKED, chapter_number);
@@ -71,7 +70,7 @@ public class CommonMethods {
         if(object instanceof SharedPreferences){
             editor = ((SharedPreferences) object).edit();
         } else {
-            editor = ((Context) object).getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+            editor = PreferenceManager.getDefaultSharedPreferences((Context) object).edit();
         }
         editor.putInt(BOOK_LASTSEEN, book_number);
         editor.putInt(CHAPTER_LASTSEEN, chapter_number);

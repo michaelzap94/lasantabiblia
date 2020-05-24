@@ -14,7 +14,6 @@ import androidx.preference.SwitchPreferenceCompat;
 import com.michaelzap94.santabiblia.R;
 
 import static com.michaelzap94.santabiblia.utilities.CommonMethods.BIBLE_EXIST;
-import static com.michaelzap94.santabiblia.utilities.CommonMethods.MY_PREFS_NAME;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
     @Override

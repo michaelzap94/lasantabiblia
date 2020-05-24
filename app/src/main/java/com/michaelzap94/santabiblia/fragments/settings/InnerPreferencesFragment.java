@@ -7,13 +7,13 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceManager;
 import androidx.preference.SwitchPreferenceCompat;
 
 import com.michaelzap94.santabiblia.R;
 import com.michaelzap94.santabiblia.Settings;
 
 import static com.michaelzap94.santabiblia.utilities.CommonMethods.BIBLE_EXIST;
-import static com.michaelzap94.santabiblia.utilities.CommonMethods.MY_PREFS_NAME;
 
 public class InnerPreferencesFragment extends PreferenceFragmentCompat {
     @Override
@@ -33,7 +33,7 @@ public class InnerPreferencesFragment extends PreferenceFragmentCompat {
         });
 
         final Preference bibleExistPrefs = (Preference) getPreferenceManager().findPreference(BIBLE_EXIST);
-        boolean exist = this.getActivity().getSharedPreferences(MY_PREFS_NAME, Context.MODE_PRIVATE).getBoolean(BIBLE_EXIST, false);
+        boolean exist = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(BIBLE_EXIST, false);
         bibleExistPrefs.setSummary(String.valueOf(exist));
 
         boolean canGoBack = getActivity().getSupportFragmentManager().getBackStackEntryCount()>0;
