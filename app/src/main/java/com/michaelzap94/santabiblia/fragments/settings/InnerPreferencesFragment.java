@@ -37,6 +37,6 @@ public class InnerPreferencesFragment extends PreferenceFragmentCompat {
         bibleExistPrefs.setSummary(String.valueOf(exist));
 
         boolean canGoBack = getActivity().getSupportFragmentManager().getBackStackEntryCount()>0;
-        Settings.updateCanGoBack(canGoBack, (AppCompatActivity)getActivity());
+        Settings.updateCanGoBack(canGoBack, (Settings)getActivity());
     }
 }

@@ -22,6 +22,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.michaelzap94.santabiblia.fragments.settings.SettingsFragment;
 import com.michaelzap94.santabiblia.utilities.CommonMethods;
@@ -42,9 +43,13 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
     private Drawable flag_gb;
     private Drawable flag_es;
     private SharedPreferences sp;
+    private CollapsingToolbarLayout collapsingToolbarLayout;
     //GETTERS=========================
     public AppBarLayout getmAppBarLayout(){
         return mAppBarLayout;
+    }
+    public CollapsingToolbarLayout getmCollapsingToolbarLayout(){
+        return collapsingToolbarLayout;
     }
 
     @Override
@@ -53,6 +58,7 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
         setContentView(R.layout.activity_settings);
         mAppBarLayout = (AppBarLayout) findViewById(R.id.settings_appbarlayout);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         setSupportActionBar(mToolbar);
         setTitle(R.string.settings);
 
@@ -84,6 +90,7 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
     @Override
     public boolean onPreferenceStartFragment(PreferenceFragmentCompat caller, Preference pref) {
         //WHEN USER TAPS ON A SECTION IN SETTINGS AND ALLOWS YOU TO CUSTOMIZE transitions/animations
+        collapsingToolbarLayout.setTitle(pref.toString());
         return false;
     }
 
@@ -103,12 +110,13 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
         }
     }
 
-    public static void updateCanGoBack(boolean canGoBack, AppCompatActivity activity){
+    public static void updateCanGoBack(boolean canGoBack, Settings activity){
         //ActionBar arrow show only if INNER settings
         ActionBar actionBar = activity.getSupportActionBar();
 
         if(actionBar != null && canGoBack == false){
             actionBar.setDisplayHomeAsUpEnabled(false);
+            activity.getmCollapsingToolbarLayout().setTitle(activity.getResources().getString(R.string.settings));
         } else {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }

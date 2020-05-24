@@ -8,7 +8,7 @@
             app:key="pref_notifications"
             app:title="Notifications"
             app:icon="@drawable/ic_notifications"
-            app:fragment="com.michaelzap94.santabiblia.fragments.settings.InnerPreferencesFragment"
+            app:fragment="com.michaelzap94.santabiblia.fragments.settings.NotificationsFragment"
             />
         <ListPreference
             app:key="pref_bible_selected"
@@ -23,7 +23,7 @@
             app:key="pref_manage_resources"
             app:title="Manage Resources"
             app:icon="@drawable/ic_local_library"
-            app:fragment="com.michaelzap94.santabiblia.fragments.settings.InnerPreferencesFragment"
+            app:fragment="com.michaelzap94.santabiblia.fragments.settings.ResourcesFragment"
             />
     </PreferenceCategory>
 
@@ -34,7 +34,7 @@
             app:key="pref_font"
             app:title="Manage Font"
             app:icon="@drawable/ic_text_format"
-            app:fragment="com.michaelzap94.santabiblia.fragments.settings.InnerPreferencesFragment"
+            app:fragment="com.michaelzap94.santabiblia.fragments.settings.FontsFragment"
             />
         <!--        <ListPreference-->
         <!--            app:entries="@array/sizeletra"-->
@@ -67,6 +67,11 @@
             app:useSimpleSummaryProvider="true"
             />
         <Preference
+            app:key="pref_feedback"
+            app:title="Send feedback"
+            app:icon="@drawable/ic_feedback"
+            app:summary="Report technical issues or suggest new features"/>
+        <Preference
             app:key="pref_clear_data"
             app:title="Clear Data"
             app:icon="@drawable/ic_delete"
@@ -80,7 +85,6 @@
             app:key="pref_share"
             app:title="Share"
             app:icon="@drawable/ic_share"
-            app:fragment="com.michaelzap94.santabiblia.fragments.settings.InnerPreferencesFragment"
             />
         <Preference
             app:key="pref_about"

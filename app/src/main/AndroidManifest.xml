@@ -21,7 +21,6 @@
         <activity
             android:name=".Settings"
             android:configChanges="locale|layoutDirection"
-            android:label="@string/settings"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".LanguageChangeLoader"
