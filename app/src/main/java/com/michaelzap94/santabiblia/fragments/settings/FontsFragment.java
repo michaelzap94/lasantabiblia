@@ -12,8 +12,6 @@ public class FontsFragment extends PreferenceFragmentCompat {
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setPreferencesFromResource(R.xml.settings_fonts,rootKey);
-        ((Settings)getActivity()).getmAppBarLayout().setExpanded(false);
-
 
 
         boolean canGoBack = getActivity().getSupportFragmentManager().getBackStackEntryCount()>0;

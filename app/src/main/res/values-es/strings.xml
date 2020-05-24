@@ -23,4 +23,5 @@
     <string name="success_lang_change">Exito! Vamos alla.</string>
 
     <string name="dash_new_value">Crear Etiqueta</string>
+    <string name="downloaded">Descargados:</string>
 </resources>

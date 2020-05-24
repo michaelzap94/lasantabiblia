@@ -36,6 +36,7 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
     private boolean canGoBack;
     private Toolbar mToolbar;
     private AppBarLayout mAppBarLayout;
+    private CollapsingToolbarLayout collapsingToolbarLayout;
     //FLAGS==========================
     static final String FLAG_LANG = "Lang";
     private Menu menu;
@@ -43,13 +44,15 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
     private Drawable flag_gb;
     private Drawable flag_es;
     private SharedPreferences sp;
-    private CollapsingToolbarLayout collapsingToolbarLayout;
     //GETTERS=========================
     public AppBarLayout getmAppBarLayout(){
         return mAppBarLayout;
     }
     public CollapsingToolbarLayout getmCollapsingToolbarLayout(){
         return collapsingToolbarLayout;
+    }
+    public Toolbar getmToolbar(){
+        return mToolbar;
     }
 
     @Override
@@ -119,6 +122,11 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
             activity.getmCollapsingToolbarLayout().setTitle(activity.getResources().getString(R.string.settings));
         } else {
             actionBar.setDisplayHomeAsUpEnabled(true);
+            activity.getmAppBarLayout().setExpanded(false);
+//            CollapsingToolbarLayout collapsingToolbar = activity.getmCollapsingToolbarLayout();
+//            AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) collapsingToolbar.getLayoutParams();
+//            params.setScrollFlags(0); // list other flags here by |
+//            collapsingToolbar.setLayoutParams(params);
         }
     }
 
