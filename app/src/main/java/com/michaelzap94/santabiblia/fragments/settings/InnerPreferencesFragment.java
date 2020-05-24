@@ -19,7 +19,6 @@ public class InnerPreferencesFragment extends PreferenceFragmentCompat {
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setPreferencesFromResource(R.xml.settings_preferences,rootKey);
-        ((Settings)getActivity()).getmAppBarLayout().setExpanded(false);
 
         final SwitchPreferenceCompat switchPreferenceCompat = (SwitchPreferenceCompat) getPreferenceManager().findPreference("enable_sync");
         switchPreferenceCompat.setSummaryProvider(new Preference.SummaryProvider() {

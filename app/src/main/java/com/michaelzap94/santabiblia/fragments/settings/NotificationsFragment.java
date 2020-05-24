@@ -12,8 +12,6 @@ public class NotificationsFragment extends PreferenceFragmentCompat {
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setPreferencesFromResource(R.xml.settings_notifications, rootKey);
-        ((Settings) getActivity()).getmAppBarLayout().setExpanded(false);
-
 
         boolean canGoBack = getActivity().getSupportFragmentManager().getBackStackEntryCount() > 0;
         Settings.updateCanGoBack(canGoBack, (Settings) getActivity());
