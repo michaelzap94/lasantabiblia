@@ -82,7 +82,8 @@ public class CommonMethods {
         //This will only get executed the first time
         if(bibleSelected == null){
             try {
-                boolean biblesLoaded = loadDatabasesByType(context, "bibles");
+                //boolean biblesLoaded = loadDatabasesByType(context, "bibles");
+                boolean biblesLoaded = loadDatabasesByLang(context, "es");
                 if(biblesLoaded){
                     SharedPreferences.Editor editor = prefs.edit();
                     editor.putString(MAIN_BIBLE_SELECTED, BibleDBHelper.getSelectedBibleName(context));
@@ -101,6 +102,22 @@ public class CommonMethods {
             BibleCreator bibleCreator = BibleCreator.getInstance((Context) arg[0]);
             try {
                 bibleCreator.createDataBasesByType((String) arg[1]);
+                success = true;
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
+            return success;
+        }
+    }
+    private static boolean loadDatabasesByLang(Context context, String lang) throws ExecutionException, InterruptedException {
+        return new ImportDatabasesByLang().execute(context, lang).get();
+    }
+    private static class ImportDatabasesByLang extends AsyncTask<Object, Void, Boolean> {
+        protected Boolean doInBackground(Object... arg) {
+            boolean success = false;
+            BibleCreator bibleCreator = BibleCreator.getInstance((Context) arg[0]);
+            try {
+                bibleCreator.createDataBasesByLang((String) arg[1]);
                 success = true;
             } catch (IOException ioe) {
                 ioe.printStackTrace();

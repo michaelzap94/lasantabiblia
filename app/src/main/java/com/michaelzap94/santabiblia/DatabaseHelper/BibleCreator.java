@@ -7,6 +7,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -67,7 +68,6 @@ public class BibleCreator {
             return null;
         }
     }
-
     public ArrayList<String> listOfAssetsByType(@NonNull String type){
         ArrayList<String> allAssets = new ArrayList<>();
         try {
@@ -82,7 +82,6 @@ public class BibleCreator {
             return null;
         }
     }
-
     public ArrayList<String> listOfAssetsByLang(@NonNull String lang){
         ArrayList<String> allAssets = new ArrayList<>();
         try {
@@ -97,7 +96,6 @@ public class BibleCreator {
             return null;
         }
     }
-
     public String[] listOfAssetsSpecific(@NonNull String type, @NonNull String lang){
         try {
             String[] filesInLang = myContext.getAssets().list("databases/" + type + "/" + lang);
@@ -107,7 +105,39 @@ public class BibleCreator {
             return null;
         }
     }
-
+    //==================================================================
+    private boolean checkDataBase(String db_name) {
+        SQLiteDatabase checkDB = null;
+        try {
+            String myPath = DB_PATH + db_name;
+            checkDB = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
+        } catch (SQLiteException e) {
+            //Database is not present. Name:
+        }
+        if (checkDB != null) {
+            checkDB.close();
+            return true;
+        }
+        return false;
+    }
+    private void copyDataBase(String type, String lang, String db_name) throws IOException {
+        String mPath = (type != null && lang != null) ? "databases/" + type + "/" + lang + "/": "databases/";
+        //first create an empty db:
+        SQLiteDatabase db = myContext.openOrCreateDatabase(db_name, MODE_PRIVATE, null);
+        InputStream myInput = myContext.getAssets().open(mPath+db_name);
+        String outFileName = DB_PATH + db_name;
+        OutputStream myOutput = new FileOutputStream(outFileName);
+        byte[] buffer = new byte[1024];
+        int length;
+        while ((length = myInput.read(buffer)) > 0) {
+            myOutput.write(buffer, 0, length);
+        }
+        myOutput.flush();
+        myOutput.close();
+        myInput.close();
+        db.close();
+    }
+    //==================================================================
     public void createDefaultDataBases() throws IOException {
         String[] assets = listOfDefaultDBBibles();
         Log.d(TAG, "List of Assets" + Arrays.toString(assets));
@@ -132,40 +162,6 @@ public class BibleCreator {
             }
         }
     }
-
-    private boolean checkDataBase(String db_name) {
-        SQLiteDatabase checkDB = null;
-        try {
-            String myPath = DB_PATH + db_name;
-            checkDB = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
-        } catch (SQLiteException e) {
-            //Database is not present. Name:
-        }
-        if (checkDB != null) {
-            checkDB.close();
-            return true;
-        }
-        return false;
-    }
-
-    private void copyDataBase(String type, String lang, String db_name) throws IOException {
-        String mPath = (type != null && lang != null) ? "databases/" + type + "/" + lang + "/": "databases/";
-        //first create an empty db:
-        SQLiteDatabase db = myContext.openOrCreateDatabase(db_name, MODE_PRIVATE, null);
-        InputStream myInput = myContext.getAssets().open(mPath+db_name);
-        String outFileName = DB_PATH + db_name;
-        OutputStream myOutput = new FileOutputStream(outFileName);
-        byte[] buffer = new byte[1024];
-        int length;
-        while ((length = myInput.read(buffer)) > 0) {
-            myOutput.write(buffer, 0, length);
-        }
-        myOutput.flush();
-        myOutput.close();
-        myInput.close();
-        db.close();
-    }
-    //==================================================================
     public void createSpecificDataBase(String type, String lang) throws IOException {
         String[] assets = listOfAssetsSpecific(type, lang);
         Log.d(TAG, "List of Assets" + Arrays.toString(assets));
@@ -210,6 +206,36 @@ public class BibleCreator {
                     try {
                         Log.d(TAG, "Copying db: " + db_name);
                         copyDataBase(type, lang, db_name);
+                    } catch (IOException e) {
+                        Log.e(TAG, e.getLocalizedMessage(), e);
+                        throw new Error("Error copying database: " + db_name);
+                    }
+                }
+            }
+        }
+    }
+    public void createDataBasesByLang(String lang) throws IOException {
+        ArrayList<String> list = listOfAssetsByLang(lang);
+        String[] assets = list.toArray(new String[list.size()]);
+        Log.d(TAG, "List of Assets" + Arrays.toString(assets));
+
+        if(assets == null){
+            throw new Error("Error copying database");
+        }
+        for (String db_name: assets) {
+            Log.d(TAG, "db_name: " + db_name);
+
+            boolean dbExist = checkDataBase(db_name);
+            if (dbExist) {
+                Log.d(TAG, "createDataBase: DB already created, Name: " + db_name);
+            } else {
+                String[] typesInDatabases = myContext.getAssets().list("databases");
+                for (String type:typesInDatabases) {
+                    try {
+                        Log.d(TAG, "Copying db: " + db_name);
+                        copyDataBase(type, lang, db_name);
+                    } catch (FileNotFoundException e){
+                        Log.d(TAG, "File not found: " + type + "/" + lang + "/" + db_name);
                     } catch (IOException e) {
                         Log.e(TAG, e.getLocalizedMessage(), e);
                         throw new Error("Error copying database: " + db_name);
