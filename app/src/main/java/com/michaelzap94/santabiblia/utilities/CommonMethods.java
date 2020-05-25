@@ -19,6 +19,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.michaelzap94.santabiblia.Bible;
 import com.michaelzap94.santabiblia.Dashboard;
 import com.michaelzap94.santabiblia.DatabaseHelper.BibleCreator;
+import com.michaelzap94.santabiblia.DatabaseHelper.BibleDBHelper;
 import com.michaelzap94.santabiblia.MainActivity;
 import com.michaelzap94.santabiblia.R;
 import com.michaelzap94.santabiblia.Search;
@@ -31,29 +32,83 @@ import java.util.concurrent.ExecutionException;
 import static android.content.Context.MODE_PRIVATE;
 import static android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP;
 import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
+import static androidx.constraintlayout.widget.Constraints.TAG;
 
 public class CommonMethods {
-    public static final String BIBLE_EXIST = "Bible_exist";
+    public static final String DEFAULT_BIBLE_EXIST = "default_bible_exist";
+    public static final String MAIN_BIBLE_SELECTED = "pref_bible_selected";
     public static final String CHAPTER_BOOKMARKED = "CHAPTER_BOOKMARKED";
     public static final String BOOK_BOOKMARKED = "BOOK_BOOKMARKED";
     public static final String CHAPTER_LASTSEEN = "CHAPTER_LASTSEEN";
     public static final String BOOK_LASTSEEN = "BOOK_LASTSEEN";
     public static final int LABEL_ID_MEMORIZE = 1;
-    public static void checkDatabaseExistLoad(Context context){
+    //DEFAULT DBS========================================================================================
+    public static void checkDefaultDatabaseExistLoad(Context context){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean bibleExist = prefs.getBoolean(BIBLE_EXIST, false);
+        boolean bibleExist = prefs.getBoolean(DEFAULT_BIBLE_EXIST, false);
         if(!bibleExist){
             try {
-                boolean biblesLoaded = loadBibles(context);
+                boolean biblesLoaded = loadDefaultBibles(context);
                 if(biblesLoaded){
                     SharedPreferences.Editor editor = prefs.edit();
-                    editor.putBoolean(BIBLE_EXIST, true);
+                    editor.putBoolean(DEFAULT_BIBLE_EXIST, true);
                     editor.apply();
                 }
             } catch (Exception e){
             }
         }
     }
+    private static boolean loadDefaultBibles(Context context) throws ExecutionException, InterruptedException {
+        return new ImportDefaultBibles().execute(context).get();
+    }
+    private static class ImportDefaultBibles extends AsyncTask<Context, Void, Boolean> {
+        //get data and populate the list
+        protected Boolean doInBackground(Context... arg) {
+            boolean success = false;
+            BibleCreator bibleCreator = BibleCreator.getInstance(arg[0]);
+            try {
+                bibleCreator.createDefaultDataBases();
+                success = true;
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
+            return success;
+        }
+    }
+    //REST of the DBS====================================================================================
+    public static void checkBibleSelectedExist(Context context){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String bibleSelected = prefs.getString(MAIN_BIBLE_SELECTED, null);
+        //This will only get executed the first time
+        if(bibleSelected == null){
+            try {
+                boolean biblesLoaded = loadDatabasesByType(context, "bibles");
+                if(biblesLoaded){
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putString(MAIN_BIBLE_SELECTED, BibleDBHelper.getSelectedBibleName(context));
+                    editor.apply();
+                }
+            } catch (Exception e){
+            }
+        }
+    }
+    private static boolean loadDatabasesByType(Context context, String type) throws ExecutionException, InterruptedException {
+        return new ImportDatabasesByType().execute(context, type).get();
+    }
+    private static class ImportDatabasesByType extends AsyncTask<Object, Void, Boolean> {
+        protected Boolean doInBackground(Object... arg) {
+            boolean success = false;
+            BibleCreator bibleCreator = BibleCreator.getInstance((Context) arg[0]);
+            try {
+                bibleCreator.createDataBasesByType((String) arg[1]);
+                success = true;
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
+            return success;
+        }
+    }
+    //===================================================================================================
     public static void setBookmark(Object object, int book_number, int chapter_number){
         SharedPreferences.Editor editor;
         if(object instanceof SharedPreferences){
@@ -75,23 +130,6 @@ public class CommonMethods {
         editor.putInt(BOOK_LASTSEEN, book_number);
         editor.putInt(CHAPTER_LASTSEEN, chapter_number);
         editor.apply();
-    }
-    private static boolean loadBibles(Context context) throws ExecutionException, InterruptedException {
-        return new ImportBibles().execute(context).get();
-    }
-    private static class ImportBibles extends AsyncTask<Context, Void, Boolean> {
-        //get data and populate the list
-        protected Boolean doInBackground(Context... arg) {
-            boolean success = false;
-            BibleCreator bibleCreator = BibleCreator.getInstance(arg[0]);
-            try {
-                bibleCreator.createDataBases();
-                success = true;
-            } catch (IOException ioe) {
-                ioe.printStackTrace();
-            }
-            return success;
-        }
     }
     public static void bottomBarActionHandler(BottomNavigationView bottomNavigationView, final int itemId, final AppCompatActivity activity){
         //Set item selected

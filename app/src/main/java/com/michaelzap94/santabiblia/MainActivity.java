@@ -80,7 +80,7 @@ public class MainActivity extends BaseActivityTopDrawer  {
 //        setContentView(R.layout.activity_main);
         setTitle(R.string.app_name);
         //=============================================================================================
-        CommonMethods.checkDatabaseExistLoad(MainActivity.this);
+        CommonMethods.checkBibleSelectedExist(MainActivity.this);
         //INIT VIEWS===================================================================================
         main_card_mem_number = findViewById(R.id.main_card_mem_number);
         viewPager = findViewById(R.id.main_card_mem_viewpager);

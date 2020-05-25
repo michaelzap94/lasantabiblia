@@ -108,7 +108,7 @@ public class BibleCreator {
         }
     }
 
-    public void createDataBases() throws IOException {
+    public void createDefaultDataBases() throws IOException {
         String[] assets = listOfDefaultDBBibles();
         Log.d(TAG, "List of Assets" + Arrays.toString(assets));
 
@@ -124,7 +124,7 @@ public class BibleCreator {
             } else {
                 try {
                     Log.d(TAG, "Copying db: " + db_name);
-                    copyDataBase(db_name);
+                    copyDataBase(null, null, db_name);
                 } catch (IOException e) {
                     Log.e(TAG, e.getLocalizedMessage(), e);
                     throw new Error("Error copying database: " + db_name);
@@ -148,10 +148,11 @@ public class BibleCreator {
         return false;
     }
 
-    private void copyDataBase(String db_name) throws IOException {
+    private void copyDataBase(String type, String lang, String db_name) throws IOException {
+        String mPath = (type != null && lang != null) ? "databases/" + type + "/" + lang + "/": "databases/";
         //first create an empty db:
         SQLiteDatabase db = myContext.openOrCreateDatabase(db_name, MODE_PRIVATE, null);
-        InputStream myInput = myContext.getAssets().open("databases/"+db_name);
+        InputStream myInput = myContext.getAssets().open(mPath+db_name);
         String outFileName = DB_PATH + db_name;
         OutputStream myOutput = new FileOutputStream(outFileName);
         byte[] buffer = new byte[1024];
@@ -164,5 +165,59 @@ public class BibleCreator {
         myInput.close();
         db.close();
     }
+    //==================================================================
+    public void createSpecificDataBase(String type, String lang) throws IOException {
+        String[] assets = listOfAssetsSpecific(type, lang);
+        Log.d(TAG, "List of Assets" + Arrays.toString(assets));
+
+        if(assets == null){
+            throw new Error("Error copying database");
+        }
+        for (String db_name: assets) {
+            Log.d(TAG, "db_name: " + db_name);
+
+            boolean dbExist = checkDataBase(db_name);
+            if (dbExist) {
+                Log.d(TAG, "createDataBase: DB already created, Name: " + db_name);
+            } else {
+                try {
+                    Log.d(TAG, "Copying db: " + db_name);
+                    copyDataBase(type, lang, db_name);
+                } catch (IOException e) {
+                    Log.e(TAG, e.getLocalizedMessage(), e);
+                    throw new Error("Error copying database: " + db_name);
+                }
+            }
+        }
+    }
+    public void createDataBasesByType(String type) throws IOException {
+        ArrayList<String> list = listOfAssetsByType(type);
+        String[] assets = list.toArray(new String[list.size()]);
+        Log.d(TAG, "List of Assets" + Arrays.toString(assets));
+
+        if(assets == null){
+            throw new Error("Error copying database");
+        }
+        for (String db_name: assets) {
+            Log.d(TAG, "db_name: " + db_name);
+
+            boolean dbExist = checkDataBase(db_name);
+            if (dbExist) {
+                Log.d(TAG, "createDataBase: DB already created, Name: " + db_name);
+            } else {
+                String[] langsInType = myContext.getAssets().list("databases/" + type);
+                for (String lang:langsInType) {
+                    try {
+                        Log.d(TAG, "Copying db: " + db_name);
+                        copyDataBase(type, lang, db_name);
+                    } catch (IOException e) {
+                        Log.e(TAG, e.getLocalizedMessage(), e);
+                        throw new Error("Error copying database: " + db_name);
+                    }
+                }
+            }
+        }
+    }
+
 
 }

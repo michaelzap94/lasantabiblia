@@ -1,6 +1,7 @@
 package com.michaelzap94.santabiblia.DatabaseHelper;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -13,6 +14,8 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.BackgroundColorSpan;
 import android.util.Log;
+
+import androidx.preference.PreferenceManager;
 
 import com.michaelzap94.santabiblia.models.Book;
 import com.michaelzap94.santabiblia.models.Concordance;
@@ -32,11 +35,14 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.michaelzap94.santabiblia.utilities.CommonMethods.MAIN_BIBLE_SELECTED;
+
 public class BibleDBHelper {
 
     private static final String TAG = "BibleDBHelper";
 
-    public static final String DB_NAME_BIBLE_CONTENT = "RVR60.db";
+    private static String DB_NAME_MAIN_BIBLE_CONTENT = "RVR60.db";
+    private static String DB_NAME_CURRENT_BIBLE_CONTENT = null;
     public static final String DB_NAME_BIBLE_CONCORDANCE = "concordance.db";
     public static final String DB_NAME_BIBLE_DICTIONARY = "ibalpedic.db";
     public static final String DB_NAME_BIBLE_COMMENTARIES = "RVR60commentaries.db";
@@ -44,6 +50,36 @@ public class BibleDBHelper {
     private Context myContext;
     String DB_PATH = null;
     String DB_NAME = null;
+    //GETTERS=======================================================================================
+    public static String getMainBibleName(){
+        return DB_NAME_MAIN_BIBLE_CONTENT;
+    }
+    public static String getSelectedBibleName(Context context){
+        String bibleSelected;
+        if(DB_NAME_CURRENT_BIBLE_CONTENT == null){
+            //DB_NAME_CURRENT_BIBLE_CONTENT is null for the instance of this SESSION
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            String bibleSelectedInMemory = prefs.getString(MAIN_BIBLE_SELECTED, null);
+            if(bibleSelectedInMemory == null){
+                //DB_NAME_CURRENT_BIBLE_CONTENT is null in memory, so use DB_NAME_MAIN_BIBLE_CONTENT
+                bibleSelected = DB_NAME_MAIN_BIBLE_CONTENT;
+            } else {
+                bibleSelected = bibleSelectedInMemory;
+            }
+        } else {
+            bibleSelected = DB_NAME_CURRENT_BIBLE_CONTENT;
+        }
+        return bibleSelected;
+    }
+    //SETTERS=======================================================================================
+//    public static void setMainBibleName(String newMainBibleName){
+//        DB_NAME_MAIN_BIBLE_CONTENT = newMainBibleName;
+//    }
+//    public static String setSelectedBibleName(){
+//        return DB_NAME_MAIN_BIBLE_CONTENT;
+//    }
+    //=======================================================================================
+    //so we only create one db instance for the duration of the session
     private HashMap<String, SQLiteDatabase> existingDBs = new HashMap<>();
     private static BibleDBHelper dbHelperSingleton = null;
 
@@ -142,7 +178,7 @@ public class BibleDBHelper {
 //                    }
 //                    Cursor innerCursor = this.getReadableDatabase().rawQuery(innerQuery, null);
                     //Integer  indexIfInHistory = history.get(uuid);
-                    //Cursor innerCursor = BibleDBHelper.getInstance(context).openDataBaseNoHelper(BibleDBHelper.DB_NAME_BIBLE_CONTENT).rawQuery(innerQuery, null);
+                    //Cursor innerCursor = BibleDBHelper.getInstance(context).openDataBaseNoHelper(BibleDBHelper.getSelectedBibleName(this.myContext)).rawQuery(innerQuery, null);
 //                    if (innerCursor.moveToFirst()) {
 //                        do{
 //                            int verseCol = innerCursor.getColumnIndex(BibleContracts.VersesContract.COL_VERSE);
@@ -182,7 +218,7 @@ public class BibleDBHelper {
             String query = "SELECT verses.verse , verses.text, stories.title, stories.verse AS story_at_verse, order_if_several FROM verses LEFT JOIN stories" +
                     " ON verses.book_number =  stories.book_number AND verses.chapter =  stories.chapter AND verses.verse = stories.verse " +
                     " WHERE verses.book_number = ? AND verses.chapter = ? ORDER BY verses.book_number, verses.chapter, verses.verse, stories.verse";
-            innerCursor = openDataBaseNoHelper(DB_NAME_BIBLE_CONTENT).rawQuery(query, new String[] {String.valueOf(book_number), String.valueOf(chapter_number)});
+            innerCursor = openDataBaseNoHelper(getSelectedBibleName(this.myContext)).rawQuery(query, new String[] {String.valueOf(book_number), String.valueOf(chapter_number)});
             if (innerCursor.moveToFirst()) {
                 rowCount = innerCursor.getCount();
                 for (i = 0; i < rowCount; i++) {
@@ -268,7 +304,7 @@ public class BibleDBHelper {
         try {
             String query = "SELECT chapter_number_from, verse_number_from, text  FROM commentaries " +
                     " WHERE book_number = ? AND marker = ? ORDER BY marker";
-            innerCursor = openDataBaseNoHelper(DB_NAME_BIBLE_CONTENT).rawQuery(query, new String[] {String.valueOf(book_number), String.valueOf(marker)});
+            innerCursor = openDataBaseNoHelper(getSelectedBibleName(this.myContext)).rawQuery(query, new String[] {String.valueOf(book_number), String.valueOf(marker)});
             if (innerCursor.moveToFirst()) {
                 rowCount = innerCursor.getCount();
                 for (i = 0; i < rowCount; i++) {
@@ -305,7 +341,7 @@ public class BibleDBHelper {
         int rowCount;
         int i;
         try {
-            innerCursor = openDataBaseNoHelper(DB_NAME_BIBLE_CONTENT).rawQuery(query, null);
+            innerCursor = openDataBaseNoHelper(getSelectedBibleName(this.myContext)).rawQuery(query, null);
             if (innerCursor.moveToFirst()) {
                 rowCount = innerCursor.getCount();
                 for (i = 0; i < rowCount; i++) {
@@ -460,11 +496,11 @@ public class BibleDBHelper {
         ArrayList<SearchResult> results = new ArrayList<>();
         int innerCursorRowsCount;
         try {
-            String query = "SELECT _id, book_number, chapter, verse, text FROM verses " +
+            String query = "SELECT book_number, chapter, verse, text FROM verses " +
                     " WHERE REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(text,'\u00C1','A'), '\u00C9','E'),'\u00CD','I'),'\u00D3','O'),'\u00DA','U'),'\u00e1','a'), '\u00e9','e'),'\u00ed','i'),'\u00f3','o'),'\u00fa','u'),'.',''),',',''),':',''),';',''),'?',''),'\u00bf',''),'\u00a1',''),'!',''),'(',''),')','') " +
                     " LIKE '%" + input.trim() + "%' ORDER BY book_number, chapter, verse";
             Log.d(TAG, "searchInBible: " + query);
-            Cursor innerCursor = openDataBaseNoHelper(DB_NAME_BIBLE_CONTENT).rawQuery(query, null);
+            Cursor innerCursor = openDataBaseNoHelper(getSelectedBibleName(this.myContext)).rawQuery(query, null);
             if (innerCursor.moveToFirst()) {
                 innerCursorRowsCount = innerCursor.getCount();
                 for (int i = 0; i < innerCursorRowsCount; i++) {

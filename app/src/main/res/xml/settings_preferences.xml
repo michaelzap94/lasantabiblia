@@ -20,7 +20,7 @@
 
 
     <Preference
-        app:key="Bible_exist"
+        app:key="default_bible_exist"
         app:title="@string/bible_exist"
         app:icon="@drawable/ic_help"
         app:useSimpleSummaryProvider="true"
