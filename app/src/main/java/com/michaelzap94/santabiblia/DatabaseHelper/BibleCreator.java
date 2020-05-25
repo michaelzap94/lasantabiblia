@@ -5,17 +5,20 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import static android.content.Context.MODE_PRIVATE;
 
 public class BibleCreator {
 
-    private static final String TAG = "BibleDBHelper";
+    private static final String TAG = "BibleCreator";
     public static final int DB_VERSION = 1;
     private final Context myContext;
     private static BibleCreator dbHelperSingleton;
@@ -38,10 +41,67 @@ public class BibleCreator {
         return dbHelperInner;
     }
 
-    public String[] listOfDBAssets(){
+    public String[] listOfDefaultDBBibles(){
         try {
-            String[] assets = myContext.getAssets().list("databases");
+            String[] assets = myContext.getAssets().list("databases/bibles/es");
             return assets;
+        } catch (Exception e){
+            Log.e(TAG, e.getLocalizedMessage(), e);
+            return null;
+        }
+    }
+    public ArrayList<String> listOfAllDBAssets(){
+        ArrayList<String> allAssets = new ArrayList<>();
+        try {
+            String[] typesInDatabases = myContext.getAssets().list("databases");
+            for( String type : typesInDatabases ) {
+                String[] langsInType = myContext.getAssets().list("databases/" + type);
+                for( String lang : langsInType ) {
+                    String[] filesInLang = myContext.getAssets().list("databases/" + type + "/" + lang);
+                    allAssets.addAll(Arrays.asList(filesInLang));
+                }
+            }
+            return allAssets;
+        } catch (Exception e){
+            Log.e(TAG, e.getLocalizedMessage(), e);
+            return null;
+        }
+    }
+
+    public ArrayList<String> listOfAssetsByType(@NonNull String type){
+        ArrayList<String> allAssets = new ArrayList<>();
+        try {
+            String[] langsInType = myContext.getAssets().list("databases/" + type);
+            for( String lang : langsInType ) {
+                String[] filesInLang = myContext.getAssets().list("databases/" + type + "/" + lang);
+                allAssets.addAll(Arrays.asList(filesInLang));
+            }
+            return allAssets;
+        } catch (Exception e){
+            Log.e(TAG, e.getLocalizedMessage(), e);
+            return null;
+        }
+    }
+
+    public ArrayList<String> listOfAssetsByLang(@NonNull String lang){
+        ArrayList<String> allAssets = new ArrayList<>();
+        try {
+            String[] typesInDatabases = myContext.getAssets().list("databases");
+            for( String type : typesInDatabases ) {
+                String[] filesInLang = myContext.getAssets().list("databases/" + type + "/" + lang);
+                allAssets.addAll(Arrays.asList(filesInLang));
+            }
+            return allAssets;
+        } catch (Exception e){
+            Log.e(TAG, e.getLocalizedMessage(), e);
+            return null;
+        }
+    }
+
+    public String[] listOfAssetsSpecific(@NonNull String type, @NonNull String lang){
+        try {
+            String[] filesInLang = myContext.getAssets().list("databases/" + type + "/" + lang);
+            return filesInLang;
         } catch (Exception e){
             Log.e(TAG, e.getLocalizedMessage(), e);
             return null;
@@ -49,7 +109,7 @@ public class BibleCreator {
     }
 
     public void createDataBases() throws IOException {
-        String[] assets = listOfDBAssets();
+        String[] assets = listOfDefaultDBBibles();
         Log.d(TAG, "List of Assets" + Arrays.toString(assets));
 
         if(assets == null){
