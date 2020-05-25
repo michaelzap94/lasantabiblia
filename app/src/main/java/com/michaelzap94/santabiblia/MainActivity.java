@@ -181,10 +181,10 @@ public class MainActivity extends BaseActivityTopDrawer  {
         if(chapter_lastseen != -1 && book_lastseen != -1) {
             String book = BookHelper.getBook(book_lastseen).getName();
             last_seen_button.setText(book + " " + chapter_lastseen);
-            bookmark_button.setEnabled(true);
+            last_seen_button.setEnabled(true);
         } else {
             last_seen_button.setText("None");
-            bookmark_button.setEnabled(false);
+            last_seen_button.setEnabled(false);
         }
         //=================================================================================
     }

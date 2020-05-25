@@ -165,14 +165,7 @@ public class CommonMethods {
                         activity.overridePendingTransition(0,0);
                         return true;
                     case R.id.bnav_bible:
-                        Intent myIntent = new Intent(activity, Bible.class);
-                        myIntent.setFlags(FLAG_ACTIVITY_REORDER_TO_FRONT);
-                        myIntent.putExtra("book", 230);
-                        myIntent.putExtra("chapter", 1);
-                        myIntent.putExtra("verse", 0);
-                        activity.startActivity(myIntent);
-                        //activity.startActivity(new Intent(activity, Bible.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
-                        activity.overridePendingTransition(0,0);
+                        goToLastSeen(activity);
                         return true;
                     case R.id.bnav_search:
                         activity.startActivity(new Intent(activity, Search.class).addFlags(FLAG_ACTIVITY_REORDER_TO_FRONT));
@@ -186,6 +179,28 @@ public class CommonMethods {
                 }
             }
         });
+    }
+    public static void goToLastSeen(AppCompatActivity activity){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+        int book_lastseen = prefs.getInt(BOOK_LASTSEEN, -1);
+        int chapter_lastseen = prefs.getInt(CHAPTER_LASTSEEN, -1);
+
+        Intent myIntent = new Intent(activity, Bible.class);
+        myIntent.setFlags(FLAG_ACTIVITY_REORDER_TO_FRONT);
+
+        if(chapter_lastseen != -1 && book_lastseen != -1) {
+            myIntent.putExtra("book", book_lastseen);
+            myIntent.putExtra("chapter", chapter_lastseen);
+            myIntent.putExtra("verse", 0);
+            myIntent.putExtra("resetstate", true);
+        } else {
+            myIntent.putExtra("book", 230);
+            myIntent.putExtra("chapter", 1);
+            myIntent.putExtra("verse", 0);
+        }
+        activity.startActivity(myIntent);
+        //activity.startActivity(new Intent(activity, Bible.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
+        activity.overridePendingTransition(0,0);
     }
     public static void copyText(Context context, String title, String text){
         String content = title + "\n" + text;
