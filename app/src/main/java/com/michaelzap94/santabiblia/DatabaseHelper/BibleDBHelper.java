@@ -451,6 +451,71 @@ public class BibleDBHelper {
         return versesDictionary;
     }
 
+    public ArrayList<String[]> getBibleCompareData(int book_number, int chapter_number, ArrayList<Integer> selectedVerses, ArrayList<String> selectedBibles){
+        ArrayList<String[]> arrToReturn = new ArrayList<>();
+        for (String bibleDBName:selectedBibles) {
+            arrToReturn.add(specificVerseGroup(bibleDBName, book_number, chapter_number, selectedVerses));
+        }
+        return arrToReturn;
+    }
+
+    public String[] specificVerseGroup(String bibleDBName, int book_number, int chapter_number, ArrayList<Integer> selectedVerses){
+        String[] arrToReturn = new String[2];
+        arrToReturn[0] = bibleDBName;
+        StringBuilder content = new StringBuilder();
+        //===========================================================================
+        String queryStart = "SELECT verse , text FROM verses WHERE ";
+        StringBuilder queryBuilder = new StringBuilder(queryStart);
+        queryBuilder.append(" book_number = " + book_number);
+        queryBuilder.append(" AND chapter = " + chapter_number + " AND (");
+        for (int i = 0; i < selectedVerses.size(); i++) {
+            queryBuilder.append(" verse = " + (selectedVerses.get(i) + 1));
+            if(i != selectedVerses.size() - 1){
+                queryBuilder.append(" OR ");
+            } else {
+                queryBuilder.append(" )");
+            }
+        }
+        queryBuilder.append(" ORDER BY verse");
+        Log.d(TAG, "specificVerseGroup: " + queryBuilder.toString());
+        //===========================================================================
+        try {
+            Cursor innerCursor = openDataBaseNoHelper(bibleDBName).rawQuery(queryBuilder.toString(), null);
+            int rowCount;
+            if (innerCursor.moveToFirst()) {
+                rowCount = innerCursor.getCount();
+                for (int i = 0; i < rowCount; i++) {
+                    int verseCol = innerCursor.getColumnIndex(BibleContracts.VersesContract.COL_VERSE);
+                    int textCol = innerCursor.getColumnIndex(BibleContracts.VersesContract.COL_TEXT);
+
+                    int verse = innerCursor.getInt(verseCol);
+                    String text = innerCursor.getString(textCol).trim();
+
+                    String textToBeParsed;
+                    if(text.contains("<n>[") && text.contains("]</n>")) {
+                        textToBeParsed = text.replace("<n>[","<br><b><i>(").replace("]</n>",")</i></b>");
+                    } else {
+                        textToBeParsed = " <b>" + verse + "</b>" + ". " + text;
+                    }
+                    content.append(textToBeParsed);
+//                    Spanned textSpanned;
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//                        textSpanned = Html.fromHtml(textToBeParsed, Html.FROM_HTML_MODE_COMPACT);
+//                    } else {
+//                        textSpanned = Html.fromHtml(textToBeParsed);
+//                    }
+
+
+                    innerCursor.moveToNext();
+                }
+            }
+            innerCursor.close();
+        } catch (Exception e) {
+        }
+        arrToReturn[1] = content.toString();
+        return arrToReturn;
+    }
+
     public String makeQuery(String book, String chapter, String verseFirst, String verseSecond){
         String query = null;
         if(verseSecond == null && verseFirst == null){

@@ -13,6 +13,7 @@ import com.michaelzap94.santabiblia.DatabaseHelper.ContentDBHelper;
 import com.michaelzap94.santabiblia.models.Label;
 import com.michaelzap94.santabiblia.models.Verse;
 
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +22,7 @@ public class VersesViewModel extends AndroidViewModel {
     private static final String TAG = "VersesViewModel";
 
     private MutableLiveData<ArrayList<Verse>> versesList;
+    private MutableLiveData<ArrayList<String[]>> bibleCompareData;
 //    private int book_number;
 //    private int chapter_number;
 
@@ -38,6 +40,12 @@ public class VersesViewModel extends AndroidViewModel {
     }
     public MutableLiveData<ArrayList<Verse>> getUserMutableLiveData() {
         return versesList;
+    }
+    public MutableLiveData<ArrayList<String[]>> getBibleCompareData() {
+        if(bibleCompareData == null){
+            bibleCompareData = new MutableLiveData<>();
+        }
+        return bibleCompareData;
     }
     //PUBLIC SO we can refresh the list for some reason from the OUTSIDE
     public void refreshVersesList(int book_number, int chapter_number){
@@ -72,6 +80,19 @@ public class VersesViewModel extends AndroidViewModel {
             } else {
                 Log.d(TAG, "MarkVerses Not all elements could be inserted");
             }
+            return null;
+        }
+    }
+    public void fetchDataForBibleCompare(int book_number, int chapter_number, ArrayList<Integer> selectedVerses, ArrayList<String> selectedBibles){
+        new VersesViewModel.GetDataForBibleCompare().execute(book_number, chapter_number, selectedVerses, selectedBibles);
+    }
+    private class GetDataForBibleCompare extends AsyncTask<Object, Void, Void> {
+        //get data and populate the list
+        protected Void doInBackground(Object... args) {
+            Log.d(TAG, "GetDataForBibleCompare doInBackground: " + args[0] + " " + args[1]);
+            ArrayList<String[]> result = BibleDBHelper.getInstance(getApplication()).getBibleCompareData((int) args[0], (int) args[1], (ArrayList<Integer>) args[2], (ArrayList<String>) args[3]);
+            Log.d(TAG, "GetDataForBibleCompare doInBackground: result " + result.size());
+            bibleCompareData.postValue(result);
             return null;
         }
     }

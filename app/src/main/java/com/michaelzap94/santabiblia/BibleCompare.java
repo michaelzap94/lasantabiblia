@@ -1,41 +1,76 @@
 package com.michaelzap94.santabiblia;
 
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NavUtils;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.michaelzap94.santabiblia.DatabaseHelper.BibleCreator;
+import com.michaelzap94.santabiblia.DatabaseHelper.BibleDBHelper;
+import com.michaelzap94.santabiblia.adapters.RecyclerView.BibleCompareRVA;
+import com.michaelzap94.santabiblia.fragments.ui.tabVerses.VersesFragment;
 import com.michaelzap94.santabiblia.models.Book;
+import com.michaelzap94.santabiblia.models.Verse;
 import com.michaelzap94.santabiblia.utilities.BookHelper;
+import com.michaelzap94.santabiblia.utilities.CommonMethods;
+import com.michaelzap94.santabiblia.utilities.RecyclerItemClickListener;
+import com.michaelzap94.santabiblia.viewmodel.VersesViewModel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class BibleCompare extends AppCompatActivity {
     private static final String TAG = "BibleCompare";
+    public static final String SELECTED_BIBLES_TO_COMPARE = "selectedBiblesToCompare";
     private int book_number;
     private String bookName;
     private int totalChapters;
     private int chapter_number;
     private int verse_number;
     private ArrayList<Integer> selectedVerses;
+    private ArrayList<String> selectedBibles;
 
+    private FloatingActionButton addBibleButton;
     private Toolbar toolbar;
     private ActionBar mActionBar;
+    private SharedPreferences prefs;
+
+    private RecyclerView rvView;
+    private BibleCompareRVA rvAdapter;
+    private VersesViewModel viewModel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bible_compare);
-
+        rvView = findViewById(R.id.bible_compare_rv);
+        addBibleButton = findViewById(R.id.bible_compare_add_bible);
         toolbar = findViewById(R.id.toolbar);
+        //===========================================================
         setSupportActionBar(toolbar);
         mActionBar = getSupportActionBar();
         mActionBar.setDisplayHomeAsUpEnabled(true);
-
-
+        //===========================================================
         Bundle extras = getIntent().getExtras();
         Log.d(TAG, "onCreate: BEFORE");
         if (extras != null) {
@@ -49,14 +84,112 @@ public class BibleCompare extends AppCompatActivity {
                 mActionBar.setTitle(this.bookName);
             }
             mActionBar.setSubtitle(BookHelper.getTitleBookAndCaps(chapter_number, selectedVerses));
-//            setBibleState();
+
+            prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            //===========================================================
+            viewModel = new ViewModelProvider(BibleCompare.this).get(VersesViewModel.class);
+            //===========================================================
+            rvAdapter = new BibleCompareRVA(new ArrayList<>());
+            rvView.setLayoutManager(new LinearLayoutManager(this));
+            rvView.setAdapter(rvAdapter);
+            observerViewModel();
+            loadSelectedBibles();
+            if(selectedBibles != null && selectedBibles.size() != 0) {
+                viewModel.fetchDataForBibleCompare(book_number, chapter_number, selectedVerses, selectedBibles);//refresh -> load data
+            }
+            //====================================================
+            addBibleButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    openBibleSelectorToCompare();
+                }
+            });
         }
+    }
 
-        if(selectedVerses.size() == 1) {
-
+    private void observerViewModel() {
+        viewModel.getBibleCompareData().observe(BibleCompare.this, (verseArrayList) -> {
+            Log.d(TAG, "observerViewModel: VersesFragment GOT DATA" + verseArrayList.size() + "in fragment: " + this.chapter_number);
+            rvAdapter.refreshData(verseArrayList);
+        });
+    }
+    private ArrayList<String> getDownloadedBiblesNotSelected() {
+        Set<String> set = prefs.getStringSet(SELECTED_BIBLES_TO_COMPARE, null);
+        ArrayList<String> allBiblesDownloaded = BibleCreator.getInstance(this).listOfAssetsByType("bibles");
+        ArrayList<String> biblesNotSelected = new ArrayList<>();
+        for (String bible : allBiblesDownloaded) {
+            if(!set.contains(bible)){
+                biblesNotSelected.add(bible);
+            }
+        }
+        return biblesNotSelected;
+    }
+    private void loadSelectedBibles(){
+        //Retrieve the values
+        Set<String> set = prefs.getStringSet(SELECTED_BIBLES_TO_COMPARE, null);
+        ArrayList<String> selectedBiblesToCompare;
+        if(set == null){
+            selectedBiblesToCompare = new ArrayList<>();
         } else {
-
+            selectedBiblesToCompare = new ArrayList(set);
         }
+        Log.d(TAG, "loadSelectedBibles: " + selectedBiblesToCompare);
+        if(selectedBiblesToCompare.size() == 0) {
+            String mainBibleSelected = BibleDBHelper.getMainBibleName();
+            ArrayList<String> latestSelectedBibles = addToBiblesSelectedToCompare(mainBibleSelected);
+            viewModel.fetchDataForBibleCompare(book_number, chapter_number, selectedVerses, latestSelectedBibles);//refresh -> load data
+            //show popup
+            openBibleSelectorToCompare();
+        } else if (selectedBiblesToCompare.size() == 1) {
+            selectedBibles = selectedBiblesToCompare;
+            //show popup
+            openBibleSelectorToCompare();
+        } else {
+            //Return list only
+            selectedBibles = selectedBiblesToCompare;
+        }
+    }
+    public ArrayList<String> addToBiblesSelectedToCompare(String mainBibleSelected){
+        Set<String> existingSet = new HashSet<String>(prefs.getStringSet(SELECTED_BIBLES_TO_COMPARE, new HashSet<String>()));
+        Set<String> mSet;
+
+        if(existingSet != null) {
+            mSet = existingSet;
+        } else {
+            mSet = new HashSet<String>();
+        }
+        Log.d(TAG, "addToBiblesSelectedToCompare: " + mSet);
+        mSet.add(mainBibleSelected);
+
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putStringSet(SELECTED_BIBLES_TO_COMPARE, mSet);
+        editor.commit();
+
+        return new ArrayList(mSet);
+    }
+    public void refreshBiblesSelectedToCompare(){
+        loadSelectedBibles();
+        viewModel.fetchDataForBibleCompare(book_number, chapter_number, selectedVerses, selectedBibles);//refresh -> load data
+    }
+    public void openBibleSelectorToCompare(){
+        Context context = new ContextThemeWrapper(this, R.style.AppTheme2);
+        ArrayList<String> biblesDownloaded = getDownloadedBiblesNotSelected();
+        if(biblesDownloaded.size() > 0) {
+            String[] arrToShow = biblesDownloaded.toArray(new String[biblesDownloaded.size()]);
+            new MaterialAlertDialogBuilder(context)
+                    .setTitle("Downloaded Bibles:")
+                    .setItems(arrToShow,  new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int position) {
+                            Log.d(TAG, "onClick: position dialog: " + position);
+                            addToBiblesSelectedToCompare(biblesDownloaded.get(position));
+                            refreshBiblesSelectedToCompare();
+                        }
+                    }).show();
+        } else {
+            Toast.makeText(this, "All downloaded bibles are shown", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     @Override
@@ -70,10 +203,8 @@ public class BibleCompare extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
     @Override
     public void onBackPressed() {
         finish();
     }
-
 }
