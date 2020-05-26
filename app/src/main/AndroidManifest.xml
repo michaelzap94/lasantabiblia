@@ -10,10 +10,19 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".BibleCompare"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:configChanges="locale|layoutDirection"
+            android:parentActivityName=".Bible"
+            >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Bible" />
+        </activity>
+        <activity
             android:name=".SearchSpecific"
             android:configChanges="locale|layoutDirection"
-            android:parentActivityName=".Search"
-            >
+            android:parentActivityName=".Search">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".Search" />
@@ -21,7 +30,7 @@
         <activity
             android:name=".Settings"
             android:configChanges="locale|layoutDirection"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".LanguageChangeLoader"
             android:configChanges="locale|layoutDirection"
@@ -31,9 +40,10 @@
             android:name=".Dashboard"
             android:configChanges="locale|layoutDirection"
             android:label="@string/dashboard"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Bible"
+            android:launchMode="singleTop"
             android:configChanges="locale|layoutDirection"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
@@ -46,6 +56,7 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

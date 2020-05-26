@@ -2,6 +2,7 @@ package com.michaelzap94.santabiblia.fragments.ui.tabVerses;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,7 +32,9 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.michaelzap94.santabiblia.BaseActivityTopDrawer;
 import com.michaelzap94.santabiblia.Bible;
+import com.michaelzap94.santabiblia.BibleCompare;
 import com.michaelzap94.santabiblia.DatabaseHelper.ContentDBHelper;
+import com.michaelzap94.santabiblia.MainActivity;
 import com.michaelzap94.santabiblia.R;
 import com.michaelzap94.santabiblia.adapters.RecyclerView.DashboardRecyclerViewAdapter;
 import com.michaelzap94.santabiblia.adapters.RecyclerView.VersesRecyclerViewAdapter;
@@ -45,8 +48,10 @@ import com.michaelzap94.santabiblia.utilities.RecyclerItemClickListener;
 import com.michaelzap94.santabiblia.viewmodel.VersesViewModel;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
+import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
 
 public class VersesFragment extends Fragment implements RecyclerItemClickListener.OnRecyclerClickListener {
     private static final String TAG = "VersesFragment";
@@ -225,10 +230,10 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mActivity);
-        int book_bookmarked = prefs.getInt(CommonMethods.BOOK_BOOKMARKED, -1);
-        int chapter_bookmarked = prefs.getInt(CommonMethods.CHAPTER_BOOKMARKED, -1);
+        int book_bookmarked = prefs.getInt(CommonMethods.BOOK_BOOKMARKED, 0);
+        int chapter_bookmarked = prefs.getInt(CommonMethods.CHAPTER_BOOKMARKED, 0);
         MenuItem item = menu.add(Menu.NONE, 1, Menu.NONE, "Bookmark");
-        if((chapter_bookmarked != -1 && book_bookmarked != -1) && (chapter_bookmarked == chapter_number && book_bookmarked == book_number)){
+        if((chapter_bookmarked != 0 && book_bookmarked != 0) && (chapter_bookmarked == chapter_number && book_bookmarked == book_number)){
             item.setIcon(R.drawable.ic_bookmarked);
         } else {
             item.setIcon(R.drawable.ic_notbookmarked);
@@ -238,11 +243,11 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
             @Override
             public boolean onMenuItemClick (MenuItem item){
                 Log.d(TAG, "onMenuItemClick: " + item.getIcon().toString());
-                int chapter_bookmarked = prefs.getInt(CommonMethods.CHAPTER_BOOKMARKED, -1);
-                int book_bookmarked = prefs.getInt(CommonMethods.BOOK_BOOKMARKED, -1);
+                int chapter_bookmarked = prefs.getInt(CommonMethods.CHAPTER_BOOKMARKED, 0);
+                int book_bookmarked = prefs.getInt(CommonMethods.BOOK_BOOKMARKED, 0);
                 Log.d(TAG, "onMenuItemClick: chapter_bookmarked: " + chapter_bookmarked + " book_bookmarked: " + book_bookmarked);
-                if((chapter_bookmarked != -1 && book_bookmarked != -1) && (chapter_bookmarked == chapter_number && book_bookmarked == book_number)) {
-                    CommonMethods.setBookmark(prefs, -1, -1);
+                if((chapter_bookmarked != 0 && book_bookmarked != 0) && (chapter_bookmarked == chapter_number && book_bookmarked == book_number)) {
+                    CommonMethods.setBookmark(prefs, 0, 0);
                     item.setIcon(R.drawable.ic_notbookmarked);
                 } else {
                     //when clicked it was not bookmarked, so bookmark it
@@ -301,14 +306,16 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
             switch (menuItem.getItemId()) {
                 case R.id.verse_menu_share:
 //                    Util.share(CapituloFragment.this.getContext(), CapituloFragment.this.mAdapter.getFormatVersiculo(), CapituloFragment.this.libro, CapituloFragment.this.capitulo, CapituloFragment.this.mAdapter.getSelectedVersiculoInc(), CapituloFragment.this.mAdapter.getSelectedVersiculoFin());
-                    actionMode.finish();
+                    VersesFragment.this.actionMode.finish();
                     return true;
                 case R.id.verse_menu_copy:
 //                    Util.copiar(CapituloFragment.this.getContext(), LibrosHelper.getTitleLibCaps(CapituloFragment.this.libro, CapituloFragment.this.capitulo, CapituloFragment.this.mAdapter.getSelectedVersiculoInc(), CapituloFragment.this.mAdapter.getSelectedVersiculoFin()), CapituloFragment.this.mAdapter.getFormatVersiculo());
-                    actionMode.finish();
+                    VersesFragment.this.actionMode.finish();
                     return true;
                 case R.id.verse_menu_compare:
-                    actionMode.finish();
+                    
+                    VersesFragment.this.goToCompare(VersesFragment.this.book_number, VersesFragment.this.chapter_number, VersesFragment.this.rvAdapter.getSelectedItems());
+                    VersesFragment.this.actionMode.finish();
                     return true;
                 default:
                     return false;
@@ -388,5 +395,17 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
         VersesLabelNoteDialog vid = new VersesLabelNoteDialog(ctx, mLabel, book_number, chapter_number, actionMode, rvAdapter, viewModel);
         vid.setStyle(DialogFragment.STYLE_NORMAL, R.style.CustomDialog);
         vid.show(((AppCompatActivity) ctx).getSupportFragmentManager(),"anything");
+    }
+    //===============================================================================================
+    public void goToCompare(int book, int chapter, @NonNull List<Integer> selectedVerses){
+        Log.d(TAG, "goToCompare: ");
+        if(book != 0 && chapter != 0 && selectedVerses.size() > 0){
+            Intent myIntent = new Intent(getActivity(), BibleCompare.class);
+            myIntent.putExtra("book", book);
+            myIntent.putExtra("chapter", chapter);
+            myIntent.putIntegerArrayListExtra("selectedVerses", (ArrayList<Integer>) selectedVerses);
+            startActivity(myIntent);
+            //getActivity().overridePendingTransition(0,0);
+        }
     }
 }

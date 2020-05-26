@@ -49,10 +49,10 @@ public class MainActivity extends BaseActivityTopDrawer  {
     private MaterialButton verses_learned_button;
     int versesMarkedArrayListSize = 0;
     //INIT BUTTON VALUES==========================================================
-    int book_bookmarked = -1;
-    int chapter_bookmarked = -1;
-    int book_lastseen = -1;
-    int chapter_lastseen = -1;
+    int book_bookmarked = 0;
+    int chapter_bookmarked = 0;
+    int book_lastseen = 0;
+    int chapter_lastseen = 0;
     View.OnClickListener mClickListener = new View.OnClickListener(){
         @Override
         public void onClick(View v) {
@@ -164,9 +164,9 @@ public class MainActivity extends BaseActivityTopDrawer  {
         viewModel.getVersesLearned(0);//refresh -> load data
         //INIT BUTTONS LAST SEEN AND BOOKMARK=================================================================================
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        book_bookmarked = prefs.getInt(CommonMethods.BOOK_BOOKMARKED, -1);
-        chapter_bookmarked = prefs.getInt(CommonMethods.CHAPTER_BOOKMARKED, -1);
-        if(chapter_bookmarked != -1 && book_bookmarked != -1) {
+        book_bookmarked = prefs.getInt(CommonMethods.BOOK_BOOKMARKED, 0);
+        chapter_bookmarked = prefs.getInt(CommonMethods.CHAPTER_BOOKMARKED, 0);
+        if(chapter_bookmarked != 0 && book_bookmarked != 0) {
             Log.d(TAG, "onResume: book_bookmarked " + book_bookmarked);
             String book = BookHelper.getBook(book_bookmarked).getName();
             bookmark_button.setText(book + " " + chapter_bookmarked);
@@ -176,9 +176,10 @@ public class MainActivity extends BaseActivityTopDrawer  {
             bookmark_button.setEnabled(false);
         }
 
-        book_lastseen = prefs.getInt(CommonMethods.BOOK_LASTSEEN, -1);
-        chapter_lastseen = prefs.getInt(CommonMethods.CHAPTER_LASTSEEN, -1);
-        if(chapter_lastseen != -1 && book_lastseen != -1) {
+        book_lastseen = prefs.getInt(CommonMethods.BOOK_LASTSEEN, 0);
+        chapter_lastseen = prefs.getInt(CommonMethods.CHAPTER_LASTSEEN, 0);
+        if(chapter_lastseen != 0 && book_lastseen != 0) {
+            Log.d(TAG, "onResume: book_lastseen " + book_lastseen);
             String book = BookHelper.getBook(book_lastseen).getName();
             last_seen_button.setText(book + " " + chapter_lastseen);
             last_seen_button.setEnabled(true);
@@ -199,7 +200,7 @@ public class MainActivity extends BaseActivityTopDrawer  {
 
     }
     protected void goToBible(int book, int chapter){
-        if(book != -1 && chapter != -1){
+        if(book != 0 && chapter != 0){
             Intent myIntent = new Intent(MainActivity.this, Bible.class);
             myIntent.setFlags(FLAG_ACTIVITY_REORDER_TO_FRONT);
             myIntent.putExtra("book", book);

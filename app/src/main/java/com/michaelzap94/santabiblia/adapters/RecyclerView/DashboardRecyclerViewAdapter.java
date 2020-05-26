@@ -37,7 +37,7 @@ public class DashboardRecyclerViewAdapter extends RecyclerView.Adapter<Dashboard
     public DashboardRecyclerViewAdapter(Context ctx, ArrayList<Label> labelArrayList) {
         this.ctx = ctx;
         this.labelArrayList = labelArrayList;
-        this.chapter_number = -1;
+        this.chapter_number = 0;
         this.rvAdapter = null;
     }
 
@@ -105,7 +105,7 @@ public class DashboardRecyclerViewAdapter extends RecyclerView.Adapter<Dashboard
             labelButton.setOnClickListener(v -> {
                 if(ctx instanceof Dashboard){
                     DashboardMainFragment.onLabelClickedFromList(ctx, mLabel);
-                } else if(ctx instanceof Bible && chapter_number > -1 && rvAdapter != null && viewModel != null){
+                } else if(ctx instanceof Bible && chapter_number > 0 && rvAdapter != null && viewModel != null){
                     VersesFragment.onLabelClickedFromList(ctx, mLabel, book_number, chapter_number, actionMode, rvAdapter, viewModel);
                 }
             });

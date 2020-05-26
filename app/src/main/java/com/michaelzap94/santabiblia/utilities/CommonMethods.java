@@ -182,13 +182,13 @@ public class CommonMethods {
     }
     public static void goToLastSeen(AppCompatActivity activity){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
-        int book_lastseen = prefs.getInt(BOOK_LASTSEEN, -1);
-        int chapter_lastseen = prefs.getInt(CHAPTER_LASTSEEN, -1);
+        int book_lastseen = prefs.getInt(BOOK_LASTSEEN, 0);
+        int chapter_lastseen = prefs.getInt(CHAPTER_LASTSEEN, 0);
 
         Intent myIntent = new Intent(activity, Bible.class);
         myIntent.setFlags(FLAG_ACTIVITY_REORDER_TO_FRONT);
 
-        if(chapter_lastseen != -1 && book_lastseen != -1) {
+        if(chapter_lastseen != 0 && book_lastseen != 0) {
             myIntent.putExtra("book", book_lastseen);
             myIntent.putExtra("chapter", chapter_lastseen);
             myIntent.putExtra("verse", 0);
