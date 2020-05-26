@@ -128,6 +128,19 @@ public class Bible extends BaseActivityTopDrawer{
             }
         });
 
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                getSupportActionBar().setTitle(bookName + ": "+ (viewPager.getCurrentItem()+1));
+            }
+            @Override
+            public void onPageSelected(int position) {
+            }
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
+
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
         CommonMethods.bottomBarActionHandler(bottomNavigationView, R.id.bnav_bible, Bible.this);
     }

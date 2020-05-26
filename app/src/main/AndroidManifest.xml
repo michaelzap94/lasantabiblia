@@ -43,7 +43,6 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Bible"
-            android:launchMode="singleTop"
             android:configChanges="locale|layoutDirection"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity

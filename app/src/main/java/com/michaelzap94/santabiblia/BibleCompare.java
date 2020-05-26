@@ -2,10 +2,12 @@ package com.michaelzap94.santabiblia;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NavUtils;
 
 import com.michaelzap94.santabiblia.models.Book;
 import com.michaelzap94.santabiblia.utilities.BookHelper;
@@ -33,6 +35,7 @@ public class BibleCompare extends AppCompatActivity {
         mActionBar = getSupportActionBar();
         mActionBar.setDisplayHomeAsUpEnabled(true);
 
+
         Bundle extras = getIntent().getExtras();
         Log.d(TAG, "onCreate: BEFORE");
         if (extras != null) {
@@ -57,8 +60,14 @@ public class BibleCompare extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        Log.d(TAG, "onDestroy: ");
-        super.onDestroy();
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
+
 }

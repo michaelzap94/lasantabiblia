@@ -277,9 +277,9 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
 
     @Override
     public void onResume() {
-        if (mActivity instanceof BaseActivityTopDrawer) {
-            ((BaseActivityTopDrawer) mActivity).getSupportActionBar().setTitle(this.currentBookName + ": "+ this.chapter_number);
-        }
+//        if (mActivity instanceof BaseActivityTopDrawer) {
+//            ((BaseActivityTopDrawer) mActivity).getSupportActionBar().setTitle(this.currentBookName + ": "+ this.chapter_number);
+//        }
         super.onResume();
     }
 
