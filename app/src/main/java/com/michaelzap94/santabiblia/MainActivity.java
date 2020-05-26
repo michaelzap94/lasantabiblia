@@ -80,7 +80,7 @@ public class MainActivity extends BaseActivityTopDrawer  {
 //        setContentView(R.layout.activity_main);
         setTitle(R.string.app_name);
         //=============================================================================================
-        CommonMethods.checkDatabaseExistLoad(MainActivity.this);
+        CommonMethods.checkBibleSelectedExist(MainActivity.this);
         //INIT VIEWS===================================================================================
         main_card_mem_number = findViewById(R.id.main_card_mem_number);
         viewPager = findViewById(R.id.main_card_mem_viewpager);
@@ -181,10 +181,10 @@ public class MainActivity extends BaseActivityTopDrawer  {
         if(chapter_lastseen != -1 && book_lastseen != -1) {
             String book = BookHelper.getBook(book_lastseen).getName();
             last_seen_button.setText(book + " " + chapter_lastseen);
-            bookmark_button.setEnabled(true);
+            last_seen_button.setEnabled(true);
         } else {
             last_seen_button.setText("None");
-            bookmark_button.setEnabled(false);
+            last_seen_button.setEnabled(false);
         }
         //=================================================================================
     }

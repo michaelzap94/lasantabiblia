@@ -229,7 +229,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
 //                    }
 //                    Cursor innerCursor = this.getReadableDatabase().rawQuery(innerQuery, null);
                     Integer  indexIfInHistory = history.get(uuid);
-                    Cursor innerCursor = BibleDBHelper.getInstance(context).openDataBaseNoHelper(BibleDBHelper.DB_NAME_BIBLE_CONTENT).rawQuery(innerQuery, null);
+                    Cursor innerCursor = BibleDBHelper.getInstance(context).openDataBaseNoHelper(BibleDBHelper.getSelectedBibleName(context)).rawQuery(innerQuery, null);
                     if (innerCursor.moveToFirst()) {
                         do{
                             int verseCol = innerCursor.getColumnIndex(BibleContracts.VersesContract.COL_VERSE);
