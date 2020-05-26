@@ -305,15 +305,26 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
         public boolean onActionItemClicked(ActionMode mode, MenuItem menuItem) {
             switch (menuItem.getItemId()) {
                 case R.id.verse_menu_share:
-//                    Util.share(CapituloFragment.this.getContext(), CapituloFragment.this.mAdapter.getFormatVersiculo(), CapituloFragment.this.libro, CapituloFragment.this.capitulo, CapituloFragment.this.mAdapter.getSelectedVersiculoInc(), CapituloFragment.this.mAdapter.getSelectedVersiculoFin());
+                    String shareTitle = VersesFragment.this.currentBookName + " " + VersesFragment.this.actionMode.getSubtitle();
+                    List<Integer> selectedVersesContent = rvAdapter.getSelectedItems();
+                    StringBuilder body = new StringBuilder();
+                    for (Integer verse:selectedVersesContent) {
+                        body.append(rvAdapter.getVerseArrayListItem(verse).getTextSpanned().toString());
+                    }
+                    CommonMethods.share(VersesFragment.this.mActivity, shareTitle, body.toString());
                     VersesFragment.this.actionMode.finish();
                     return true;
                 case R.id.verse_menu_copy:
-//                    Util.copiar(CapituloFragment.this.getContext(), LibrosHelper.getTitleLibCaps(CapituloFragment.this.libro, CapituloFragment.this.capitulo, CapituloFragment.this.mAdapter.getSelectedVersiculoInc(), CapituloFragment.this.mAdapter.getSelectedVersiculoFin()), CapituloFragment.this.mAdapter.getFormatVersiculo());
+                    String title = VersesFragment.this.currentBookName + " " + VersesFragment.this.actionMode.getSubtitle();
+                    List<Integer> selectedVersesContentCopy = rvAdapter.getSelectedItems();
+                    StringBuilder bodyCopy = new StringBuilder();
+                    for (Integer verse:selectedVersesContentCopy) {
+                        bodyCopy.append(rvAdapter.getVerseArrayListItem(verse).getTextSpanned().toString());
+                    }
+                    CommonMethods.copyText(VersesFragment.this.mActivity, title, bodyCopy.toString());
                     VersesFragment.this.actionMode.finish();
                     return true;
                 case R.id.verse_menu_compare:
-                    
                     VersesFragment.this.goToCompare(VersesFragment.this.book_number, VersesFragment.this.chapter_number, VersesFragment.this.rvAdapter.getSelectedItems());
                     VersesFragment.this.actionMode.finish();
                     return true;

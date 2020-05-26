@@ -3,10 +3,13 @@ package com.michaelzap94.santabiblia.utilities;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ResolveInfo;
 import android.os.AsyncTask;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -27,12 +30,15 @@ import com.michaelzap94.santabiblia.Settings;
 import com.michaelzap94.santabiblia.models.Book;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import static android.content.Context.MODE_PRIVATE;
 import static android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP;
 import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
 import static androidx.constraintlayout.widget.Constraints.TAG;
+import static java.net.Proxy.Type.HTTP;
 
 public class CommonMethods {
     public static final String DEFAULT_BIBLE_EXIST = "default_bible_exist";
@@ -202,9 +208,20 @@ public class CommonMethods {
         //activity.startActivity(new Intent(activity, Bible.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
         activity.overridePendingTransition(0,0);
     }
+    //==================================================================================================
     public static void copyText(Context context, String title, String text){
         String content = title + "\n" + text;
         ((ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE)).setPrimaryClip(ClipData.newPlainText("Bible content", content));
         Toast.makeText(context, title + " Copied.", Toast.LENGTH_SHORT).show();
+    }
+    public static void share(Context ctx, String title, String body) {
+        String content = title + "\n" + body;
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.setType("text/plain");
+        sendIntent.putExtra(Intent.EXTRA_TEXT, content);
+        sendIntent.putExtra(Intent.EXTRA_TITLE, title);
+        Intent shareIntent = Intent.createChooser(sendIntent, "Share it with the people you love!");
+        ctx.startActivity(shareIntent);
     }
 }
