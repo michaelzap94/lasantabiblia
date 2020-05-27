@@ -2,6 +2,7 @@ package com.michaelzap94.santabiblia;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -25,6 +26,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -50,11 +52,13 @@ import java.util.Set;
 public class BibleCompare extends AppCompatActivity {
     private static final String TAG = "BibleCompare";
     public static final String SELECTED_BIBLES_TO_COMPARE = "selectedBiblesToCompare";
+    private static final String FLAG_PREV_BUTTON = "PREV";
+    private static final String FLAG_NEXT_BUTTON = "NEXT";
     private int book_number;
     private String bookName;
     private int totalChapters;
     private int chapter_number;
-    private int verse_number;
+    private int totalVerses;
     private ArrayList<Integer> selectedVerses;
     private ArrayList<String> selectedBibles;
     private ArrayList<String[]> data = new ArrayList<>();
@@ -63,6 +67,9 @@ public class BibleCompare extends AppCompatActivity {
     private ActionBar mActionBar;
     private SharedPreferences prefs;
     private CoordinatorLayout coordinatorLayout;
+    private MaterialButton prevButton;
+    private MaterialButton nextButton;
+    int minSelectedVerse, maxSelectedVerse;
 
     private RecyclerView rvView;
     private BibleCompareRVA rvAdapter;
@@ -75,6 +82,8 @@ public class BibleCompare extends AppCompatActivity {
         addBibleButton = findViewById(R.id.bible_compare_add_bible);
         toolbar = findViewById(R.id.toolbar);
         coordinatorLayout = findViewById(R.id.bible_compare_coordinatorlayout);
+        prevButton = findViewById(R.id.bible_compare_prev);
+        nextButton = findViewById(R.id.bible_compare_next);
         //===========================================================
         setSupportActionBar(toolbar);
         mActionBar = getSupportActionBar();
@@ -85,7 +94,10 @@ public class BibleCompare extends AppCompatActivity {
         if (extras != null) {
             this.book_number = extras.getInt("book");
             this.chapter_number = extras.getInt("chapter");
+            this.totalVerses = extras.getInt("totalVerses");
             this.selectedVerses = extras.getIntegerArrayList("selectedVerses");
+            minSelectedVerse = Collections.min(selectedVerses);
+            maxSelectedVerse = Collections.max(selectedVerses);
             Book book = BookHelper.getBook(this.book_number);
             if (book != null) {
                 this.bookName = book.getName();
@@ -93,7 +105,13 @@ public class BibleCompare extends AppCompatActivity {
                 mActionBar.setTitle(this.bookName);
             }
             mActionBar.setSubtitle(BookHelper.getTitleBookAndCaps(chapter_number, selectedVerses));
-
+            //=====================================================================================
+            if(minSelectedVerse <= 0) {
+                prevButton.setEnabled(false);
+            }
+            if(maxSelectedVerse >= totalVerses - 1){
+                nextButton.setEnabled(false);
+            }
             prefs = PreferenceManager.getDefaultSharedPreferences(this);
             //===========================================================
             viewModel = new ViewModelProvider(BibleCompare.this).get(VersesViewModel.class);
@@ -108,12 +126,48 @@ public class BibleCompare extends AppCompatActivity {
                 viewModel.fetchDataForBibleCompare(book_number, chapter_number, selectedVerses, selectedBibles);//refresh -> load data
             }
             //====================================================
-            addBibleButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    openBibleSelectorToCompare();
+            addBibleButton.setOnClickListener(mClickListener);
+            prevButton.setOnClickListener(mClickListener);
+            nextButton.setOnClickListener(mClickListener);
+        }
+    }
+    private View.OnClickListener mClickListener = new View.OnClickListener(){
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()){
+                case R.id.bible_compare_add_bible: openBibleSelectorToCompare();
+                    break;
+                case R.id.bible_compare_prev: goToPrevNextVerse(FLAG_PREV_BUTTON);
+                    break;
+                case R.id.bible_compare_next: goToPrevNextVerse(FLAG_NEXT_BUTTON);
+                    break;
+                default: break;
+            }
+        }
+    };
+
+    private void goToPrevNextVerse(String flagPage){
+        if(book_number != 0 && chapter_number != 0 && totalVerses != 0 && selectedVerses.size() > 0){
+
+            ArrayList<Integer> newSelectedVerses = new ArrayList<>();
+            if(flagPage == FLAG_PREV_BUTTON) {
+                if(minSelectedVerse > 0) {
+                    newSelectedVerses.add(minSelectedVerse - 1);
                 }
-            });
+            } else {
+                if(maxSelectedVerse < totalVerses - 1){
+                    newSelectedVerses.add(maxSelectedVerse + 1);
+                }
+            }
+
+            Intent myIntent = new Intent(BibleCompare.this, BibleCompare.class);
+            myIntent.putExtra("book", book_number);
+            myIntent.putExtra("chapter", chapter_number);
+            myIntent.putExtra("totalVerses", totalVerses);
+            myIntent.putIntegerArrayListExtra("selectedVerses", (ArrayList<Integer>) newSelectedVerses);
+            finish();
+            startActivity(myIntent);
+            overridePendingTransition(0,0);
         }
     }
 

@@ -325,7 +325,7 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
                     VersesFragment.this.actionMode.finish();
                     return true;
                 case R.id.verse_menu_compare:
-                    VersesFragment.this.goToCompare(VersesFragment.this.book_number, VersesFragment.this.chapter_number, VersesFragment.this.rvAdapter.getSelectedItems());
+                    VersesFragment.this.goToCompare(VersesFragment.this.book_number, VersesFragment.this.chapter_number, VersesFragment.this.rvAdapter.getItemCount(), VersesFragment.this.rvAdapter.getSelectedItems());
                     VersesFragment.this.actionMode.finish();
                     return true;
                 default:
@@ -408,12 +408,13 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
         vid.show(((AppCompatActivity) ctx).getSupportFragmentManager(),"anything");
     }
     //===============================================================================================
-    public void goToCompare(int book, int chapter, @NonNull List<Integer> selectedVerses){
+    public void goToCompare(int book, int chapter, int totalVerses, @NonNull List<Integer> selectedVerses){
         Log.d(TAG, "goToCompare: ");
-        if(book != 0 && chapter != 0 && selectedVerses.size() > 0){
+        if(book != 0 && chapter != 0 && totalVerses != 0 && selectedVerses.size() > 0){
             Intent myIntent = new Intent(getActivity(), BibleCompare.class);
             myIntent.putExtra("book", book);
             myIntent.putExtra("chapter", chapter);
+            myIntent.putExtra("totalVerses", totalVerses);
             myIntent.putIntegerArrayListExtra("selectedVerses", (ArrayList<Integer>) selectedVerses);
             startActivity(myIntent);
             //getActivity().overridePendingTransition(0,0);
