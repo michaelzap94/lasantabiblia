@@ -3,6 +3,7 @@ package com.michaelzap94.santabiblia;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
@@ -15,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.NavUtils;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.Preference;
@@ -60,6 +62,7 @@ public class BibleCompare extends AppCompatActivity {
     private Toolbar toolbar;
     private ActionBar mActionBar;
     private SharedPreferences prefs;
+    private CoordinatorLayout coordinatorLayout;
 
     private RecyclerView rvView;
     private BibleCompareRVA rvAdapter;
@@ -71,6 +74,7 @@ public class BibleCompare extends AppCompatActivity {
         rvView = findViewById(R.id.bible_compare_rv);
         addBibleButton = findViewById(R.id.bible_compare_add_bible);
         toolbar = findViewById(R.id.toolbar);
+        coordinatorLayout = findViewById(R.id.bible_compare_coordinatorlayout);
         //===========================================================
         setSupportActionBar(toolbar);
         mActionBar = getSupportActionBar();
@@ -174,6 +178,22 @@ public class BibleCompare extends AppCompatActivity {
 
         return new ArrayList(mSet);
     }
+    public void removeFromBiblesSelectedToCompare(String mainBibleSelected){
+        Set<String> existingSet = new HashSet<String>(prefs.getStringSet(SELECTED_BIBLES_TO_COMPARE, new HashSet<String>()));
+        Set<String> mSet;
+
+        if(existingSet != null) {
+            mSet = existingSet;
+        } else {
+            return;
+        }
+        Log.d(TAG, "removeFromBiblesSelectedToCompare: " + mSet);
+        mSet.remove(mainBibleSelected);
+
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putStringSet(SELECTED_BIBLES_TO_COMPARE, mSet);
+        editor.commit();
+    }
     public void refreshBiblesSelectedToCompare(){
         loadSelectedBibles();
         viewModel.fetchDataForBibleCompare(book_number, chapter_number, selectedVerses, selectedBibles);//refresh -> load data
@@ -206,7 +226,7 @@ public class BibleCompare extends AppCompatActivity {
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder dragged, RecyclerView.ViewHolder target) {
                 int position_dragged = dragged.getAdapterPosition();
                 int position_target = target.getAdapterPosition();
-                Collections.swap(data, position_dragged, position_target);
+                Collections.swap(rvAdapter.getData(), position_dragged, position_target);
                 rvAdapter.notifyItemMoved(position_dragged, position_target);
                 return false;
             }
@@ -215,23 +235,27 @@ public class BibleCompare extends AppCompatActivity {
 
                 //Remove swiped item from list and notify the RecyclerView
                 int position = viewHolder.getAdapterPosition();
-
-                //final String[] item = rvAdapter.getData().get(position);
+                final String[] item = rvAdapter.getData().get(position);
+                final String bibleRemoved = item[0];//name of Bible
+                //remove from RVadapter
                 rvAdapter.removeItem(position);
+                //remove Bible from SP biblesSelected
+                removeFromBiblesSelectedToCompare(bibleRemoved);
 
-//                Snackbar snackbar = Snackbar.make(coordinatorLayout, "Item was removed from the list.", Snackbar.LENGTH_LONG);
-//                snackbar.setAction("UNDO", new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        selectedItems.add(position, verseNumber);
-//                        updateTitle();
-//                        rvAdapter.restoreItem(item, position);
-//                        rvView.scrollToPosition(position);
-//                    }
-//                });
-//
-//                snackbar.setActionTextColor(Color.YELLOW);
-//                snackbar.show();
+                Snackbar snackbar = Snackbar.make(coordinatorLayout, "Item was removed from the list.", Snackbar.LENGTH_LONG);
+                snackbar.setAction("UNDO", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        //get bibles Downloaded and not Selected in SP biblesSelected
+//                        ArrayList<String> biblesDownloaded = getDownloadedBiblesNotSelected();
+                        addToBiblesSelectedToCompare(bibleRemoved);//add to SP
+                        rvAdapter.restoreItem(item, position);
+                        rvView.scrollToPosition(position);
+                    }
+                });
+
+                snackbar.setActionTextColor(Color.YELLOW);
+                snackbar.show();
 
             }
         };

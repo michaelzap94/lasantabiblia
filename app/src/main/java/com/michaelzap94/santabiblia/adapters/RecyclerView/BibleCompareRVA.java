@@ -38,6 +38,10 @@ public class BibleCompareRVA extends RecyclerView.Adapter<BibleCompareRVA.ViewHo
         results.remove(position);
         notifyItemRemoved(position);
     }
+    public void restoreItem(String[] item, int position) {
+        results.add(position, item);
+        notifyItemInserted(position);
+    }
     @NonNull
     @Override
     public BibleCompareRVA.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
