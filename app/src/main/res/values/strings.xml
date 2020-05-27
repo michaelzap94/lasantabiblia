@@ -41,4 +41,6 @@
     <string name="dash_creator_fragment_color_txtview">Color of Label:</string>
     <string name="dash_creator_fragment_button">Create Label</string>
     <string name="downloaded">Downloaded:</string>
+    <string name="search_card_maps_title">Maps</string>
+    <string name="search_card_maps_desc">Search in the Bible Maps</string>
 </resources>
