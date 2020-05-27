@@ -159,15 +159,16 @@ public class BibleCompare extends AppCompatActivity {
                     newSelectedVerses.add(maxSelectedVerse + 1);
                 }
             }
-
-            Intent myIntent = new Intent(BibleCompare.this, BibleCompare.class);
-            myIntent.putExtra("book", book_number);
-            myIntent.putExtra("chapter", chapter_number);
-            myIntent.putExtra("totalVerses", totalVerses);
-            myIntent.putIntegerArrayListExtra("selectedVerses", (ArrayList<Integer>) newSelectedVerses);
-            finish();
-            startActivity(myIntent);
-            overridePendingTransition(0,0);
+            if(newSelectedVerses.size() > 0) {
+                Intent myIntent = new Intent(BibleCompare.this, BibleCompare.class);
+                myIntent.putExtra("book", book_number);
+                myIntent.putExtra("chapter", chapter_number);
+                myIntent.putExtra("totalVerses", totalVerses);
+                myIntent.putIntegerArrayListExtra("selectedVerses", (ArrayList<Integer>) newSelectedVerses);
+                finish();
+                startActivity(myIntent);
+                overridePendingTransition(0,0);
+            }
         }
     }
 
