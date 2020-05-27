@@ -19,20 +19,25 @@ import java.util.ArrayList;
 
 public class BibleCompareRVA extends RecyclerView.Adapter<BibleCompareRVA.ViewHolder> {
     private static final String TAG = "BibleCompareRVA";
-    ArrayList<String[]> results;
+    private ArrayList<String[]> results;
     private Context context;
     public BibleCompareRVA(ArrayList<String[]> results){
         Log.d(TAG, "BibleCompareRVA: " + results.size());
         this.results = results;
     }
-
     public void refreshData(ArrayList<String[]> _results){
         Log.d(TAG, "BibleCompareRVA: " + _results.size());
         results.clear();
         results.addAll(_results);
         notifyDataSetChanged();
     }
-
+    public ArrayList<String[]> getData(){
+        return results;
+    }
+    public void removeItem(int position) {
+        results.remove(position);
+        notifyItemRemoved(position);
+    }
     @NonNull
     @Override
     public BibleCompareRVA.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -40,17 +45,14 @@ public class BibleCompareRVA extends RecyclerView.Adapter<BibleCompareRVA.ViewHo
         View rootView = LayoutInflater.from(context).inflate(R.layout.search_adapter_item, parent,false);
         return new BibleCompareRVA.ViewHolder(rootView);
     }
-
     @Override
     public void onBindViewHolder(@NonNull BibleCompareRVA.ViewHolder holder, int position) {
         holder.bind();
     }
-
     @Override
     public int getItemCount() {
         return results.size();
     }
-
     class ViewHolder extends RecyclerView.ViewHolder {
         TextView txtView_title;
         TextView txtView_content;
@@ -75,4 +77,5 @@ public class BibleCompareRVA extends RecyclerView.Adapter<BibleCompareRVA.ViewHo
             txtView_content.setText(textSpanned);
         }
     }
+
 }

@@ -2,19 +2,19 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/verse_menu_copy"
-        android:title="Remove"
+        android:title="Copy"
         android:icon="@drawable/ic_copy"
         app:iconTint="@color/blanco"
         app:showAsAction="ifRoom"
         android:orderInCategory="1"/>
     <item android:id="@+id/verse_menu_share"
-        android:title="Remove"
+        android:title="Share"
         android:icon="@drawable/ic_share"
         app:iconTint="@color/blanco"
         app:showAsAction="ifRoom"
         android:orderInCategory="2"/>
     <item android:id="@+id/verse_menu_compare"
-        android:title="Remove"
+        android:title="Compare"
         android:icon="@drawable/ic_compare_arrows"
         app:iconTint="@color/blanco"
         app:showAsAction="ifRoom"

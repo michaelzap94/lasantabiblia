@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -18,11 +19,13 @@ import androidx.core.app.NavUtils;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.michaelzap94.santabiblia.DatabaseHelper.BibleCreator;
 import com.michaelzap94.santabiblia.DatabaseHelper.BibleDBHelper;
 import com.michaelzap94.santabiblia.adapters.RecyclerView.BibleCompareRVA;
@@ -32,9 +35,11 @@ import com.michaelzap94.santabiblia.models.Verse;
 import com.michaelzap94.santabiblia.utilities.BookHelper;
 import com.michaelzap94.santabiblia.utilities.CommonMethods;
 import com.michaelzap94.santabiblia.utilities.RecyclerItemClickListener;
+import com.michaelzap94.santabiblia.utilities.SwipeToDelete;
 import com.michaelzap94.santabiblia.viewmodel.VersesViewModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -50,7 +55,7 @@ public class BibleCompare extends AppCompatActivity {
     private int verse_number;
     private ArrayList<Integer> selectedVerses;
     private ArrayList<String> selectedBibles;
-
+    private ArrayList<String[]> data = new ArrayList<>();
     private FloatingActionButton addBibleButton;
     private Toolbar toolbar;
     private ActionBar mActionBar;
@@ -89,9 +94,10 @@ public class BibleCompare extends AppCompatActivity {
             //===========================================================
             viewModel = new ViewModelProvider(BibleCompare.this).get(VersesViewModel.class);
             //===========================================================
-            rvAdapter = new BibleCompareRVA(new ArrayList<>());
+            rvAdapter = new BibleCompareRVA(data);
             rvView.setLayoutManager(new LinearLayoutManager(this));
             rvView.setAdapter(rvAdapter);
+            enableSwipeToDeleteAndUndo();
             observerViewModel();
             loadSelectedBibles();
             if(selectedBibles != null && selectedBibles.size() != 0) {
@@ -110,6 +116,7 @@ public class BibleCompare extends AppCompatActivity {
     private void observerViewModel() {
         viewModel.getBibleCompareData().observe(BibleCompare.this, (verseArrayList) -> {
             Log.d(TAG, "observerViewModel: VersesFragment GOT DATA" + verseArrayList.size() + "in fragment: " + this.chapter_number);
+            data = verseArrayList;
             rvAdapter.refreshData(verseArrayList);
         });
     }
@@ -192,6 +199,46 @@ public class BibleCompare extends AppCompatActivity {
 
     }
 
+    //===================================================================
+    private void enableSwipeToDeleteAndUndo() {
+        SwipeToDelete swipeToDeleteCallback = new SwipeToDelete(BibleCompare.this, true, true) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder dragged, RecyclerView.ViewHolder target) {
+                int position_dragged = dragged.getAdapterPosition();
+                int position_target = target.getAdapterPosition();
+                Collections.swap(data, position_dragged, position_target);
+                rvAdapter.notifyItemMoved(position_dragged, position_target);
+                return false;
+            }
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
+
+                //Remove swiped item from list and notify the RecyclerView
+                int position = viewHolder.getAdapterPosition();
+
+                //final String[] item = rvAdapter.getData().get(position);
+                rvAdapter.removeItem(position);
+
+//                Snackbar snackbar = Snackbar.make(coordinatorLayout, "Item was removed from the list.", Snackbar.LENGTH_LONG);
+//                snackbar.setAction("UNDO", new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//                        selectedItems.add(position, verseNumber);
+//                        updateTitle();
+//                        rvAdapter.restoreItem(item, position);
+//                        rvView.scrollToPosition(position);
+//                    }
+//                });
+//
+//                snackbar.setActionTextColor(Color.YELLOW);
+//                snackbar.show();
+
+            }
+        };
+
+        ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeToDeleteCallback);
+        itemTouchhelper.attachToRecyclerView(rvView);
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {

@@ -27,9 +27,13 @@ public abstract class SwipeToDelete extends ItemTouchHelper.Callback {
         private Drawable deleteDrawable;
         private int intrinsicWidth;
         private int intrinsicHeight;
+        private boolean draggedEnable;
+        private boolean swipeEnabled;
 
-        public SwipeToDelete(Context context) {
+        public SwipeToDelete(Context context, boolean draggedEnable, boolean swipeEnabled) {
             mContext = context;
+            this.draggedEnable = draggedEnable;
+            this.swipeEnabled = swipeEnabled;
             mBackground = new ColorDrawable();
             backgroundColor = Color.parseColor("#b80f0a");
             mClearPaint = new Paint();
@@ -57,7 +61,9 @@ public abstract class SwipeToDelete extends ItemTouchHelper.Callback {
 
         @Override
         public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
-            return makeMovementFlags(0, ItemTouchHelper.LEFT );//| ItemTouchHelper.RIGHT
+            int dragFlags = (draggedEnable) ? ItemTouchHelper.UP | ItemTouchHelper.DOWN : 0;
+            int swipeFlags = (swipeEnabled) ? ItemTouchHelper.LEFT : 0;
+            return makeMovementFlags(dragFlags,swipeFlags);//| ItemTouchHelper.RIGHT
         }
 
         @Override
