@@ -139,7 +139,7 @@ public class DashboardCreatorFragment extends Fragment implements LabelColorCrea
         color_txtview_info = view.findViewById(R.id.dash_creator_fragment_color_txtview_info);
         createButton = view.findViewById(R.id.dash_creator_fragment_button);
         LabelColorCreatorRecyclerView adapter = new LabelColorCreatorRecyclerView(getActivity(), colors, editMode, this);
-        GridLayoutManager manager = new GridLayoutManager(getActivity(), 6, GridLayoutManager.VERTICAL, false);
+        GridLayoutManager manager = new GridLayoutManager(getActivity(), 5, GridLayoutManager.VERTICAL, false);
         //============================================================================================
         boolean canGoBack = getActivity().getSupportFragmentManager().getBackStackEntryCount()>0;
         Dashboard.updateCanGoBack(canGoBack, (AppCompatActivity)getActivity());
