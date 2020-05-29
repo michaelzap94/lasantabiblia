@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<!--    MARGIN AND PADDING STANDARD-->
+    <dimen name="margin_tiny">2dp</dimen>
+    <dimen name="margin_small">4dp</dimen>
+    <dimen name="margin_normal">8dp</dimen>
+    <dimen name="margin_medium">16dp</dimen>
+    <dimen name="margin_large">24dp</dimen>
+    <dimen name="margin_very_large">36dp</dimen>
+
+    <!-- LAYOUT -->
+    <dimen name="bottom_sheet_collapsed_size">120dp</dimen>
+    <dimen name="bottom_sheet_expanded_size">360dp</dimen>
+    <dimen name="floating_button_size">56dp</dimen>
+    <dimen name="floating_button_margin">16dp</dimen>
+    <dimen name="verses_rv_padding_for_floating_button">72dp</dimen>
+
+<!-- FONTS -->
+    <dimen name="verses">20sp</dimen>
+</resources>

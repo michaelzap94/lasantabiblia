@@ -26,6 +26,7 @@ import com.michaelzap94.santabiblia.models.VersesMarked;
 import com.michaelzap94.santabiblia.utilities.BookHelper;
 import com.michaelzap94.santabiblia.utilities.CommonMethods;
 import com.michaelzap94.santabiblia.utilities.ShadowTransformer;
+import com.michaelzap94.santabiblia.utilities.Util;
 import com.michaelzap94.santabiblia.viewmodel.VersesMarkedViewModel;
 
 import java.util.ArrayList;
@@ -98,7 +99,9 @@ public class MainActivity extends BaseActivityTopDrawer  {
         viewModel.getVersesLearned(0);//refresh -> load data
 
         mCardShadowTransformer = new ShadowTransformer(viewPager, mainCardViewPagerAdapter);
-        viewPager.setPadding(68, 8, 68, 10);
+
+        int bottomAndTopPadding = Util.dpAsPixels(this,16);
+        viewPager.setPadding(68, bottomAndTopPadding, 68, bottomAndTopPadding);
 //        viewPager.setPageMargin(5);
         viewPager.setAdapter(mainCardViewPagerAdapter);
         viewPager.setPageTransformer(false, mCardShadowTransformer);

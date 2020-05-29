@@ -3,11 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/bottom_sheet_nestedscrollview"
     android:layout_width="match_parent"
-    android:layout_height="360dp"
+    android:layout_height="@dimen/bottom_sheet_expanded_size"
     android:background="@android:color/white"
     android:orientation="vertical"
     app:behavior_hideable="true"
-    app:behavior_peekHeight="120dp"
+    app:behavior_peekHeight="@dimen/bottom_sheet_collapsed_size"
     app:layout_behavior="@string/bottom_sheet_behavior">
 
 <!--    <LinearLayout-->
