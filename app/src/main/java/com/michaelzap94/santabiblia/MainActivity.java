@@ -6,12 +6,20 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 import androidx.viewpager.widget.ViewPager;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
+import android.view.Surface;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -88,6 +96,16 @@ public class MainActivity extends BaseActivityTopDrawer  {
         bookmark_button = findViewById(R.id.bookmark_button);
         last_seen_button = findViewById(R.id.last_seen_button);
         verses_learned_button = findViewById(R.id.verses_learned_button);
+        //=============================================================================================
+        Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        int rotation = display.getRotation();
+        if(rotation != Surface.ROTATION_0){
+            //not in portrait
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            params.height=(int) Resources.getSystem().getDisplayMetrics().heightPixels;
+            viewPager.setLayoutParams(params);
+        }
+
         //BUTTON LISTENER=============================================================================
         bookmark_button.setOnClickListener(mClickListener);
         last_seen_button.setOnClickListener(mClickListener);
