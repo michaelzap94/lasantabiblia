@@ -3,8 +3,11 @@ package com.michaelzap94.santabiblia.fragments.dashboard;
 import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,6 +23,8 @@ import com.michaelzap94.santabiblia.Dashboard;
 import com.michaelzap94.santabiblia.DatabaseHelper.ContentDBHelper;
 import com.michaelzap94.santabiblia.R;
 import com.michaelzap94.santabiblia.adapters.RecyclerView.LabelColorCreatorRecyclerView;
+import com.michaelzap94.santabiblia.models.Label;
+import com.michaelzap94.santabiblia.viewmodel.VersesMarkedViewModel;
 
 import java.util.Arrays;
 
@@ -118,7 +123,8 @@ public class DashboardCreatorFragment extends Fragment implements LabelColorCrea
     private String colorVal = null;
     private int idValue = -1;
     private boolean editMode = false;
-    RecyclerView recyclerView;
+    private RecyclerView recyclerView;
+    private VersesMarkedViewModel viewModel;
 
     public DashboardCreatorFragment() {
         // Required empty public constructor
@@ -129,6 +135,12 @@ public class DashboardCreatorFragment extends Fragment implements LabelColorCrea
         this.colorVal = color;
         this.idValue = idValue;
         this.editMode = true;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        viewModel = new ViewModelProvider(getActivity()).get(VersesMarkedViewModel.class);
     }
 
     @Override
@@ -182,19 +194,17 @@ public class DashboardCreatorFragment extends Fragment implements LabelColorCrea
                 if(!error){
                     String nameValue = name.getEditText().getText().toString();
                     String colorValue = color_txtview_info.getText().toString().trim();
-                    boolean insertSuccess = false;
                     if(editMode && idValue > 0){
-                        insertSuccess = ContentDBHelper.getInstance(getActivity()).editLabel(nameValue, colorValue, idValue);
+                        viewModel.updateOrCreateLabel(nameValue, colorValue, idValue);
                     } else {
-                        insertSuccess = ContentDBHelper.getInstance(getActivity()).createLabel(nameValue, colorValue);
+                        viewModel.updateOrCreateLabel(nameValue, colorValue, -1);
                     }
-
-                    if(insertSuccess){
-                        getActivity().getSupportFragmentManager().popBackStack();
-                        Toast.makeText(getActivity(), "Insert success", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(getActivity(), "Insert failure", Toast.LENGTH_SHORT).show();
-                    }
+                    //go back to Label fragment
+//                    getActivity().getSupportFragmentManager().popBackStack();
+//                    //go back to All Labels fragments
+//                    getActivity().getSupportFragmentManager().popBackStack();
+                    // Reload current fragment
+                    ((Dashboard) getActivity()).refreshLabelFragmentAfterEdit(new Label(idValue, nameValue, colorValue, 0));
 
                 }
 
@@ -215,7 +225,11 @@ public class DashboardCreatorFragment extends Fragment implements LabelColorCrea
     public void onResume() {
         super.onResume();
         if (getActivity() instanceof Dashboard) {
-            ((Dashboard) getActivity()).getSupportActionBar().setTitle("New Label");
+            if(editMode) {
+                ((Dashboard) getActivity()).getSupportActionBar().setTitle("Edit Label");
+            } else {
+                ((Dashboard) getActivity()).getSupportActionBar().setTitle("New Label");
+            }
         }
     }
 

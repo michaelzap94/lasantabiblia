@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -17,6 +18,7 @@ import android.view.inputmethod.InputMethodManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.michaelzap94.santabiblia.fragments.dashboard.DashboardMainFragment;
+import com.michaelzap94.santabiblia.models.Label;
 import com.michaelzap94.santabiblia.utilities.CommonMethods;
 
 public class Dashboard extends AppCompatActivity {
@@ -108,6 +110,15 @@ public class Dashboard extends AppCompatActivity {
             imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
         }
         return super.dispatchTouchEvent(ev);
+    }
+
+    public void refreshLabelFragmentAfterEdit(Label newLabel) {
+        //go back to Label fragment
+        getSupportFragmentManager().popBackStack();
+        //go back to All Labels fragments
+        getSupportFragmentManager().popBackStack();
+        //refresh the Edit fragment
+        DashboardMainFragment.onLabelClickedFromList(this, newLabel);
     }
 
     protected void onNewIntent(Intent intent) {
