@@ -129,6 +129,9 @@ public class VersesLearned extends DialogFragment {
                 updateTitle();
                 //refresh the not learned verses
                 viewModel.getVersesLearned(0);
+                if(versesLearnedSize == 0) {
+                    dismiss();
+                }
             } else {
                 Toast.makeText(ctx, "This item could not be deleted", Toast.LENGTH_SHORT).show();
             }
