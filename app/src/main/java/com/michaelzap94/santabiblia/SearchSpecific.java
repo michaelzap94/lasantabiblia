@@ -57,10 +57,10 @@ public class SearchSpecific extends AppCompatActivity {
                     title = getResources().getString(R.string.search_card_text_title);
                     type = "bible";
                     break;
-                case R.id.search_card_label:
-                    title = getResources().getString(R.string.search_card_label_title);
-                    type = "notes";
-                    break;
+//                case R.id.search_card_label:
+//                    title = getResources().getString(R.string.search_card_label_title);
+//                    type = "notes";
+//                    break;
                 default: title = "No card found";
                     break;
             }

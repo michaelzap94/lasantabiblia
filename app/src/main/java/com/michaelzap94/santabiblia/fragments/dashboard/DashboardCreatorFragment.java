@@ -162,6 +162,7 @@ public class DashboardCreatorFragment extends Fragment implements LabelColorCrea
             int position = Arrays.asList(colors).indexOf(colorVal);
             adapter.setSelected(position);
             onItemClick(position);
+            createButton.setText("Edit Label");
         }
 
 
