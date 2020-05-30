@@ -41,7 +41,7 @@ public class VersesLearned extends DialogFragment {
     // this data will not be shown until you setAdapter to the RecyclerView view in the Layout
     private VersesLearnedRecyclerView rvAdapter;
     private CoordinatorLayout coordinatorLayout;;
-
+    private boolean ableToDelete = true;
     public static VersesLearned newInstance() {
         return new VersesLearned();
     }
@@ -110,12 +110,23 @@ public class VersesLearned extends DialogFragment {
 //        toolbar.setSubtitle(titleChapterVerses);
     }
 
-    public void removeFromLearned(String uuid, int position){new VersesLearned.RemoveVersesLearned(position).execute(uuid);}
+    public void removeFromLearned(String uuid, int position){
+        if(ableToDelete){
+            new VersesLearned.RemoveVersesLearned(position).execute(uuid);
+        }
+    }
     private class RemoveVersesLearned extends AsyncTask<String, Void, Boolean> {
         private int position;
         private RemoveVersesLearned(int position) {
             this.position = position;
         }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            ableToDelete = false;
+        }
+
         protected Boolean doInBackground(String... args) {
             Log.d(TAG, "doInBackground: " + args[0]);
             return ContentDBHelper.getInstance(ctx).editVersesLearned(args[0], 0);
@@ -129,9 +140,13 @@ public class VersesLearned extends DialogFragment {
                 updateTitle();
                 //refresh the not learned verses
                 viewModel.getVersesLearned(0);
+                if(versesLearnedSize == 0) {
+                    dismiss();
+                }
             } else {
                 Toast.makeText(ctx, "This item could not be deleted", Toast.LENGTH_SHORT).show();
             }
+            ableToDelete = true;
         }
     }
 }

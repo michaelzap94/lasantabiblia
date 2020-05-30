@@ -6,12 +6,20 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 import androidx.viewpager.widget.ViewPager;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
+import android.view.Surface;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +34,7 @@ import com.michaelzap94.santabiblia.models.VersesMarked;
 import com.michaelzap94.santabiblia.utilities.BookHelper;
 import com.michaelzap94.santabiblia.utilities.CommonMethods;
 import com.michaelzap94.santabiblia.utilities.ShadowTransformer;
+import com.michaelzap94.santabiblia.utilities.Util;
 import com.michaelzap94.santabiblia.viewmodel.VersesMarkedViewModel;
 
 import java.util.ArrayList;
@@ -87,6 +96,16 @@ public class MainActivity extends BaseActivityTopDrawer  {
         bookmark_button = findViewById(R.id.bookmark_button);
         last_seen_button = findViewById(R.id.last_seen_button);
         verses_learned_button = findViewById(R.id.verses_learned_button);
+        //=============================================================================================
+        Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        int rotation = display.getRotation();
+        if(rotation != Surface.ROTATION_0){
+            //not in portrait
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            params.height=(int) Resources.getSystem().getDisplayMetrics().heightPixels;
+            viewPager.setLayoutParams(params);
+        }
+
         //BUTTON LISTENER=============================================================================
         bookmark_button.setOnClickListener(mClickListener);
         last_seen_button.setOnClickListener(mClickListener);
@@ -98,7 +117,9 @@ public class MainActivity extends BaseActivityTopDrawer  {
         viewModel.getVersesLearned(0);//refresh -> load data
 
         mCardShadowTransformer = new ShadowTransformer(viewPager, mainCardViewPagerAdapter);
-        viewPager.setPadding(68, 8, 68, 10);
+
+        int bottomAndTopPadding = Util.dpAsPixels(this,8);
+        viewPager.setPadding(68, bottomAndTopPadding, 68, bottomAndTopPadding);
 //        viewPager.setPageMargin(5);
         viewPager.setAdapter(mainCardViewPagerAdapter);
         viewPager.setPageTransformer(false, mCardShadowTransformer);
@@ -153,7 +174,11 @@ public class MainActivity extends BaseActivityTopDrawer  {
             versesMarkedArrayListSize = versesMarkedArrayList.size();
             //WHEN data is created  pass data and set it in the updateVersesMarkedViewPager VIEW
             mainCardViewPagerAdapter.updateVersesMarkedViewPager(versesMarkedArrayList);
-            main_card_mem_number.setText((viewPager.getCurrentItem()+1)+"/"+versesMarkedArrayListSize);
+            if(versesMarkedArrayListSize == 0 ) {
+                main_card_mem_number.setText("0");
+            } else {
+                main_card_mem_number.setText((viewPager.getCurrentItem()+1)+"/"+versesMarkedArrayListSize);
+            }
         });
     }
     @Override
@@ -240,7 +265,11 @@ public class MainActivity extends BaseActivityTopDrawer  {
             if(success){
                 mainCardViewPagerAdapter.removeCardItem(this.position);
                 versesMarkedArrayListSize--;
-                main_card_mem_number.setText((viewPager.getCurrentItem()+1)+"/"+versesMarkedArrayListSize);
+                if(versesMarkedArrayListSize == 0 ) {
+                    main_card_mem_number.setText("0");
+                } else {
+                    main_card_mem_number.setText((viewPager.getCurrentItem()+1)+"/"+versesMarkedArrayListSize);
+                }
             } else {
                 Toast.makeText(MainActivity.this, "This item could not be deleted", Toast.LENGTH_SHORT).show();
             }

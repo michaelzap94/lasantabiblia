@@ -14,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -45,6 +47,7 @@ import com.michaelzap94.santabiblia.models.Verse;
 import com.michaelzap94.santabiblia.utilities.BookHelper;
 import com.michaelzap94.santabiblia.utilities.CommonMethods;
 import com.michaelzap94.santabiblia.utilities.RecyclerItemClickListener;
+import com.michaelzap94.santabiblia.utilities.Util;
 import com.michaelzap94.santabiblia.viewmodel.VersesViewModel;
 
 import java.util.ArrayList;
@@ -52,6 +55,7 @@ import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
 import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
+import static android.content.Intent.makeMainActivity;
 
 public class VersesFragment extends Fragment implements RecyclerItemClickListener.OnRecyclerClickListener {
     private static final String TAG = "VersesFragment";
@@ -178,6 +182,8 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) rvView.getLayoutParams();
+            int rvViewMarginBefore = 0;
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 switch (newState){
@@ -193,7 +199,6 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
                         if(rvViewLabels == null) {
                             rvViewLabels = (RecyclerView) view.findViewById(R.id.bottom_sheet_recycler_view);
                             rvViewLabels.setLayoutManager(new LinearLayoutManager(VersesFragment.this.getContext()));
-                            //rvViewLabels.addOnItemTouchListener(new RecyclerItemClickListener(mActivity, rvView, VersesFragment.this));
                             rvViewLabels.setAdapter(rvAdapterLabels);//attach the RecyclerView adapter to the RecyclerView View
                         }
                         if(bottomSheetIcon == null){
@@ -210,6 +215,9 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
                         if(actionMode!=null){
                             actionMode.finish();
                         }
+
+                        params.bottomMargin = rvViewMarginBefore;
+                        rvView.setLayoutParams(params);
                         break;
                     case BottomSheetBehavior.STATE_HALF_EXPANDED:
                         break;
@@ -219,7 +227,9 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
 
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-                Log.d(TAG, "BottomSheetBehavior liding....");
+                int margin = (int) (bottomSheetBehavior.getPeekHeight() + (bottomSheet.getHeight() - bottomSheetBehavior.getPeekHeight()) * slideOffset);
+                params.bottomMargin = margin;
+                rvView.setLayoutParams(params);
             }
         });
         ///////////////////////////////////////////////////////////

@@ -9,7 +9,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clickable="true"
-            android:focusable="true" />
+            android:focusable="true"
+            android:paddingBottom="@dimen/verses_rv_padding_for_floating_button"
+            android:clipToPadding="false"/>
 
         <include layout="@layout/bottom_sheet" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
