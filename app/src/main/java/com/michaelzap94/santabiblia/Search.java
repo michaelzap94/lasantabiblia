@@ -28,9 +28,19 @@ public class Search extends AppCompatActivity {
     }
 
     public void goToSearchSpecific(View view){
-        Intent myIntent = new Intent(Search.this, SearchSpecific.class);
-        myIntent.putExtra("id", view.getId());
-        startActivity(myIntent);
+        switch (view.getId()){
+            case R.id.search_card_maps:
+                Intent mapsIntent = new Intent(Search.this, Maps.class);
+                startActivity(mapsIntent);
+                break;
+            default:
+                Intent searchSpecificIntent = new Intent(Search.this, SearchSpecific.class);
+                searchSpecificIntent.putExtra("id", view.getId());
+                startActivity(searchSpecificIntent);
+                break;
+        }
+
+
     }
 
 
