@@ -156,7 +156,11 @@ public class MainActivity extends BaseActivityTopDrawer  {
             versesMarkedArrayListSize = versesMarkedArrayList.size();
             //WHEN data is created  pass data and set it in the updateVersesMarkedViewPager VIEW
             mainCardViewPagerAdapter.updateVersesMarkedViewPager(versesMarkedArrayList);
-            main_card_mem_number.setText((viewPager.getCurrentItem()+1)+"/"+versesMarkedArrayListSize);
+            if(versesMarkedArrayListSize == 0 ) {
+                main_card_mem_number.setText("0");
+            } else {
+                main_card_mem_number.setText((viewPager.getCurrentItem()+1)+"/"+versesMarkedArrayListSize);
+            }
         });
     }
     @Override
@@ -243,7 +247,11 @@ public class MainActivity extends BaseActivityTopDrawer  {
             if(success){
                 mainCardViewPagerAdapter.removeCardItem(this.position);
                 versesMarkedArrayListSize--;
-                main_card_mem_number.setText((viewPager.getCurrentItem()+1)+"/"+versesMarkedArrayListSize);
+                if(versesMarkedArrayListSize == 0 ) {
+                    main_card_mem_number.setText("0");
+                } else {
+                    main_card_mem_number.setText((viewPager.getCurrentItem()+1)+"/"+versesMarkedArrayListSize);
+                }
             } else {
                 Toast.makeText(MainActivity.this, "This item could not be deleted", Toast.LENGTH_SHORT).show();
             }
