@@ -184,8 +184,8 @@ public class VersesMarkedViewModel extends AndroidViewModel {
         //get data and populate the list
         protected Void doInBackground(Integer... args) {
             int idValue = args[0];
-            boolean insertSuccess = ContentDBHelper.getInstance(getApplication()).deleteOneLabel(idValue);
-            if(insertSuccess){
+            boolean deleteSuccess = ContentDBHelper.getInstance(getApplication()).deleteOneLabel(idValue);
+            if(deleteSuccess){
                 getAllLabels();
             } else {
                 Log.d(TAG, "doInBackground: label could not be deleted");
