@@ -30,6 +30,7 @@ import com.google.android.material.tabs.TabLayout;
 import com.michaelzap94.santabiblia.fragments.ui.tabBooks.BooksPagerAdapter;
 import com.michaelzap94.santabiblia.models.Book;
 import com.michaelzap94.santabiblia.utilities.BookHelper;
+import com.michaelzap94.santabiblia.utilities.DrawerLayoutHorizontalSupport;
 
 import java.util.Locale;
 
@@ -38,8 +39,9 @@ import static android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP;
 public abstract class BaseActivityTopDrawer extends AppCompatActivity {
 
     private static final String TAG = "BaseActivityTopDrawer";
-    private DrawerLayout drawer;
-    private NavigationView navigationView;
+    private DrawerLayoutHorizontalSupport mDrawer;
+    private View mDrawerLeft;
+    private ActionBarDrawerToggle mDrawerToggle;
     private ViewPager viewPagerBooks;
     private TabLayout tabsBooks;
     private Toolbar toolbar;
@@ -65,60 +67,61 @@ public abstract class BaseActivityTopDrawer extends AppCompatActivity {
             getBaseContext().getResources().updateConfiguration(config,
                     getBaseContext().getResources().getDisplayMetrics());
         }
-
         //======================================================================================
-
         setContentView(contentView);
         toolbar = findViewById(R.id.toolbar_books);
         setSupportActionBar(toolbar);
-
-        drawer = findViewById(R.id.drawer_layout_books);
-        navigationView = findViewById(R.id.nav_view_books);
-
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        // Single widgets in xml
+        mDrawer = findViewById(R.id.drawer_layout_books);
+        mDrawerLeft = findViewById(R.id.nav_view_books);
         viewPagerBooks = findViewById(R.id.pager_view_books);
         tabsBooks = findViewById(R.id.tabs_books);
-        //Create the sectionsPagerAdapter
+        //======================================================================================
         BooksPagerAdapter sectionsPagerAdapter = new BooksPagerAdapter(this, getSupportFragmentManager());
         // add the SectionsPagerAdapter to the viewPager
         viewPagerBooks.setAdapter(sectionsPagerAdapter);
         viewPagerBooks.setCurrentItem(1);//select NT
         //add the viewPager to the tab layout
         tabsBooks.setupWithViewPager(viewPagerBooks);
-
-        drawer.addDrawerListener(new DrawerLayout.DrawerListener() {
-            @Override
-            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
-                Log.d(TAG, "onDrawerSlide: " + String.valueOf(slideOffset));
+        viewPagerBooks.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
             }
 
-            @Override
-            public void onDrawerOpened(@NonNull View drawerView) {
-                drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);//DrawerLayout instance
+            public void onPageSelected(int position) {
+                if (BaseActivityTopDrawer.this.mDrawer == null) {
+                    return;
+                }
+                if (position == 2) {
+                    BaseActivityTopDrawer.this.mDrawer.setverifyScrollChild(false);
+                } else {
+                    BaseActivityTopDrawer.this.mDrawer.setverifyScrollChild(true);
+                }
             }
 
-            @Override
-            public void onDrawerClosed(@NonNull View drawerView) {
-                Log.d(TAG, "onDrawerClosed: ");
-
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
-                Log.d(TAG, "onDrawerStateChanged: " + String.valueOf(newState));
-
+            public void onPageScrollStateChanged(int state) {
             }
         });
-
+        //======================================================================================
+        this.mDrawer.setInterceptTouchEventChildId(R.id.pager_view_books);
+        this.mDrawerToggle = new ActionBarDrawerToggle(this, this.mDrawer, this.toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+            public void onDrawerClosed(View view) {
+                if (BaseActivityTopDrawer.this.mDrawer != null) {
+                    BaseActivityTopDrawer.this.mDrawer.setverifyScrollChild(false);
+                }
+            }
+            public void onDrawerOpened(View drawerView) {
+                if (BaseActivityTopDrawer.this.mDrawer != null && BaseActivityTopDrawer.this.viewPagerBooks.getCurrentItem() != 2) {
+                    BaseActivityTopDrawer.this.mDrawer.setverifyScrollChild(true);
+                }
+            }
+        };
+        this.mDrawer.addDrawerListener(this.mDrawerToggle);
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        getSupportActionBar().setHomeButtonEnabled(true);
+        this.mDrawerToggle.syncState();
     }
 
     public static void onChapterClickedFromDrawer(Activity ct, int position) {
         Log.d(TAG, "onBindViewHolder: CLICK RECEIVED "+position);
-
         Book book = (Book) BookHelper.getBook(position);
         Intent myIntent = new Intent(ct, Bible.class);
         myIntent.setFlags(FLAG_ACTIVITY_CLEAR_TOP);
@@ -128,43 +131,27 @@ public abstract class BaseActivityTopDrawer extends AppCompatActivity {
         ct.startActivity(myIntent);
     }
 
-    /**
-     * Close the Navigation View/Drawer when clicked outside the box.
-     *
-     * @param ev
-     * @return
-     */
     @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        Rect viewRect = new Rect();
-        navigationView.getGlobalVisibleRect(viewRect);
-        if (!viewRect.contains((int) ev.getRawX(), (int) ev.getRawY())) {
-            //hide your navigation view here.
-            drawer.closeDrawer(GravityCompat.START);
+    public void onBackPressed() {
+        if (isNavigationDrawerOpen()) {
+            closeNavigationDrawer();
+        } else {
+            super.onBackPressed();
         }
-        return super.dispatchTouchEvent(ev);
     }
     @Override
     public void onStop() {
         super.onStop();
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
+        if (isNavigationDrawerOpen()) {
+            closeNavigationDrawer();
         }
     }
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.nav_drawer, menu);
-//        return true;
-//    }
-
-    @Override
-    public void onBackPressed() {
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
+    public void closeNavigationDrawer() {
+        if (this.mDrawer != null && this.mDrawerLeft != null) {
+            this.mDrawer.closeDrawer(this.mDrawerLeft);
         }
+    }
+    public boolean isNavigationDrawerOpen() {
+        return (this.mDrawer == null || this.mDrawerLeft == null || !this.mDrawer.isDrawerOpen(this.mDrawerLeft)) ? false : true;
     }
 }
