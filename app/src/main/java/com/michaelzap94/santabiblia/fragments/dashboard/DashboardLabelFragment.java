@@ -146,12 +146,8 @@ public class DashboardLabelFragment extends Fragment {
                     dialog.dismiss();
                 })
                 .setPositiveButton("Delete", (dialog, which) -> {
-                    boolean deleteSuccess = ContentDBHelper.getInstance(ctx).deleteOneLabel(mLabel.getId());
-                    if(deleteSuccess){
-                        ((AppCompatActivity) ctx).getSupportFragmentManager().popBackStack();
-                    } else {
-                        Toast.makeText(ctx, "Sorry, but the label could not be deleted.", Toast.LENGTH_SHORT).show();
-                    }
+                    viewModel.deleteLabel(mLabel.getId());
+                    ((AppCompatActivity) ctx).getSupportFragmentManager().popBackStack();
                 })
                 .show();
     }

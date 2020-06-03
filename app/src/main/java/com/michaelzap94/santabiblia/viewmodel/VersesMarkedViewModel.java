@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.LongDef;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
@@ -175,8 +176,23 @@ public class VersesMarkedViewModel extends AndroidViewModel {
             return null;
         }
     }
-
     //===============================================================================================
+    public void deleteLabel(int label_id){
+        new VersesMarkedViewModel.DeleteLabelAsync().execute(label_id);
+    }
+    private class DeleteLabelAsync extends AsyncTask<Integer, Void, Void> {
+        //get data and populate the list
+        protected Void doInBackground(Integer... args) {
+            int idValue = args[0];
+            boolean insertSuccess = ContentDBHelper.getInstance(getApplication()).deleteOneLabel(idValue);
+            if(insertSuccess){
+                getAllLabels();
+            } else {
+                Log.d(TAG, "doInBackground: label could not be deleted");
+            }
+            return null;
+        }
+    }
 //    public void removeFromLearned(String uuid, int position){new VersesMarkedViewModel.RemoveVersesLearned(position).execute(uuid);}
 //    private class RemoveVersesLearned extends AsyncTask<String, Void, Boolean> {
 //        private int position;
