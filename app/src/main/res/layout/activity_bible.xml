@@ -6,14 +6,6 @@
     android:id="@+id/drawer_layout_books"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <!--            <com.google.android.material.tabs.TabLayout-->
-    <!--                android:id="@+id/tabs_chapters"-->
-    <!--                android:layout_width="fill_parent"-->
-    <!--                android:layout_height="wrap_content"-->
-    <!--                app:tabMode="scrollable"-->
-    <!--                app:tabGravity="fill"/>-->
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -37,6 +29,12 @@
                 app:titleTextAppearance="@style/ToolbarTitleAppearance"
                 app:subtitleTextAppearance="@style/ToolbarSubtitleAppearance"
                 app:popupTheme="@style/AppTheme.PopupOverlay" />
+            <!--            <com.google.android.material.tabs.TabLayout-->
+            <!--                android:id="@+id/tabs_chapters"-->
+            <!--                android:layout_width="fill_parent"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                app:tabMode="scrollable"-->
+            <!--                app:tabGravity="fill"/>-->
 
         </com.google.android.material.appbar.AppBarLayout>
 
