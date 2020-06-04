@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.LongDef;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
@@ -27,6 +28,7 @@ public class VersesMarkedViewModel extends AndroidViewModel {
     private MutableLiveData<ArrayList<VersesMarked>> versesMarkedListByUUID;
     private MutableLiveData<ArrayList<VersesMarked>> versesMarkedListLearned;
     private MutableLiveData<ArrayList<VersesMarked>> versesMarkedListNotLearned;
+    private MutableLiveData<ArrayList<Label>> allLabels;
     private int label_id;
 
     public VersesMarkedViewModel(@NonNull Application application) {
@@ -45,6 +47,9 @@ public class VersesMarkedViewModel extends AndroidViewModel {
     }
     public MutableLiveData<ArrayList<VersesMarked>> getVersesMarkedListNotLearned() {
         return versesMarkedListNotLearned;
+    }
+    public MutableLiveData<ArrayList<Label>> getAllLabelsLiveData() {
+        return allLabels;
     }
     //PUBLIC SO we can refresh the list for some reason from the OUTSIDE
     public void refreshVersesMarkedList(int label_id){
@@ -135,6 +140,59 @@ public class VersesMarkedViewModel extends AndroidViewModel {
         }
     }
     //===============================================================================================
+    public void getAllLabels(){
+        if(allLabels == null){
+            this.allLabels = new MutableLiveData<ArrayList<Label>>();
+        }
+        new VersesMarkedViewModel.AllLabelsAsync().execute();
+    }
+    private class AllLabelsAsync extends AsyncTask<Void, Void, Void> {
+        //get data and populate the list
+        protected Void doInBackground(Void... args) {
+            Log.d(TAG, "GetVersesMarked doInBackground: ");
+            ArrayList<Label> result = ContentDBHelper.getInstance(getApplication()).getAllLabels();
+            Log.d(TAG, "GetVersesMarked doInBackground: result " + result.size());
+            allLabels.postValue(result);
+            return null;
+        }
+    }
+    //===============================================================================================
+    public void updateOrCreateLabel(String nameValue, String colorValue, int idValue){
+        new VersesMarkedViewModel.UpdateOrCreateLabelAsync().execute(nameValue, colorValue, idValue);
+    }
+    private class UpdateOrCreateLabelAsync extends AsyncTask<Object, Void, Void> {
+        //get data and populate the list
+        protected Void doInBackground(Object... args) {
+            int idValue = (int) args[2];
+            boolean insertSuccess;
+            if(idValue != -1){
+                insertSuccess = ContentDBHelper.getInstance(getApplication()).editLabel((String) args[0], (String) args[1], idValue);
+            } else {
+                insertSuccess = ContentDBHelper.getInstance(getApplication()).createLabel((String) args[0], (String) args[1]);
+            }
+            if(insertSuccess){
+                getAllLabels();
+            }
+            return null;
+        }
+    }
+    //===============================================================================================
+    public void deleteLabel(int label_id){
+        new VersesMarkedViewModel.DeleteLabelAsync().execute(label_id);
+    }
+    private class DeleteLabelAsync extends AsyncTask<Integer, Void, Void> {
+        //get data and populate the list
+        protected Void doInBackground(Integer... args) {
+            int idValue = args[0];
+            boolean deleteSuccess = ContentDBHelper.getInstance(getApplication()).deleteOneLabel(idValue);
+            if(deleteSuccess){
+                getAllLabels();
+            } else {
+                Log.d(TAG, "doInBackground: label could not be deleted");
+            }
+            return null;
+        }
+    }
 //    public void removeFromLearned(String uuid, int position){new VersesMarkedViewModel.RemoveVersesLearned(position).execute(uuid);}
 //    private class RemoveVersesLearned extends AsyncTask<String, Void, Boolean> {
 //        private int position;

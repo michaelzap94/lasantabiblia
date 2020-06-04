@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,6 +24,7 @@ import com.michaelzap94.santabiblia.DatabaseHelper.ContentDBHelper;
 import com.michaelzap94.santabiblia.R;
 import com.michaelzap94.santabiblia.adapters.RecyclerView.DashboardRecyclerViewAdapter;
 import com.michaelzap94.santabiblia.models.Label;
+import com.michaelzap94.santabiblia.viewmodel.VersesMarkedViewModel;
 
 import java.util.ArrayList;
 
@@ -35,10 +37,19 @@ public class DashboardMainFragment extends Fragment {
     private Button createNewLabel;
     private RecyclerView rvView;
     private DashboardRecyclerViewAdapter rvAdapter;
-
+    private VersesMarkedViewModel viewModel;
+    private ArrayList<Label> allLabels = new ArrayList<>();
 
     public DashboardMainFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        viewModel = new ViewModelProvider(getActivity()).get(VersesMarkedViewModel.class);
+        viewModel.getAllLabels();
+        rvAdapter = new DashboardRecyclerViewAdapter(getActivity(), allLabels);
     }
 
     @Override
@@ -46,17 +57,10 @@ public class DashboardMainFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.dashboard_fragment, container, false);
-
-        Log.d(TAG, "onCreateView: MAIN");
         //================================================================================================
         boolean canGoBack = getActivity().getSupportFragmentManager().getBackStackEntryCount()>0;
         Dashboard.updateCanGoBack(canGoBack, (AppCompatActivity)getActivity());
         //================================================================================================
-
-        ArrayList<Label> arrReturned = ContentDBHelper.getInstance(getActivity()).getAllLabels();
-        Log.d(TAG, "onCreateView: SIZE: " + arrReturned.size());
-        rvAdapter = new DashboardRecyclerViewAdapter(getActivity(), arrReturned);
-
         createNewLabel = view.findViewById(R.id.dash_new_button);
         createNewLabel.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -80,6 +84,15 @@ public class DashboardMainFragment extends Fragment {
 //        rvView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), rvView, VersesFragment.this));
         rvView.setAdapter(rvAdapter);//attach the RecyclerView adapter to the RecyclerView View
         /////////////////////////////////////////
+        observerViewModel();
+    }
+
+    private void observerViewModel() {
+        viewModel.getAllLabelsLiveData().observe(getActivity(), (labels) -> {
+            Log.d(TAG, "observerViewModel: LABEL GOT DATA" + labels.size() + "in label: Mem");
+            //WHEN data is created  pass data and set it in the updateVersesMarkedViewPager VIEW
+            rvAdapter.refreshData(labels);
+        });
     }
 
     @Override

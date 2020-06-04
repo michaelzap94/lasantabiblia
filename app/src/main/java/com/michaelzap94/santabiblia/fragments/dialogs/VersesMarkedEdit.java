@@ -164,7 +164,7 @@ public class VersesMarkedEdit extends DialogFragment {
     }
     //===================================================================
     private void enableSwipeToDeleteAndUndo() {
-        SwipeToDelete swipeToDeleteCallback = new SwipeToDelete(getActivity()) {
+        SwipeToDelete swipeToDeleteCallback = new SwipeToDelete(getActivity(), false, true) {
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
 

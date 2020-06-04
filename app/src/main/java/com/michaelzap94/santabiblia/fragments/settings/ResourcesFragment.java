@@ -17,11 +17,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
+import com.michaelzap94.santabiblia.Bible;
+import com.michaelzap94.santabiblia.DatabaseHelper.BibleCreator;
 import com.michaelzap94.santabiblia.R;
 import com.michaelzap94.santabiblia.Settings;
 import com.michaelzap94.santabiblia.adapters.RecyclerView.SettingsResourcesDownloadedRVAdapter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class ResourcesFragment extends Fragment {
     private static final String TAG = "ResourcesFragment";
@@ -36,9 +39,9 @@ public class ResourcesFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        list = new ArrayList<>();
-        list.add("something 1");
-        list.add("something 2");
+//        String[] resourcesAvailable = BibleCreator.getInstance(this.getContext()).listOfAssetsSpecific("bibles", "es");;
+//        list = new ArrayList<String>(Arrays.asList(resourcesAvailable));
+        list = BibleCreator.getInstance(this.getContext()).listOfAllDBAssets();
         adapter = new SettingsResourcesDownloadedRVAdapter(getActivity(), list);
     }
 

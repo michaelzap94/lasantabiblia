@@ -1,4 +1,5 @@
 package com.michaelzap94.santabiblia.utilities;
+import android.util.Log;
 import android.view.View;
 
 import androidx.cardview.widget.CardView;
@@ -8,11 +9,11 @@ import com.michaelzap94.santabiblia.interfaces.CardAdapter;
 
 
 public class ShadowTransformer implements ViewPager.OnPageChangeListener, ViewPager.PageTransformer {
-
+    private static final String TAG = "ShadowTransformer";
     private ViewPager mViewPager;
     private CardAdapter mAdapter;
     private float mLastOffset;
-    private boolean mScalingEnabled = true;
+    private boolean mScalingEnabled = false;
 
     public ShadowTransformer(ViewPager viewPager, CardAdapter adapter) {
         mViewPager = viewPager;
@@ -70,10 +71,22 @@ public class ShadowTransformer implements ViewPager.OnPageChangeListener, ViewPa
             realCurrentPosition = position;
             realOffset = positionOffset;
         }
-
+//        Log.d(TAG, "onPageScrolled: realOffset " + realOffset);
+//        Log.d(TAG, "onPageScrolled: positionOffset " + positionOffset);
+//
+//        Log.d(TAG, "onPageScrolled: mAdapter.getCount() " + mAdapter.getCount());
+//        Log.d(TAG, "onPageScrolled: position " + position);
+//        Log.d(TAG, "onPageScrolled: nextPosition " + nextPosition);
+//        Log.d(TAG, "onPageScrolled: realCurrentPosition " + realCurrentPosition);
+//        Log.d(TAG, "onPageScrolled: =========================================");
+        if(position == mAdapter.getCount() - 1) {
+            //if this is the last card
+            CardView currentCard = mAdapter.getCardViewAt(position);
+            currentCard.setCardElevation((baseElevation + baseElevation
+                    * (CardAdapter.MAX_ELEVATION_FACTOR - 1) * (1 - positionOffset)));
+        }
         // Avoid crash on overscroll
-        if (nextPosition > mAdapter.getCount() - 1
-                || realCurrentPosition > mAdapter.getCount() - 1) {
+        if (nextPosition > mAdapter.getCount() - 1 || realCurrentPosition > mAdapter.getCount() - 1) {
             return;
         }
 

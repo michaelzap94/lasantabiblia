@@ -12,11 +12,8 @@
             />
         <ListPreference
             app:key="pref_bible_selected"
-            app:entries="@array/sizeletra"
-            app:entryValues="@array/valuesizeletra"
             app:icon="@drawable/ic_library_books"
             app:title="Bible Selected"
-            app:defaultValue="14"
             app:useSimpleSummaryProvider="true"
             />
         <Preference
@@ -36,13 +33,15 @@
             app:icon="@drawable/ic_text_format"
             app:fragment="com.michaelzap94.santabiblia.fragments.settings.FontsFragment"
             />
-        <!--        <ListPreference-->
-        <!--            app:entries="@array/sizeletra"-->
-        <!--            app:title="Tamaño de Letra"-->
-        <!--            app:key="list_preference"-->
-        <!--            app:summary="Establecer tamaño de fuente."-->
-        <!--            app:defaultValue="2"-->
-        <!--            app:entryValues="@array/valuesizeletra" />-->
+<!--        <ListPreference-->
+<!--            app:key="pref_bible_selected"-->
+<!--            app:entries="@array/sizeletra"-->
+<!--            app:entryValues="@array/valuesizeletra"-->
+<!--            app:icon="@drawable/ic_library_books"-->
+<!--            app:title="Bible Selected"-->
+<!--            app:defaultValue="14"-->
+<!--            app:useSimpleSummaryProvider="true"-->
+<!--            />-->
         <CheckBoxPreference
             app:key="pref_night_mode"
             app:icon="@drawable/ic_moon"

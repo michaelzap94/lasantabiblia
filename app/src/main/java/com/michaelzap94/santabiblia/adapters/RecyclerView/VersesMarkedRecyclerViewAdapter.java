@@ -141,6 +141,7 @@ public class VersesMarkedRecyclerViewAdapter extends RecyclerView.Adapter<Verses
             });
             btn_share.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
+                    CommonMethods.share(ctx,title, content);
                 }
             });
             btn_edit.setOnClickListener(new View.OnClickListener() {
