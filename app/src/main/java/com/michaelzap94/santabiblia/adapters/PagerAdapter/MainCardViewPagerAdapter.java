@@ -19,7 +19,7 @@ import androidx.viewpager.widget.PagerAdapter;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.michaelzap94.santabiblia.DatabaseHelper.ContentDBHelper;
-import com.michaelzap94.santabiblia.MainActivity;
+import com.michaelzap94.santabiblia.Home;
 import com.michaelzap94.santabiblia.adapters.RecyclerView.VersesLearnedRecyclerView;
 import com.michaelzap94.santabiblia.interfaces.CardAdapter;
 import com.michaelzap94.santabiblia.models.VersesMarked;
@@ -39,9 +39,9 @@ public class MainCardViewPagerAdapter extends PagerAdapter  implements CardAdapt
     private float mBaseElevation;
     private LayoutInflater layoutInflater;
     private Context context;
-    MainActivity listener;
+    private Home listener;
 
-    public MainCardViewPagerAdapter(List<VersesMarked> mainCardContents, Context context, MainActivity listener) {
+    public MainCardViewPagerAdapter(List<VersesMarked> mainCardContents, Context context, Home listener) {
         if(mainCardContents != null){
             this.mainCardContents = mainCardContents;
         } else {
@@ -152,7 +152,7 @@ public class MainCardViewPagerAdapter extends PagerAdapter  implements CardAdapt
             contentSpanned = Html.fromHtml(content);
         }
 
-        //String title = bookName + " " + chapter + ":" + verseFrom  + (verseFrom < verseTo ? "-" + verseTo : BuildConfig.FLAVOR);
+        //String title = bookName + " " + chapter + ":" + verseFrom  + (verseFrom < verseTo ? "-" + verseTo : "");
         String titleChapterVerses = BookHelper.getTitleBookAndCaps(chapter, selectedItems);
         String title = bookName + " " + titleChapterVerses;
         txtView_title.setText(title);

@@ -207,7 +207,7 @@ public class BookHelper {
             List<Integer> currentArr = versesGroups.get(i);
             int verseFrom = (currentArr.get(0)+1);
             int verseTo = (currentArr.get(currentArr.size()-1)+1);
-            resultArr[i] = verseFrom + (verseFrom < verseTo ? "-" + verseTo : BuildConfig.FLAVOR);
+            resultArr[i] = verseFrom + (verseFrom < verseTo ? "-" + verseTo : "");
         }
         Log.d(TAG, "STRING: " + resultArr);
         verses = TextUtils.join(", ", resultArr);
@@ -218,9 +218,9 @@ public class BookHelper {
 //    public static String getUrlLibCaps(int libro, int capitulo, int versiculoi, int versiculof) {
 //        Book nlibro = getBook(libro);
 //        if (nlibro == null || versiculoi == 0) {
-//            return BuildConfig.FLAVOR;
+//            return "";
 //        }
-//        return "http://tusversiculos.com/v/" + nlibro.getId() + "/" + capitulo + "/" + versiculoi + "/" + (versiculoi < versiculof ? versiculof + "/" : BuildConfig.FLAVOR);
+//        return "http://tusversiculos.com/v/" + nlibro.getId() + "/" + capitulo + "/" + versiculoi + "/" + (versiculoi < versiculof ? versiculof + "/" : "");
 //    }
 
 

@@ -36,7 +36,6 @@ import com.michaelzap94.santabiblia.BaseActivityTopDrawer;
 import com.michaelzap94.santabiblia.Bible;
 import com.michaelzap94.santabiblia.BibleCompare;
 import com.michaelzap94.santabiblia.DatabaseHelper.ContentDBHelper;
-import com.michaelzap94.santabiblia.MainActivity;
 import com.michaelzap94.santabiblia.R;
 import com.michaelzap94.santabiblia.adapters.RecyclerView.DashboardRecyclerViewAdapter;
 import com.michaelzap94.santabiblia.adapters.RecyclerView.VersesRecyclerViewAdapter;
@@ -55,7 +54,6 @@ import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
 import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
-import static android.content.Intent.makeMainActivity;
 
 public class VersesFragment extends Fragment implements RecyclerItemClickListener.OnRecyclerClickListener {
     private static final String TAG = "VersesFragment";

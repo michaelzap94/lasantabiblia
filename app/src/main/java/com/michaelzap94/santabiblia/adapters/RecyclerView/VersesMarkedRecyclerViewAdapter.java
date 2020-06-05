@@ -122,7 +122,7 @@ public class VersesMarkedRecyclerViewAdapter extends RecyclerView.Adapter<Verses
                 contentSpanned = Html.fromHtml(content);
             }
 
-            //String title = bookName + " " + chapter + ":" + verseFrom  + (verseFrom < verseTo ? "-" + verseTo : BuildConfig.FLAVOR);
+            //String title = bookName + " " + chapter + ":" + verseFrom  + (verseFrom < verseTo ? "-" + verseTo : "");
             String titleChapterVerses = BookHelper.getTitleBookAndCaps(chapter, selectedItems);
             String title = bookName + " " + titleChapterVerses;
             txtView_title.setText(title);

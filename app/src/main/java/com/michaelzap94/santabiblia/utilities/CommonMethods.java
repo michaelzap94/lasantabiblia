@@ -23,7 +23,7 @@ import com.michaelzap94.santabiblia.Bible;
 import com.michaelzap94.santabiblia.Dashboard;
 import com.michaelzap94.santabiblia.DatabaseHelper.BibleCreator;
 import com.michaelzap94.santabiblia.DatabaseHelper.BibleDBHelper;
-import com.michaelzap94.santabiblia.MainActivity;
+import com.michaelzap94.santabiblia.Home;
 import com.michaelzap94.santabiblia.R;
 import com.michaelzap94.santabiblia.Search;
 import com.michaelzap94.santabiblia.Settings;
@@ -41,6 +41,8 @@ import static androidx.constraintlayout.widget.Constraints.TAG;
 import static java.net.Proxy.Type.HTTP;
 
 public class CommonMethods {
+    public static final String USER_SELECTED_OFFLINE = "USER_SELECTED_OFFLINE";
+    public static final String USER_IS_LOGGED_IN = "USER_IS_LOGGED_IN";
     public static final String DEFAULT_BIBLE_EXIST = "default_bible_exist";
     public static final String MAIN_BIBLE_SELECTED = "pref_bible_selected";
     public static final String CHAPTER_BOOKMARKED = "CHAPTER_BOOKMARKED";
@@ -163,7 +165,7 @@ public class CommonMethods {
                 if(itemId == menuItem.getItemId()) return true;
                 switch (menuItem.getItemId()){
                     case R.id.bnav_home:
-                        activity.startActivity(new Intent(activity, MainActivity.class).addFlags(FLAG_ACTIVITY_REORDER_TO_FRONT));
+                        activity.startActivity(new Intent(activity, Home.class).addFlags(FLAG_ACTIVITY_REORDER_TO_FRONT));
                         activity.overridePendingTransition(0,0);
                         return true;
                     case R.id.bnav_dashboard:
@@ -207,6 +209,19 @@ public class CommonMethods {
         activity.startActivity(myIntent);
         //activity.startActivity(new Intent(activity, Bible.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
         activity.overridePendingTransition(0,0);
+    }
+    //==================================================================================================
+    //TODO: implement logic to determine if user is logged in
+    public static boolean checkIfUserSelectedOfflineOrIsLoggedIn(Context context){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getBoolean(USER_SELECTED_OFFLINE, false);
+    }
+    public static boolean updateUserOfflineSelection(Context context, boolean value){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean(USER_SELECTED_OFFLINE, value);
+        editor.apply();
+        return prefs.getBoolean(USER_SELECTED_OFFLINE, false);
     }
     //==================================================================================================
     public static void copyText(Context context, String title, String text){

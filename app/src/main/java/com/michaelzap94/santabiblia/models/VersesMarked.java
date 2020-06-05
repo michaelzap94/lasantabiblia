@@ -51,7 +51,7 @@ public class VersesMarked implements Parcelable {
         return chapter;
     }
     public boolean hasNote() {
-        return (this.note == null || this.note.equals(BuildConfig.FLAVOR)) ? false : true;
+        return (this.note == null || this.note.equals("")) ? false : true;
     }
     public String getNote() {
         return this.note;
