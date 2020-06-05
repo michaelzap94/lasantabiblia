@@ -7,7 +7,10 @@
     <dimen name="margin_medium">16dp</dimen>
     <dimen name="margin_large">24dp</dimen>
     <dimen name="margin_very_large">36dp</dimen>
-
+    <dimen name="margin_extra_large">48dp</dimen>
+    <dimen name="margin_huge">56dp</dimen>
+    <dimen name="margin_very_huge">64dp</dimen>
+    <dimen name="margin_extra_huge">72dp</dimen>
     <!-- LAYOUT -->
     <dimen name="bottom_sheet_collapsed_size">120dp</dimen>
     <dimen name="bottom_sheet_expanded_size">360dp</dimen>

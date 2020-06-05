@@ -2,13 +2,12 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fitsSystemWindows="true">
 <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="42dp"
+    android:padding="@dimen/margin_large"
     android:orientation="vertical">
     <ImageView android:src="@drawable/flag_es"
         android:layout_width="wrap_content"
@@ -21,8 +20,9 @@
         android:id="@+id/login_input_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginTop="@dimen/margin_normal"
+        android:layout_marginStart="@dimen/margin_medium"
+        android:layout_marginEnd="@dimen/margin_medium"
         android:inputType="textEmailAddress"
         android:hint="Email">
 
@@ -37,8 +37,9 @@
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginTop="@dimen/margin_normal"
+        android:layout_marginStart="@dimen/margin_medium"
+        android:layout_marginEnd="@dimen/margin_medium"
         android:hint="Password"
         app:endIconMode="password_toggle">
         <com.google.android.material.textfield.TextInputEditText
@@ -52,13 +53,13 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/login_button"
-        android:layout_marginTop="@dimen/margin_normal"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        style="@style/Widget.MaterialComponents.Button"
         app:strokeColor="?attr/colorOnSurface"
         app:strokeWidth="1dp"
         app:elevation="2dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_normal"
         android:layout_marginStart="@dimen/margin_large"
         android:layout_marginEnd="@dimen/margin_large"
         android:text="LOGIN" />
@@ -71,59 +72,90 @@
         android:layout_marginTop="@dimen/margin_normal"
         android:text="No account yet? Create one"
         android:gravity="center"
-        android:textSize="16dip"
+        android:textSize="14dip"
         android:onClick="goToSignUp"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true">
+        <TextView
+            android:id="@+id/tvText1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:text="OR"/>
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_margin="12dp"
-            android:background="@android:color/black" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="2dp"
-            android:background="@android:color/white"
-            android:layout_centerHorizontal="true"
-            android:text="or" />
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="16dp"
+            android:layout_toLeftOf="@id/tvText1"
+            android:background="@android:color/black"
+            />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="16dp"
+            android:layout_toRightOf="@id/tvText1"
+            android:background="@android:color/black"
+            />
     </RelativeLayout>
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/sign_in_button"
+        android:layout_marginTop="@dimen/margin_normal"
+        android:layout_marginStart="@dimen/margin_large"
+        android:layout_marginEnd="@dimen/margin_large"
+        android:layout_marginBottom="@dimen/margin_normal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true">
+        <TextView
+            android:id="@+id/tvText2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:text="OR"/>
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_margin="12dp"
-            android:background="@android:color/black" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="2dp"
-            android:background="@android:color/white"
-            android:layout_centerHorizontal="true"
-            android:text="or" />
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="16dp"
+            android:layout_toLeftOf="@id/tvText2"
+            android:background="@android:color/black"
+            />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="16dp"
+            android:layout_toRightOf="@id/tvText2"
+            android:background="@android:color/black"
+            />
     </RelativeLayout>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/login_continue_offline"
-        android:layout_marginTop="@dimen/margin_normal"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         app:strokeColor="?attr/colorOnSurface"
         app:strokeWidth="1dp"
         app:elevation="2dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_normal"
         android:layout_marginStart="@dimen/margin_large"
         android:layout_marginEnd="@dimen/margin_large"
+        android:layout_marginBottom="@dimen/margin_normal"
         android:text="CONTINUE OFFLINE"
         android:onClick="continueOffline"/>
 </LinearLayout>
