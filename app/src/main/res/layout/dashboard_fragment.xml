@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.michaelzap94.santabiblia.fragments.dashboard.DashboardMainFragment">
+    tools:context="com.zapatatech.santabiblia.fragments.dashboard.DashboardMainFragment">
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/dash_new_button"

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.michaelzap94.santabiblia.utilities.DrawerLayoutHorizontalSupport
+<com.zapatatech.santabiblia.utilities.DrawerLayoutHorizontalSupport
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -95,4 +95,4 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
     </RelativeLayout>
 
-</com.michaelzap94.santabiblia.utilities.DrawerLayoutHorizontalSupport>
+</com.zapatatech.santabiblia.utilities.DrawerLayoutHorizontalSupport>

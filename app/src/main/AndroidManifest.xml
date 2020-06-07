@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.michaelzap94.santabiblia">
+    package="com.zapatatech.santabiblia">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -12,69 +12,69 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".SignUp"
+        <activity android:name="com.zapatatech.santabiblia.SignUp"
             android:configChanges="locale|layoutDirection"
-            android:parentActivityName=".Login">
+            android:parentActivityName="com.zapatatech.santabiblia.Login">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".Login" />
+                android:value="com.zapatatech.santabiblia.Login" />
         </activity>
-        <activity android:name=".Login"
+        <activity android:name="com.zapatatech.santabiblia.Login"
             android:configChanges="locale|layoutDirection"/>
         <activity
-            android:name=".Home"
+            android:name="com.zapatatech.santabiblia.Home"
             android:configChanges="locale|layoutDirection"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".Maps"
+            android:name="com.zapatatech.santabiblia.Maps"
             android:configChanges="locale|layoutDirection"
             android:label="Maps"
-            android:parentActivityName=".Search">
+            android:parentActivityName="com.zapatatech.santabiblia.Search">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".Search" />
+                android:value="com.zapatatech.santabiblia.Search" />
         </activity>
         <activity
-            android:name=".BibleCompare"
+            android:name="com.zapatatech.santabiblia.BibleCompare"
             android:configChanges="locale|layoutDirection"
-            android:parentActivityName=".Bible"
+            android:parentActivityName="com.zapatatech.santabiblia.Bible"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".Bible" />
+                android:value="com.zapatatech.santabiblia.Bible" />
         </activity>
         <activity
-            android:name=".SearchSpecific"
+            android:name="com.zapatatech.santabiblia.SearchSpecific"
             android:configChanges="locale|layoutDirection"
-            android:parentActivityName=".Search">
+            android:parentActivityName="com.zapatatech.santabiblia.Search">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".Search" />
+                android:value="com.zapatatech.santabiblia.Search" />
         </activity>
         <activity
-            android:name=".Settings"
+            android:name="com.zapatatech.santabiblia.Settings"
             android:configChanges="locale|layoutDirection"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".LanguageChangeLoader"
+            android:name="com.zapatatech.santabiblia.LanguageChangeLoader"
             android:configChanges="locale|layoutDirection"
             android:label="@string/title_activity_language_change_loader"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".Dashboard"
+            android:name="com.zapatatech.santabiblia.Dashboard"
             android:configChanges="locale|layoutDirection"
             android:label="@string/dashboard"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".Bible"
+            android:name="com.zapatatech.santabiblia.Bible"
             android:configChanges="locale|layoutDirection"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".Search"
+            android:name="com.zapatatech.santabiblia.Search"
             android:configChanges="locale|layoutDirection"
             android:label="@string/search" />
         <activity
-            android:name=".MainActivity"
+            android:name="com.zapatatech.santabiblia.MainActivity"
             android:configChanges="locale|layoutDirection">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -6,7 +6,7 @@
     android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.michaelzap94.santabiblia.fragments.settings.ResourcesFragment">
+    tools:context="com.zapatatech.santabiblia.fragments.settings.ResourcesFragment">
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/resources_see_available_button"
