@@ -41,7 +41,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <include layout="@layout/activity_main" />
+                <include layout="@layout/activity_home" />
             </androidx.core.widget.NestedScrollView>
 
             <com.google.android.material.bottomnavigation.BottomNavigationView

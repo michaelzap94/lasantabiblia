@@ -12,7 +12,19 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".Home"></activity>
+        <activity android:name=".SignUp"
+            android:configChanges="locale|layoutDirection"
+            android:parentActivityName=".Login">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Login" />
+        </activity>
+        <activity android:name=".Login"
+            android:configChanges="locale|layoutDirection"/>
+        <activity
+            android:name=".Home"
+            android:configChanges="locale|layoutDirection"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Maps"
             android:configChanges="locale|layoutDirection"
@@ -63,8 +75,7 @@
             android:label="@string/search" />
         <activity
             android:name=".MainActivity"
-            android:configChanges="locale|layoutDirection"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:configChanges="locale|layoutDirection">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

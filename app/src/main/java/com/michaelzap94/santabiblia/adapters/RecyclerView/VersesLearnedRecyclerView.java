@@ -111,7 +111,7 @@ public class VersesLearnedRecyclerView extends RecyclerView.Adapter<VersesLearne
                 contentSpanned = Html.fromHtml(content);
             }
 
-            //String title = bookName + " " + chapter + ":" + verseFrom  + (verseFrom < verseTo ? "-" + verseTo : BuildConfig.FLAVOR);
+            //String title = bookName + " " + chapter + ":" + verseFrom  + (verseFrom < verseTo ? "-" + verseTo : "");
             String titleChapterVerses = BookHelper.getTitleBookAndCaps(chapter, selectedItems);
             String title = bookName + " " + titleChapterVerses;
             txtView_title.setText(title);

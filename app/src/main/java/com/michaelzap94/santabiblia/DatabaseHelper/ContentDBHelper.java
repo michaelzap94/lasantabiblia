@@ -105,7 +105,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
             cv.put("label_color", label_color);
             cv.put("book_number", book_number);
             cv.put("chapter", chapter_number);
-            if(note == null || note.equals(BuildConfig.FLAVOR)){
+            if(note == null || note.equals("")){
                 cv.putNull("note");
             } else {
                 cv.put("note", note);
@@ -171,7 +171,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         cv.put("chapter", chapter_number);
         cv.put("verseFrom", verseFrom);
         cv.put("verseTo", (verseTo));
-        cv.put("note", (!note.equals(BuildConfig.FLAVOR) ?  note : "NULL"));
+        cv.put("note", (!note.equals("") ?  note : "NULL"));
         return this.getWritableDatabase().insert("verses_marked",null, cv) > 0;
     }
     public ArrayList<VersesMarked> getVersesMarked(int label_id, String _uuid, int learned) {
