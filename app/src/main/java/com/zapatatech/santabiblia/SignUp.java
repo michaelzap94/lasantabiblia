@@ -61,13 +61,6 @@ public class SignUp extends AppCompatActivity {
         return isValid;
     }
 
-    public void goToLogin(View view){
-        Intent i = new Intent(SignUp.this, Login.class);
-        i.addFlags(FLAG_ACTIVITY_REORDER_TO_FRONT);
-        startActivity(i);
-        finish();
-    }
-
     public void startSignUp(View view){
         //1st check if input is valid
         if(isValidInput()){
@@ -79,6 +72,13 @@ public class SignUp extends AppCompatActivity {
         } else {
             Toast.makeText(this, "Please, provide a valid input", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void goToLogin(View view){
+        Intent i = new Intent(SignUp.this, Login.class);
+        i.addFlags(FLAG_ACTIVITY_REORDER_TO_FRONT);
+        startActivity(i);
+        finish();
     }
 
 }

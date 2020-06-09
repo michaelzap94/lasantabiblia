@@ -62,7 +62,8 @@
         android:layout_marginTop="@dimen/margin_normal"
         android:layout_marginStart="@dimen/margin_large"
         android:layout_marginEnd="@dimen/margin_large"
-        android:text="LOGIN" />
+        android:text="LOGIN"
+        android:onClick="startLogIn"/>
 
     <Button
         android:id="@+id/login_go_to_signup"
