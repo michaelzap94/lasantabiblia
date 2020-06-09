@@ -23,18 +23,19 @@
         android:layout_marginTop="@dimen/margin_normal"
         android:layout_marginStart="@dimen/margin_medium"
         android:layout_marginEnd="@dimen/margin_medium"
-        android:inputType="textEmailAddress"
         android:hint="Email">
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:inputType="textEmailAddress"
             />
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <!-- Password Label -->
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/login_input_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_normal"
@@ -43,7 +44,6 @@
         android:hint="Password"
         app:endIconMode="password_toggle">
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/login_input_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPassword"

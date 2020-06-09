@@ -23,11 +23,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
-            android:inputType="textCapWords"
             android:hint="Name">
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:inputType="textCapWords"
                 />
         </com.google.android.material.textfield.TextInputLayout>
         <!-- Email Label -->
@@ -37,24 +37,24 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
-            android:inputType="textEmailAddress"
             android:hint="Email">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Password Label -->
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/signup_input_password"
+            android:id="@+id/signup_input_password1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
-            android:hint="Password"
+            android:hint="Enter Password"
             app:endIconMode="password_toggle">
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
@@ -62,7 +62,20 @@
                 android:inputType="textPassword"
                 />
         </com.google.android.material.textfield.TextInputLayout>
-
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/signup_input_password2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:hint="Re-enter Password"
+            app:endIconMode="password_toggle">
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/signup_button"
@@ -75,7 +88,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_large"
             android:layout_marginEnd="@dimen/margin_large"
-            android:text="Create Account" />
+            android:text="Create Account"
+            android:onClick="startSignUp"/>
 
         <Button
             android:id="@+id/signup_go_to_login"
