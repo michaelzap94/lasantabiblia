@@ -31,7 +31,8 @@ public class MainActivity extends AppCompatActivity{
      * ELSE -> take him to the Login Activity
      */
     private void showLoginOrHomePage(){
-        Intent i = (CommonMethods.checkIfUserSelectedOfflineOrIsLoggedIn(this)) ? new Intent(MainActivity.this, Home.class) : new Intent(MainActivity.this, Login.class);
+        //ONLY ALLOW TO USE THE APP-> if USER_OFFLINE OR USER_ONLINE, not WHEN USER_NONE
+        Intent i = (CommonMethods.checkUserStatus(this) > CommonMethods.USER_NONE) ? new Intent(MainActivity.this, Home.class) : new Intent(MainActivity.this, Login.class);
         startActivity(i);
         finish();
     }

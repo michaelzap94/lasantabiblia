@@ -78,7 +78,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        app:key="syncf"
+        app:key="syncfourth"
         app:title="Fourth">
         <Preference
             app:key="pref_share"
