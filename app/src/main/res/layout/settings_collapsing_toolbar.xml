@@ -1,15 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.appbar.AppBarLayout
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/settings_appbarlayout"
+<com.google.android.material.appbar.CollapsingToolbarLayout
+    app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+    android:id="@+id/collapsing_toolbar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:fitsSystemWindows="false"
-    android:theme="@style/AppTheme.AppBarOverlay">
-<com.google.android.material.appbar.CollapsingToolbarLayout android:id="@+id/collapsing_toolbar"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     app:contentScrim="?attr/colorPrimary"
     app:expandedTitleGravity="center_horizontal|bottom"
@@ -79,5 +73,4 @@
         app:popupTheme="@style/AppTheme.PopupOverlay" />
 
 </com.google.android.material.appbar.CollapsingToolbarLayout>
-</com.google.android.material.appbar.AppBarLayout>
 

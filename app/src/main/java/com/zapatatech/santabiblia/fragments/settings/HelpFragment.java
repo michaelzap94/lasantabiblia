@@ -39,6 +39,6 @@ public class HelpFragment extends PreferenceFragmentCompat {
         setPreferencesFromResource(R.xml.settings_preferences, rootKey);
 
         boolean canGoBack = getActivity().getSupportFragmentManager().getBackStackEntryCount() > 0;
-        Settings.updateCanGoBack(canGoBack, (Settings) getActivity(), null);
+        Settings.updateCanGoBack(canGoBack, (Settings) getActivity(), "Help");
     }
 }

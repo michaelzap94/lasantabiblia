@@ -38,6 +38,6 @@ public class NotificationsFragment extends PreferenceFragmentCompat {
         setPreferencesFromResource(R.xml.settings_notifications, rootKey);
 
         boolean canGoBack = getActivity().getSupportFragmentManager().getBackStackEntryCount() > 0;
-        Settings.updateCanGoBack(canGoBack, (Settings) getActivity(), null);
+        Settings.updateCanGoBack(canGoBack, (Settings) getActivity(), "Notifications");
     }
 }

@@ -77,7 +77,7 @@ public class ResourcesFragment extends Fragment {
         //============================================================================================
         setHasOptionsMenu(true);
         boolean canGoBack = getActivity().getSupportFragmentManager().getBackStackEntryCount()>0;
-        Settings.updateCanGoBack(canGoBack, (Settings)getActivity(), null);
+        Settings.updateCanGoBack(canGoBack, (Settings)getActivity(), "Manage Resources");
         //============================================================================================
         return view;
     }

@@ -40,6 +40,6 @@ public class FontsFragment extends PreferenceFragmentCompat {
 
 
         boolean canGoBack = getActivity().getSupportFragmentManager().getBackStackEntryCount()>0;
-        Settings.updateCanGoBack(canGoBack, (Settings)getActivity(), null);
+        Settings.updateCanGoBack(canGoBack, (Settings)getActivity(), "Fonts");
     }
 }

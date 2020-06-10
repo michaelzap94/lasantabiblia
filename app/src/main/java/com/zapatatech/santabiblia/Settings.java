@@ -17,10 +17,12 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewStub;
+import android.widget.FrameLayout;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
@@ -39,6 +41,7 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
     private Toolbar mToolbar;
     private AppBarLayout mAppBarLayout;
     private CollapsingToolbarLayout collapsingToolbarLayout;
+    private ViewStub stub;
     //GETTERS=========================
     public AppBarLayout getmAppBarLayout(){
         return mAppBarLayout;
@@ -55,26 +58,32 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         //-----------------------------------------------------------------------------------------
-        ViewStub stub = (ViewStub) findViewById(R.id.layout_stub);
+        mAppBarLayout = (AppBarLayout) findViewById(R.id.settings_appbarlayout);
+
+        stub = (ViewStub) findViewById(R.id.layout_stub);
         if(CommonMethods.checkUserStatus(this) == CommonMethods.USER_ONLINE) {
             stub.setLayoutResource(R.layout.settings_collapsing_toolbar);
             View inflatedView = stub.inflate();
             //parent component
-            mAppBarLayout = (AppBarLayout) findViewById(R.id.inflated_bar_layout);
+            //collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.inflated_bar_layout);
+
+            //mAppBarLayout = (AppBarLayout) findViewById(R.id.inflated_bar_layout);
             //children
-            collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+            collapsingToolbarLayout = (CollapsingToolbarLayout) inflatedView.findViewById(R.id.collapsing_toolbar);
             mToolbar = (Toolbar) inflatedView.findViewById(R.id.toolbar);
         } else {
             stub.setLayoutResource(R.layout.settings_toolbar);
             View inflatedView = stub.inflate();
             //parent component
-            mAppBarLayout = (AppBarLayout) findViewById(R.id.inflated_bar_layout);
+            mToolbar = (Toolbar) findViewById(R.id.inflated_bar_layout);
+
+            //mAppBarLayout = (AppBarLayout) findViewById(R.id.inflated_bar_layout);
             //children
-            mToolbar = (Toolbar) inflatedView.findViewById(R.id.toolbar);
+            //mToolbar = (Toolbar) inflatedView.findViewById(R.id.toolbar);
         }
         //-----------------------------------------------------------------------------------------
         setSupportActionBar(mToolbar);
-        setTitle(R.string.settings);
+        //setTitle(R.string.settings);
 
         //set account icon instead of three dots
         Drawable drawable = ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_account_circle);
@@ -132,11 +141,11 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
     @Override
     public boolean onPreferenceStartFragment(PreferenceFragmentCompat caller, Preference pref) {
         //WHEN USER TAPS ON A SECTION IN SETTINGS AND ALLOWS YOU TO CUSTOMIZE transitions/animations
-        if(CommonMethods.checkUserStatus(this) == CommonMethods.USER_ONLINE) {
-            collapsingToolbarLayout.setTitle(pref.toString());
-        } else {
-            mToolbar.setTitle(pref.toString());
-        }
+//        if(CommonMethods.checkUserStatus(this) == CommonMethods.USER_ONLINE) {
+//            collapsingToolbarLayout.setTitle(pref.toString());
+//        } else {
+//            mToolbar.setTitle(pref.toString());
+//        }
         return false;
     }
 
@@ -147,27 +156,41 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
         if(actionBar != null && canGoBack == false){
             actionBar.setDisplayHomeAsUpEnabled(false);
             if(CommonMethods.checkUserStatus(activity) == CommonMethods.USER_ONLINE) {
+                activity.toggleCollapsingToolbar(false);
                 activity.getmCollapsingToolbarLayout().setTitle(activity.getResources().getString(R.string.settings));
             } else {
                 activity.getmToolbar().setTitle(activity.getResources().getString(R.string.settings));
             }
         } else {
-            //TODO: replace collapsing toolbar with normal toolbar
-            actionBar.setDisplayHomeAsUpEnabled(true);
             if(CommonMethods.checkUserStatus(activity) == CommonMethods.USER_ONLINE) {
-                activity.getmAppBarLayout().setExpanded(false);
-                if(title != null){
-                    activity.getmCollapsingToolbarLayout().setTitle(title);
-                }
-            } else {
-                if(title != null){
-                    activity.getmToolbar().setTitle(title);
-                }
+                activity.toggleCollapsingToolbar(true);
             }
-//            CollapsingToolbarLayout collapsingToolbar = activity.getmCollapsingToolbarLayout();
-//            AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) collapsingToolbar.getLayoutParams();
-//            params.setScrollFlags(0); // list other flags here by |
-//            collapsingToolbar.setLayoutParams(params);
+            if(title != null){
+                activity.getmToolbar().setTitle(title);
+            }
+            activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    public void toggleCollapsingToolbar(boolean remove){
+        if(remove){
+            if(getmCollapsingToolbarLayout() != null) {
+                mAppBarLayout.removeAllViews(); // remove previous view, add 2nd layout
+                View newView = LayoutInflater.from(Settings.this).inflate(R.layout.settings_toolbar, mAppBarLayout, false);
+                mAppBarLayout.addView(newView);
+                mToolbar = (Toolbar) newView.findViewById(R.id.toolbar);
+                setSupportActionBar(mToolbar);
+                collapsingToolbarLayout = null;
+            }
+        } else {
+            if(getmCollapsingToolbarLayout() == null) {
+                mAppBarLayout.removeAllViews(); // remove previous view, add 2nd layout
+                View newView = LayoutInflater.from(Settings.this).inflate(R.layout.settings_collapsing_toolbar, mAppBarLayout, false);
+                mAppBarLayout.addView(newView);
+                collapsingToolbarLayout = (CollapsingToolbarLayout) newView.findViewById(R.id.collapsing_toolbar);
+                mToolbar = (Toolbar) newView.findViewById(R.id.toolbar);
+                setSupportActionBar(mToolbar);
+            }
         }
     }
 
