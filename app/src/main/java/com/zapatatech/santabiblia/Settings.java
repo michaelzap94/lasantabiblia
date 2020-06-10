@@ -3,22 +3,20 @@ package com.zapatatech.santabiblia;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.res.Configuration;
-import android.content.res.Resources;
+
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import androidx.preference.PreferenceManager;
-import android.util.DisplayMetrics;
+
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.google.android.material.appbar.AppBarLayout;
@@ -58,6 +56,8 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         setSupportActionBar(mToolbar);
         setTitle(R.string.settings);
+        Drawable drawable = ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_account_circle);
+        mToolbar.setOverflowIcon(drawable);
 
         updateCanGoBack(canGoBack, Settings.this);
         //Populate one Fragment to cover the WHOLE settings screen
@@ -116,16 +116,34 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
         }
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        //show icons in the dropdown
+        if(menu instanceof MenuBuilder){
+            MenuBuilder m = (MenuBuilder) menu;
+            //noinspection RestrictedApi
+            m.setOptionalIconsVisible(true);
+        }
+
         if(CommonMethods.checkUserStatus(this) == CommonMethods.USER_ONLINE){
-            MenuItem item = menu.add(Menu.NONE, 1, Menu.NONE, "Log In");
-            item.setIcon(R.drawable.ic_bookmarked);
-            item.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-            item.setOnMenuItemClickListener (new MenuItem.OnMenuItemClickListener(){
+            MenuItem userDetails = menu.add(Menu.NONE, 2, Menu.NONE, "User Details");
+            userDetails.setIcon(R.drawable.ic_edit_user_details);
+            userDetails.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_NEVER);
+            userDetails.setOnMenuItemClickListener (new MenuItem.OnMenuItemClickListener(){
                 @Override
                 public boolean onMenuItemClick (MenuItem item){
 
+                    return true;
+                }
+            });
+            MenuItem logOut = menu.add(Menu.NONE, 3, Menu.NONE, "Log Out");
+            logOut.setIcon(R.drawable.ic_exit);
+            logOut.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_NEVER);
+            logOut.setOnMenuItemClickListener (new MenuItem.OnMenuItemClickListener(){
+                @Override
+                public boolean onMenuItemClick (MenuItem item){
+                    CommonMethods.logOutOfApp(Settings.this);
                     return true;
                 }
             });
@@ -141,33 +159,6 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
                 }
             });
         }
-//        int book_bookmarked = prefs.getInt(CommonMethods.BOOK_BOOKMARKED, 0);
-//        int chapter_bookmarked = prefs.getInt(CommonMethods.CHAPTER_BOOKMARKED, 0);
-//        MenuItem item = menu.add(Menu.NONE, 1, Menu.NONE, "Bookmark");
-//        if((chapter_bookmarked != 0 && book_bookmarked != 0) && (chapter_bookmarked == chapter_number && book_bookmarked == book_number)){
-//            item.setIcon(R.drawable.ic_bookmarked);
-//        } else {
-//            item.setIcon(R.drawable.ic_notbookmarked);
-//        }
-//        item.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-//        item.setOnMenuItemClickListener (new MenuItem.OnMenuItemClickListener(){
-//            @Override
-//            public boolean onMenuItemClick (MenuItem item){
-//                Log.d(TAG, "onMenuItemClick: " + item.getIcon().toString());
-//                int chapter_bookmarked = prefs.getInt(CommonMethods.CHAPTER_BOOKMARKED, 0);
-//                int book_bookmarked = prefs.getInt(CommonMethods.BOOK_BOOKMARKED, 0);
-//                Log.d(TAG, "onMenuItemClick: chapter_bookmarked: " + chapter_bookmarked + " book_bookmarked: " + book_bookmarked);
-//                if((chapter_bookmarked != 0 && book_bookmarked != 0) && (chapter_bookmarked == chapter_number && book_bookmarked == book_number)) {
-//                    CommonMethods.setBookmark(prefs, 0, 0);
-//                    item.setIcon(R.drawable.ic_notbookmarked);
-//                } else {
-//                    //when clicked it was not bookmarked, so bookmark it
-//                    CommonMethods.setBookmark(prefs, book_number, chapter_number);
-//                    item.setIcon(R.drawable.ic_bookmarked);
-//                }
-//                return true;
-//            }
-//        });
         return true;
     }
     @Override
