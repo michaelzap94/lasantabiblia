@@ -1,15 +1,18 @@
 package com.zapatatech.santabiblia;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -18,6 +21,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.zapatatech.santabiblia.interfaces.retrofit.RetrofitAuthService;
 import com.zapatatech.santabiblia.interfaces.retrofit.RetrofitRESTendpointsService;
@@ -29,18 +40,25 @@ import com.zapatatech.santabiblia.utilities.RetrofitErrorUtils;
 import com.zapatatech.santabiblia.utilities.RetrofitServiceGenerator;
 import com.zapatatech.santabiblia.utilities.Util;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.HttpException;
 import retrofit2.Response;
 
 public class Login extends AppCompatActivity {
     private static final String TAG = "Login";
     private TextInputLayout email;
     private TextInputLayout password;
+    //GOOGLE=========================
+    private static int RC_SIGN_IN = 1;
+    private SignInButton googleButton;
+    private GoogleSignInClient mGoogleSignInClient;
+    private GoogleSignInOptions gso;
     //FLAGS==========================
     public static final String FLAG_LANG = "Lang";
     private Menu menu;
@@ -57,16 +75,100 @@ public class Login extends AppCompatActivity {
         email = findViewById(R.id.login_input_email);
         password = findViewById(R.id.login_input_password);
         //===================================================================================
-
+        googleButton = findViewById(R.id.sign_in_button);
         //FLAGS================================================================================
         sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         flagInSharedPref = sp.getString(FLAG_LANG, "");
 
         flag_gb = ContextCompat.getDrawable(getApplicationContext(),R.drawable.flag_gb);
         flag_es = ContextCompat.getDrawable(getApplicationContext(),R.drawable.flag_es);
-        //=====================================================================================
+        //GOOGLE===========================================================================
+        // Configure sign-in to request the user's ID, email address, and basic
+        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
+        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.server_client_id))
+                .requestEmail()
+                .build();
+        // Build a GoogleSignInClient with the options specified by gso.
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        //===========================================================================
+        googleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startLoginGoogle();
+            }
+        });
 
     }
+
+    //GOOGLE===========================================================================
+
+    public void startLoginGoogle(){
+        Log.d(TAG, "startLoginGoogle: ");
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            // The Task returned from this call is always completed, no need to attach a listener.
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            handleSignInResult(task);
+        }
+    }
+
+    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        try {//SUCCESS
+            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+            // send ID Token to server and validate USING POST
+            HashMap<String, Object> loginObject = new HashMap<>();
+            loginObject.put("auth_token", account.getIdToken());
+            loginObject.put("account_type", "google");
+            retrofitLogin(loginObject);
+        } catch (ApiException e) {
+            // The ApiException status code indicates the detailed failure reason.
+            // Please refer to the GoogleSignInStatusCodes class reference for more information.
+            Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
+            Toast.makeText(Login.this, "Login was not successful", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Check for existing Google Sign In account, if the user is already signed in
+        // the GoogleSignInAccount will be non-null.
+//        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+//        if(account != null) {
+//            logAccount(account);
+//            Toast.makeText(Login.this, "already success auth", Toast.LENGTH_SHORT).show();
+//        }
+        //SIMILAR AS ABOVE LOGIC, BUT BUILT-IN BY GOOGLE
+        //When your app starts, check if the user has already signed in to your app using Google,
+        // on this device or another device, by calling silentSignIn
+//        mGoogleSignInClient.silentSignIn()
+//            .addOnCompleteListener(this,new OnCompleteListener<GoogleSignInAccount>() {
+//                        @Override
+//                        public void onComplete(@NonNull Task<GoogleSignInAccount> task) {
+//                            handleSignInResult(task);
+//                        }
+//                    });
+    }
+
+    //USE IT IF USER WANTS TO DELETE THEIR ACCOUNTS
+    private void revokeAccess() {
+        mGoogleSignInClient.revokeAccess()
+                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        // ...
+                    }
+                });
+    }
+
+    //===========================================================================
 
     public void testGetLabels(String auth_token){
         Log.d(TAG, "testGetLabels: " + auth_token);
@@ -117,26 +219,42 @@ public class Login extends AppCompatActivity {
         return isValid;
     }
 
-    public void startLogIn(View view) {
+    public void startLogInLocal(View view) {
         //1st check if input is valid
         if(isValidInput()){
             String emailValue = email.getEditText().getText().toString().trim();
             String passwordValue = password.getEditText().getText().toString().trim();
-
-            retrofitLogin(emailValue, passwordValue);
+            HashMap<String, Object> loginObject = new HashMap<>();
+            loginObject.put("email", emailValue);
+            loginObject.put("password", passwordValue);
+            retrofitLogin(loginObject);
         } else {
             Toast.makeText(this, "Please, provide a valid input", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void retrofitLogin(String emailValue, String passwordValue){
+    private void retrofitLogin(HashMap<String, Object> loginObject){
         RetrofitAuthService loginService = RetrofitServiceGenerator.createService(RetrofitAuthService.class, null);
+        Call<AuthInfo> call;
+        final String account_type;//default
+        //doing this, because account_type can be null, if so, I cannot convert a null to string
+        Object account_type_object = loginObject.get("account_type");
+        account_type = (account_type_object != null) ? account_type_object.toString() : "local";
 
-        HashMap<String, Object> loginObject = new HashMap<>();
-        loginObject.put("email", emailValue);
-        loginObject.put("password", passwordValue);
+        switch (account_type){
+            case "google" : call = loginService.requestLoginSocial(loginObject);
+                break;
+            default:
+                call = loginService.requestLogin(loginObject);
+        }
 
-        Call<AuthInfo> call = loginService.requestLogin(loginObject);
+        // Set up progress before call
+        ProgressDialog mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setIndeterminate(true);
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.setMessage("Signing you in...");
+        mProgressDialog.show();
+
         call.enqueue(new Callback<AuthInfo >() {
             @Override
             public void onResponse(Call<AuthInfo> call, Response<AuthInfo> response) {
@@ -146,9 +264,11 @@ public class Login extends AppCompatActivity {
                     if(response.body().getAccessToken() != null && response.body().getRefreshToken() != null ){
                         //Store tokens
                         CommonMethods.storeBothTokens(Login.this, response.body());
+                        //save type of auth method
+                        CommonMethods.storeAccountType(Login.this, account_type);
                         //Continue to App
                         CommonMethods.continueToApp(Login.this);
-//                        testGetLabels(response.body().getAccessToken());
+
                     } else {
                         String error = "Sorry, something went wrong";
                         if(response.body().getDetail() != null) {
@@ -157,19 +277,41 @@ public class Login extends AppCompatActivity {
                             error = response.body().getError().toString();
                         }
                         Toast.makeText(Login.this, error, Toast.LENGTH_SHORT).show();
+                        if(account_type == "google") {
+                            mGoogleSignInClient.signOut();
+                        }
                     }
                 } else {
                     // parse the response body …
                     APIError error = RetrofitErrorUtils.parseError(response);
                     // … and use it to show error information
                     Toast.makeText(Login.this, error.message(), Toast.LENGTH_SHORT).show();
+                    if(account_type == "google") {
+                        mGoogleSignInClient.signOut();
+                    }
                 }
+                mProgressDialog.dismiss();
             }
 
             @Override
-            public void onFailure(Call<AuthInfo> call, Throwable t) {
+            public void onFailure(Call<AuthInfo> call, Throwable throwable) {
                 // something went completely south (like no internet connection)
-                Log.d("onFailure Error", t.getMessage());
+                Log.d("onFailure Error", throwable.getMessage());
+                String message = "Sorry, something went wrong";
+                if (throwable instanceof HttpException) {
+                    // We had non-2XX http error
+                    message = "Sorry, we could not connect to the server";
+                }
+                if (throwable instanceof IOException) {
+                    // A network or conversion error happened
+                    message = "A network or conversion error happened";
+                }
+
+                Toast.makeText(Login.this, message, Toast.LENGTH_SHORT).show();
+                if(account_type == "google") {
+                    mGoogleSignInClient.signOut();
+                }
+                mProgressDialog.dismiss();
             }
         });
     }

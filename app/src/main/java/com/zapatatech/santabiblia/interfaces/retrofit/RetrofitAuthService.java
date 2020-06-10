@@ -18,4 +18,8 @@ public interface RetrofitAuthService {
 
     @POST("/auth/api/jwt/logout/") //The server needs the URL to end with a /
     Call<AuthInfo> requestLogOut(@Body HashMap<String, Object> body);
+
+    //SOCIAL ENDPOINTS
+    @POST("/auth/api/jwt/login/social/") //The server needs the URL to end with a /
+    Call<AuthInfo> requestLoginSocial(@Body HashMap<String, Object> body);
 }

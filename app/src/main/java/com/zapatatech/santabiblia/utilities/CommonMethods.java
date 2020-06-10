@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -15,12 +16,18 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.zapatatech.santabiblia.Bible;
 import com.zapatatech.santabiblia.Dashboard;
 import com.zapatatech.santabiblia.DatabaseHelper.BibleCreator;
 import com.zapatatech.santabiblia.DatabaseHelper.BibleDBHelper;
 import com.zapatatech.santabiblia.Home;
+import com.zapatatech.santabiblia.Login;
 import com.zapatatech.santabiblia.MainActivity;
 import com.zapatatech.santabiblia.R;
 import com.zapatatech.santabiblia.Search;
@@ -34,6 +41,7 @@ import java.util.concurrent.ExecutionException;
 import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
 
 public class CommonMethods {
+    private static final String TAG = "CommonMethods";
     //flags==================================================
     public static final int USER_NONE = 0;
     public static final int USER_ONLINE = 1;
@@ -43,6 +51,7 @@ public class CommonMethods {
     public static final String USER_STATUS = "USER_ONLINE";
     public static final String ACCESS_TOKEN_SP = "ACCESS_TOKEN_SP";
     public static final String REFRESH_TOKEN_SP = "REFRESH_TOKEN_SP";
+    public static final String ACCOUNT_TYPE = "ACCOUNT_TYPE";
 
     public static final String DEFAULT_BIBLE_EXIST = "default_bible_exist";
     public static final String MAIN_BIBLE_SELECTED = "pref_bible_selected";
@@ -231,6 +240,16 @@ public class CommonMethods {
         editor.putString(REFRESH_TOKEN_SP, authInfo.getRefreshToken());
         editor.apply();
     }
+    public static void storeAccountType(Context context, String account_type){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(ACCOUNT_TYPE, account_type);
+        editor.apply();
+    }
+    public static String getAccountType(Context context){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getString(ACCOUNT_TYPE, null);
+    }
     public static String getAccessToken(Context context){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.getString(ACCESS_TOKEN_SP, null);
@@ -247,6 +266,10 @@ public class CommonMethods {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.edit().remove(REFRESH_TOKEN_SP).commit();//commit will return true if success
     }
+    public static boolean clearAccountType(Context context){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.edit().remove(ACCOUNT_TYPE).commit();//commit will return true if success
+    }
     public static void continueToApp(Activity activity){
         if(CommonMethods.getAccessToken(activity) != null && CommonMethods.getAccessToken(activity) != null ){
             int newStatus = updateUserStatus(activity, USER_ONLINE);
@@ -262,7 +285,34 @@ public class CommonMethods {
         }
     }
     public static void logOutOfApp(Activity activity){
-        if(CommonMethods.clearAccessToken(activity)&& CommonMethods.clearRefreshToken(activity)){
+        String accountName = CommonMethods.getAccountType(activity);
+        String account_type = (null != accountName) ? accountName : "offline";
+        switch (account_type) {
+            case "google": CommonMethods.googleLogOut(activity);
+                break;
+            default: CommonMethods.deviceLogOut(activity);
+        }
+    }
+    public static void googleLogOut(Activity activity) {
+        // Configure sign-in to request the user's ID, email address, and basic
+        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(activity.getString(R.string.server_client_id))
+                .requestEmail()
+                .build();
+        // Build a GoogleSignInClient with the options specified by gso.
+        GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(activity, gso);
+        mGoogleSignInClient.signOut()
+                .addOnCompleteListener(activity, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        deviceLogOut(activity);
+                    }
+                });
+    }
+
+    public static void deviceLogOut(Activity activity){
+        if(CommonMethods.clearAccessToken(activity) && CommonMethods.clearRefreshToken(activity) && CommonMethods.clearAccountType(activity)){
             int newStatus = CommonMethods.updateUserStatus(activity, CommonMethods.USER_NONE);
             if(newStatus == CommonMethods.USER_NONE){
                 Intent intent = new Intent(activity, MainActivity.class);
@@ -275,6 +325,7 @@ public class CommonMethods {
             Toast.makeText(activity, "Tokens are not stored", Toast.LENGTH_SHORT).show();
         }
     }
+
     //==================================================================================================
     public static void copyText(Context context, String title, String text){
         String content = title + "\n" + text;

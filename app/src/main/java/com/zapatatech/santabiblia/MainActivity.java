@@ -8,6 +8,8 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.zapatatech.santabiblia.utilities.CommonMethods;
 
 import java.util.Locale;
@@ -58,6 +60,14 @@ public class MainActivity extends AppCompatActivity{
      * ELSE -> take him to the Login Activity
      */
     private void showLoginOrHomePage(){
+        //TODO: Check the credentials of User are still valid
+//        if(CommonMethods.getAccountType(this, "google") == "google") {
+//            GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+//            if(account != null) {
+//                //
+//            }
+//        }
+        //==============================================================
         //ONLY ALLOW TO USE THE APP-> if USER_OFFLINE OR USER_ONLINE, not WHEN USER_NONE
         Intent i = (CommonMethods.checkUserStatus(this) > CommonMethods.USER_NONE) ? new Intent(MainActivity.this, Home.class) : new Intent(MainActivity.this, Login.class);
         startActivity(i);
