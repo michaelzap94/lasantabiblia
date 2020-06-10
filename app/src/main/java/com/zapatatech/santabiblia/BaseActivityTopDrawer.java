@@ -44,6 +44,8 @@ public abstract class BaseActivityTopDrawer extends AppCompatActivity {
         //SET INITIAL LANGUAGE==============================================================
         sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         flagInSharedPref = sp.getString(FLAG_LANG, "");
+        Log.d(TAG, "onCreate: flag " + flagInSharedPref);
+        Log.d(TAG, "onCreate: flag resources" + getResources().getConfiguration().locale.getLanguage());
 //        String defaultLang = Locale.getDefault().getLanguage();
 //        String currentLang = getResources().getConfiguration().locale.getLanguage();
         //only change language if necessary

@@ -1,6 +1,7 @@
 package com.zapatatech.santabiblia.utilities;
 
 
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -20,9 +21,12 @@ import com.zapatatech.santabiblia.Dashboard;
 import com.zapatatech.santabiblia.DatabaseHelper.BibleCreator;
 import com.zapatatech.santabiblia.DatabaseHelper.BibleDBHelper;
 import com.zapatatech.santabiblia.Home;
+import com.zapatatech.santabiblia.MainActivity;
 import com.zapatatech.santabiblia.R;
 import com.zapatatech.santabiblia.Search;
 import com.zapatatech.santabiblia.Settings;
+import com.zapatatech.santabiblia.SignUp;
+import com.zapatatech.santabiblia.models.AuthInfo;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -30,8 +34,16 @@ import java.util.concurrent.ExecutionException;
 import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
 
 public class CommonMethods {
-    public static final String USER_SELECTED_OFFLINE = "USER_SELECTED_OFFLINE";
-    public static final String USER_IS_LOGGED_IN = "USER_IS_LOGGED_IN";
+    //flags==================================================
+    public static final int USER_NONE = 0;
+    public static final int USER_ONLINE = 1;
+    public static final int USER_OFFLINE = 2;
+    //flags==================================================
+
+    public static final String USER_STATUS = "USER_ONLINE";
+    public static final String ACCESS_TOKEN_SP = "ACCESS_TOKEN_SP";
+    public static final String REFRESH_TOKEN_SP = "REFRESH_TOKEN_SP";
+
     public static final String DEFAULT_BIBLE_EXIST = "default_bible_exist";
     public static final String MAIN_BIBLE_SELECTED = "pref_bible_selected";
     public static final String CHAPTER_BOOKMARKED = "CHAPTER_BOOKMARKED";
@@ -200,17 +212,68 @@ public class CommonMethods {
         activity.overridePendingTransition(0,0);
     }
     //==================================================================================================
-    //TODO: implement logic to determine if user is logged in
-    public static boolean checkIfUserSelectedOfflineOrIsLoggedIn(Context context){
+    public static int checkUserStatus(Context context){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return prefs.getBoolean(USER_SELECTED_OFFLINE, false);
+        return prefs.getInt(USER_STATUS, USER_NONE);
     }
-    public static boolean updateUserOfflineSelection(Context context, boolean value){
+    public static int updateUserStatus(Context context, int value){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putBoolean(USER_SELECTED_OFFLINE, value);
+        editor.putInt(USER_STATUS, value);
         editor.apply();
-        return prefs.getBoolean(USER_SELECTED_OFFLINE, false);
+        int newStatusFlag = prefs.getInt(USER_STATUS, USER_NONE);
+        return newStatusFlag;
+    }
+    public static void storeBothTokens(Context context, AuthInfo authInfo){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(ACCESS_TOKEN_SP, authInfo.getAccessToken());
+        editor.putString(REFRESH_TOKEN_SP, authInfo.getRefreshToken());
+        editor.apply();
+    }
+    public static String getAccessToken(Context context){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getString(ACCESS_TOKEN_SP, null);
+    }
+    public static String getRefreshToken(Context context){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getString(REFRESH_TOKEN_SP, null);
+    }
+    public static boolean clearAccessToken(Context context){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.edit().remove(ACCESS_TOKEN_SP).commit();//commit will return true if success
+    }
+    public static boolean clearRefreshToken(Context context){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.edit().remove(REFRESH_TOKEN_SP).commit();//commit will return true if success
+    }
+    public static void continueToApp(Activity activity){
+        if(CommonMethods.getAccessToken(activity) != null && CommonMethods.getAccessToken(activity) != null ){
+            int newStatus = updateUserStatus(activity, USER_ONLINE);
+            if(newStatus == USER_ONLINE){
+                Intent intent = new Intent(activity, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);//CLEAR ALL ACTIVITIES
+                activity.startActivity(intent);
+            } else {
+                Toast.makeText(activity, "Status not updated", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(activity, "Tokens are not stored", Toast.LENGTH_SHORT).show();
+        }
+    }
+    public static void logOutOfApp(Activity activity){
+        if(CommonMethods.clearAccessToken(activity)&& CommonMethods.clearRefreshToken(activity)){
+            int newStatus = CommonMethods.updateUserStatus(activity, CommonMethods.USER_NONE);
+            if(newStatus == CommonMethods.USER_NONE){
+                Intent intent = new Intent(activity, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);//CLEAR ALL ACTIVITIES
+                activity.startActivity(intent);
+            } else {
+                Toast.makeText(activity, "Status not updated", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(activity, "Tokens are not stored", Toast.LENGTH_SHORT).show();
+        }
     }
     //==================================================================================================
     public static void copyText(Context context, String title, String text){

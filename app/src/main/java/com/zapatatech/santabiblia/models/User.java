@@ -1,32 +1,31 @@
 package com.zapatatech.santabiblia.models;
 
 public class User {
-    private String title;
-    private String description;
-    private String imgIcon;
+    private String user_id;
+    private String email;
+    private String firstname;
+    private String lastname;
 
-
-    public String getTitle() {
-        return title;
+    public User(String user_id, String email, String firstname, String lastname) {
+        this.user_id = user_id;
+        this.email = email;
+        this.firstname = firstname;
+        this.lastname = lastname;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public String getUser_id() {
+        return user_id;
     }
 
-    public String getDescription() {
-        return description;
+    public String getEmail() {
+        return email;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public String getFirstName() {
+        return firstname;
     }
 
-    public String getImgIcon() {
-        return imgIcon;
-    }
-
-    public void setImgIcon(String imgIcon) {
-        this.imgIcon = imgIcon;
+    public String getLastName() {
+        return lastname;
     }
 }

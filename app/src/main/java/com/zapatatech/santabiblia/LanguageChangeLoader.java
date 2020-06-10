@@ -17,7 +17,7 @@ public class LanguageChangeLoader extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_language_change_loader);
         sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        flagInSharedPref = sp.getString(Settings.FLAG_LANG, "en");
+        flagInSharedPref = sp.getString(Login.FLAG_LANG, "en");
         //timeout
         new android.os.Handler().postDelayed(new Runnable() {
                     public void run() {

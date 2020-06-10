@@ -28,6 +28,13 @@
         app:key="syncs"
         app:title="Second">
         <Preference
+            app:key="pref_language"
+            app:title="Language"
+            app:icon="@drawable/ic_language"
+            app:fragment="com.zapatatech.santabiblia.fragments.settings.FontsFragment"
+            app:summary="English"
+            />
+        <Preference
             app:key="pref_font"
             app:title="Manage Font"
             app:icon="@drawable/ic_text_format"
@@ -57,28 +64,28 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        app:key="synct"
+        app:key="pref_section_third"
         app:title="Third">
-        <Preference
-            app:key="pref_sync_up"
-            app:title="Back up and Sync Up"
-            app:icon="@drawable/ic_sync"
-            app:useSimpleSummaryProvider="true"
-            />
+<!--        <Preference-->
+<!--            app:key="pref_back_up"-->
+<!--            app:title="Back up and Sync Up"-->
+<!--            app:icon="@drawable/ic_sync"-->
+<!--            app:useSimpleSummaryProvider="true"-->
+<!--            />-->
         <Preference
             app:key="pref_feedback"
             app:title="Send feedback"
             app:icon="@drawable/ic_feedback"
             app:summary="Report technical issues or suggest new features"/>
         <Preference
-            app:key="pref_clear_data"
-            app:title="Clear Data"
+            app:key="pref_clear_local_data"
+            app:title="Clear Local Data"
             app:icon="@drawable/ic_delete"
             />
     </PreferenceCategory>
 
     <PreferenceCategory
-        app:key="syncf"
+        app:key="pref_section_last"
         app:title="Fourth">
         <Preference
             app:key="pref_share"
@@ -97,11 +104,11 @@
             app:icon="@drawable/ic_help"
             app:fragment="com.zapatatech.santabiblia.fragments.settings.InnerPreferencesFragment"
             />
-        <Preference
-            app:key="pref_sign_out"
-            app:title="Sign Out"
-            app:icon="@drawable/ic_exit"
-            app:summary="Come back soon!"/>
+<!--        <Preference-->
+<!--            app:key="pref_sign_out"-->
+<!--            app:title="Sign Out"-->
+<!--            app:icon="@drawable/ic_exit"-->
+<!--            app:summary="Come back soon!"/>-->
     </PreferenceCategory>
 
 </androidx.preference.PreferenceScreen>

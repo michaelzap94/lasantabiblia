@@ -17,6 +17,7 @@
     <dimen name="floating_button_size">56dp</dimen>
     <dimen name="floating_button_margin">16dp</dimen>
     <dimen name="verses_rv_padding_for_floating_button">72dp</dimen>
+    <dimen name="toolbar_height">48dp</dimen>
 
 <!-- FONTS -->
     <dimen name="verses">20sp</dimen>
