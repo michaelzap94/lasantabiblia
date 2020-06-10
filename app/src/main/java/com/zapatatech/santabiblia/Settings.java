@@ -18,6 +18,7 @@ import androidx.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.google.android.material.appbar.AppBarLayout;
@@ -27,6 +28,7 @@ import com.zapatatech.santabiblia.fragments.settings.SettingsFragment;
 import com.zapatatech.santabiblia.utilities.CommonMethods;
 
 import java.util.Locale;
+import java.util.Set;
 
 public class Settings extends AppCompatActivity implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
     private static final String TAG = "Settings";
@@ -36,13 +38,6 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
     private Toolbar mToolbar;
     private AppBarLayout mAppBarLayout;
     private CollapsingToolbarLayout collapsingToolbarLayout;
-    //FLAGS==========================
-    static final String FLAG_LANG = "Lang";
-    private Menu menu;
-    private String flagInSharedPref;
-    private Drawable flag_gb;
-    private Drawable flag_es;
-    private SharedPreferences sp;
     //GETTERS=========================
     public AppBarLayout getmAppBarLayout(){
         return mAppBarLayout;
@@ -63,14 +58,6 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         setSupportActionBar(mToolbar);
         setTitle(R.string.settings);
-
-        //FLAGS================================================================================
-        sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        flagInSharedPref = sp.getString(FLAG_LANG, "");
-
-        flag_gb = ContextCompat.getDrawable(getApplicationContext(),R.drawable.flag_gb);
-        flag_es = ContextCompat.getDrawable(getApplicationContext(),R.drawable.flag_es);
-        //=====================================================================================
 
         updateCanGoBack(canGoBack, Settings.this);
         //Populate one Fragment to cover the WHOLE settings screen
@@ -129,55 +116,65 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
         }
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        this.menu = menu;
-        getMenuInflater().inflate(R.menu.menu_languages, menu);
+        if(CommonMethods.checkUserStatus(this) == CommonMethods.USER_ONLINE){
+            MenuItem item = menu.add(Menu.NONE, 1, Menu.NONE, "Log In");
+            item.setIcon(R.drawable.ic_bookmarked);
+            item.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+            item.setOnMenuItemClickListener (new MenuItem.OnMenuItemClickListener(){
+                @Override
+                public boolean onMenuItemClick (MenuItem item){
 
-        //you need menu.findItem as the Menu has not been fully inflated yet. so findViewById will not work.
-        MenuItem item_gb = menu.findItem(R.id.lang_en);
-        MenuItem item_es = menu.findItem(R.id.lang_es);
-        if(flagInSharedPref.length()>0) {
-
-            switch (flagInSharedPref) {
-                case "en":
-                    menu.getItem(0).setIcon(flag_gb);
-                    item_gb.setChecked(true);
-                    break;
-                case "es":
-                    menu.getItem(0).setIcon(flag_es);
-                    item_es.setChecked(true);
-                    break;
-
-            }
-        }else{
-            //default language is English for now
-            sp.edit().putString(FLAG_LANG,"en").apply();
-            menu.getItem(0).setIcon(flag_gb);
-            item_gb.setChecked(true);
+                    return true;
+                }
+            });
+        } else {
+            MenuItem item = menu.add(Menu.NONE, 1, Menu.NONE, "Log In");
+            item.setIcon(R.drawable.ic_account_circle);
+            item.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+            item.setOnMenuItemClickListener (new MenuItem.OnMenuItemClickListener(){
+                @Override
+                public boolean onMenuItemClick (MenuItem item){
+                    CommonMethods.logOutOfApp(Settings.this);
+                    return true;
+                }
+            });
         }
-
-
+//        int book_bookmarked = prefs.getInt(CommonMethods.BOOK_BOOKMARKED, 0);
+//        int chapter_bookmarked = prefs.getInt(CommonMethods.CHAPTER_BOOKMARKED, 0);
+//        MenuItem item = menu.add(Menu.NONE, 1, Menu.NONE, "Bookmark");
+//        if((chapter_bookmarked != 0 && book_bookmarked != 0) && (chapter_bookmarked == chapter_number && book_bookmarked == book_number)){
+//            item.setIcon(R.drawable.ic_bookmarked);
+//        } else {
+//            item.setIcon(R.drawable.ic_notbookmarked);
+//        }
+//        item.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+//        item.setOnMenuItemClickListener (new MenuItem.OnMenuItemClickListener(){
+//            @Override
+//            public boolean onMenuItemClick (MenuItem item){
+//                Log.d(TAG, "onMenuItemClick: " + item.getIcon().toString());
+//                int chapter_bookmarked = prefs.getInt(CommonMethods.CHAPTER_BOOKMARKED, 0);
+//                int book_bookmarked = prefs.getInt(CommonMethods.BOOK_BOOKMARKED, 0);
+//                Log.d(TAG, "onMenuItemClick: chapter_bookmarked: " + chapter_bookmarked + " book_bookmarked: " + book_bookmarked);
+//                if((chapter_bookmarked != 0 && book_bookmarked != 0) && (chapter_bookmarked == chapter_number && book_bookmarked == book_number)) {
+//                    CommonMethods.setBookmark(prefs, 0, 0);
+//                    item.setIcon(R.drawable.ic_notbookmarked);
+//                } else {
+//                    //when clicked it was not bookmarked, so bookmark it
+//                    CommonMethods.setBookmark(prefs, book_number, chapter_number);
+//                    item.setIcon(R.drawable.ic_bookmarked);
+//                }
+//                return true;
+//            }
+//        });
         return true;
     }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-//        if (item.getItemId() == android.R.id.home) {
-//            getSupportFragmentManager().popBackStack();
-//            boolean canGoBack = getSupportFragmentManager().getBackStackEntryCount()>1;
-//            Log.d(TAG, "onOptionsItemSelected: "+canGoBack);
-//            Settings.updateCanGoBack(canGoBack, Settings.this);
-//        }
-//        return true;
-
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-
-        //noinspection SimplifiableIfStatement
         switch (item.getItemId()) {
             case android.R.id.home:
                 getSupportFragmentManager().popBackStack();
@@ -185,44 +182,9 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
                 Log.d(TAG, "onOptionsItemSelected: "+canGoBack);
                 Settings.updateCanGoBack(canGoBack, Settings.this);
                 return true;
-            case R.id.lang_en:
-                sp.edit().putString(FLAG_LANG,"en").apply();
-                if (item.isChecked()){
-                    item.setChecked(false);
-                }else{
-                    item.setChecked(true);
-                    setLocale("en");
-                }
-//                menu.getItem(0).setIcon(flag_gb);
-                return true;
-            case R.id.lang_es:
-                sp.edit().putString(FLAG_LANG,"es").apply();
-                if (item.isChecked()){
-                    item.setChecked(false);
-                }else{
-                    item.setChecked(true);
-                    setLocale("es");
-                }
-//                menu.getItem(0).setIcon(flag_es);
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    public void setLocale(String lang) {
-        //change language files===================
-        Locale myLocale = new Locale(lang);
-        Locale.setDefault(myLocale);
-        Resources res = getResources();
-        DisplayMetrics dm = res.getDisplayMetrics();
-        Configuration conf = res.getConfiguration();
-        conf.locale = myLocale;
-        res.updateConfiguration(conf, dm);
-        //start Intent===================
-        Intent refresh = new Intent(this, LanguageChangeLoader.class);
-        refresh.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);//CLEAR ALL ACTIVITIES
-        startActivity(refresh);
     }
 
     @Override

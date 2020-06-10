@@ -4,14 +4,18 @@ package com.zapatatech.santabiblia.fragments.settings;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.preference.CheckBoxPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
+import androidx.preference.PreferenceScreen;
 
 import com.zapatatech.santabiblia.DatabaseHelper.BibleCreator;
 import com.zapatatech.santabiblia.Login;
@@ -38,6 +42,7 @@ import static com.zapatatech.santabiblia.utilities.CommonMethods.getRefreshToken
 public class SettingsFragment extends PreferenceFragmentCompat {
     private static final String TAG = "SettingsFragment";
     private Activity mActivity;
+    private PreferenceScreen screen;
 
     protected static void setListPreferenceData(Context ctx, ListPreference lp) {
         String bibleSelected = PreferenceManager.getDefaultSharedPreferences(ctx).getString(MAIN_BIBLE_SELECTED, null);
@@ -54,7 +59,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setPreferencesFromResource(R.xml.settings, rootKey);
         mActivity = getActivity();
-        //================================================================================================
+        screen = this.getPreferenceScreen(); // "null". See onViewCreated.
+        //ALL PREFERENCES ================================================================================================
             final ListPreference listPreference = (ListPreference) findPreference("pref_bible_selected");
             // THIS IS REQUIRED IF YOU DON'T HAVE 'entries' and 'entryValues' in your XML
             setListPreferenceData(mActivity, listPreference);
@@ -65,17 +71,44 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     return false;
                 }
             });
+
+        //ONLINE PREFERENCES ONLY================================================================================================
+        if(CommonMethods.checkUserStatus(mActivity) == CommonMethods.USER_ONLINE){
+            addPreferencesForLoggedInUsers();
+        }
+    }
+
+    private void addPreferencesForLoggedInUsers(){
+        final PreferenceCategory thirdCategory = (PreferenceCategory) findPreference("pref_section_third");
+        Preference backUp = new Preference(screen.getContext());
+        backUp.setKey("pref_back_up");
+        backUp.setTitle("Back up and Sync Up");
+        backUp.setSummary("Last synced: 28/10/20 13:34");
+        backUp.setIcon(R.drawable.ic_sync);
+        backUp.setOrder(0);
+        thirdCategory.addPreference(backUp);
         //================================================================================================
-            Preference signOutButton = findPreference("pref_sign_out");
-            signOutButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    //Blacklist the current refresh token, so it cannot be used to create new access tokens
-                    retrofitLogout();
-                    return true;
-                }
-            });
+        //add Sign out button programatically
+        final PreferenceCategory lastCategory = (PreferenceCategory) findPreference("pref_section_last");
+        Preference signOutButton = new Preference(screen.getContext());
+        signOutButton.setKey("pref_sign_out");
+        signOutButton.setTitle("Sign Out");
+        signOutButton.setSummary("Come back soon!");
+        signOutButton.setIcon(R.drawable.ic_exit);
+        lastCategory.addPreference(signOutButton);
+        signOutButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                //Blacklist the current refresh token, so it cannot be used to create new access tokens
+                retrofitLogout();
+                return true;
+            }
+        });
         //================================================================================================
+//        Create the Preferences Manually - so that the key can be set programatically.
+//        PreferenceCategory category = new PreferenceCategory(screen.getContext());
+//        category.setTitle("Channel Configuration");
+//        screen.addPreference(category);
     }
 
     private void retrofitLogout(){
@@ -127,6 +160,5 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             CommonMethods.logOutOfApp(mActivity);
         }
     }
-
 
 }

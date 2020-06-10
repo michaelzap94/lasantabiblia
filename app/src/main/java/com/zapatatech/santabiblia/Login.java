@@ -1,13 +1,20 @@
 package com.zapatatech.santabiblia;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -24,6 +31,7 @@ import com.zapatatech.santabiblia.utilities.Util;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -33,6 +41,13 @@ public class Login extends AppCompatActivity {
     private static final String TAG = "Login";
     private TextInputLayout email;
     private TextInputLayout password;
+    //FLAGS==========================
+    public static final String FLAG_LANG = "Lang";
+    private Menu menu;
+    private String flagInSharedPref;
+    private Drawable flag_gb;
+    private Drawable flag_es;
+    private SharedPreferences sp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +57,14 @@ public class Login extends AppCompatActivity {
         email = findViewById(R.id.login_input_email);
         password = findViewById(R.id.login_input_password);
         //===================================================================================
+
+        //FLAGS================================================================================
+        sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        flagInSharedPref = sp.getString(FLAG_LANG, "");
+
+        flag_gb = ContextCompat.getDrawable(getApplicationContext(),R.drawable.flag_gb);
+        flag_es = ContextCompat.getDrawable(getApplicationContext(),R.drawable.flag_es);
+        //=====================================================================================
 
     }
 
@@ -166,4 +189,82 @@ public class Login extends AppCompatActivity {
             Toast.makeText(this, "Status not updated", Toast.LENGTH_SHORT).show();
         }
     }
+
+    //LANGUAGE===============================================================
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        this.menu = menu;
+        getMenuInflater().inflate(R.menu.menu_languages, menu);
+
+        //you need menu.findItem as the Menu has not been fully inflated yet. so findViewById will not work.
+        MenuItem item_gb = menu.findItem(R.id.lang_en);
+        MenuItem item_es = menu.findItem(R.id.lang_es);
+        if(flagInSharedPref.length()>0) {
+
+            switch (flagInSharedPref) {
+                case "en":
+                    menu.getItem(0).setIcon(flag_gb);
+                    item_gb.setChecked(true);
+                    break;
+                case "es":
+                    menu.getItem(0).setIcon(flag_es);
+                    item_es.setChecked(true);
+                    break;
+
+            }
+        }else{
+            //default language is English for now
+            sp.edit().putString(FLAG_LANG,"en").apply();
+            menu.getItem(0).setIcon(flag_gb);
+            item_gb.setChecked(true);
+        }
+
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.lang_en:
+                sp.edit().putString(FLAG_LANG,"en").apply();
+                if (item.isChecked()){
+                    item.setChecked(false);
+                }else{
+                    item.setChecked(true);
+                    setLocale("en");
+                }
+//                menu.getItem(0).setIcon(flag_gb);
+                return true;
+            case R.id.lang_es:
+                sp.edit().putString(FLAG_LANG,"es").apply();
+                if (item.isChecked()){
+                    item.setChecked(false);
+                }else{
+                    item.setChecked(true);
+                    setLocale("es");
+                }
+//                menu.getItem(0).setIcon(flag_es);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public void setLocale(String lang) {
+        //change language files===================
+        Locale myLocale = new Locale(lang);
+        Locale.setDefault(myLocale);
+        Resources res = getResources();
+        DisplayMetrics dm = res.getDisplayMetrics();
+        Configuration conf = res.getConfiguration();
+        conf.locale = myLocale;
+        res.updateConfiguration(conf, dm);
+        //start Intent===================
+        Intent refresh = new Intent(this, LanguageChangeLoader.class);
+        refresh.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);//CLEAR ALL ACTIVITIES
+        startActivity(refresh);
+    }
+
 }
