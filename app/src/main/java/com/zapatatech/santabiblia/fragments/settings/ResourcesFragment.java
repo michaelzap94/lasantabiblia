@@ -3,6 +3,8 @@ package com.zapatatech.santabiblia.fragments.settings;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -19,6 +21,7 @@ import com.zapatatech.santabiblia.DatabaseHelper.BibleCreator;
 import com.zapatatech.santabiblia.R;
 import com.zapatatech.santabiblia.Settings;
 import com.zapatatech.santabiblia.adapters.RecyclerView.SettingsResourcesDownloadedRVAdapter;
+import com.zapatatech.santabiblia.utilities.CommonMethods;
 
 import java.util.ArrayList;
 
@@ -33,8 +36,24 @@ public class ResourcesFragment extends Fragment {
     }
 
     @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        if(CommonMethods.checkUserStatus(getActivity()) == CommonMethods.USER_ONLINE){
+            MenuItem item2= menu.findItem(2);
+            MenuItem item3= menu.findItem(3);
+            item2.setVisible(false);
+            item3.setVisible(false);
+        } else {
+            MenuItem item= menu.findItem(1);
+            item.setVisible(false);
+        }
+
+        super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
 //        String[] resourcesAvailable = BibleCreator.getInstance(this.getContext()).listOfAssetsSpecific("bibles", "es");;
 //        list = new ArrayList<String>(Arrays.asList(resourcesAvailable));
         list = BibleCreator.getInstance(this.getContext()).listOfAllDBAssets();
@@ -45,7 +64,6 @@ public class ResourcesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView: ");
-        ((Settings) getActivity()).getmCollapsingToolbarLayout().setTitle("Manage Resources");
         View view =  inflater.inflate(R.layout.settings_resources, container, false);
         seeAvailable = view.findViewById(R.id.resources_see_available_button);
         rvView = (RecyclerView) view.findViewById(R.id.resources_downloaded_rv);
@@ -57,8 +75,9 @@ public class ResourcesFragment extends Fragment {
         rvView.setLayoutManager(new LinearLayoutManager(this.getContext()));
 
         //============================================================================================
+        setHasOptionsMenu(true);
         boolean canGoBack = getActivity().getSupportFragmentManager().getBackStackEntryCount()>0;
-        Settings.updateCanGoBack(canGoBack, (Settings)getActivity());
+        Settings.updateCanGoBack(canGoBack, (Settings)getActivity(), null);
         //============================================================================================
         return view;
     }

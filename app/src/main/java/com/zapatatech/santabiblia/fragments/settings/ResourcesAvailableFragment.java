@@ -2,6 +2,8 @@ package com.zapatatech.santabiblia.fragments.settings;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -13,8 +15,11 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
+import com.zapatatech.santabiblia.DatabaseHelper.BibleCreator;
 import com.zapatatech.santabiblia.R;
 import com.zapatatech.santabiblia.Settings;
+import com.zapatatech.santabiblia.adapters.RecyclerView.SettingsResourcesDownloadedRVAdapter;
+import com.zapatatech.santabiblia.utilities.CommonMethods;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,9 +46,29 @@ public class ResourcesAvailableFragment extends Fragment {
     }
 
     @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        if(CommonMethods.checkUserStatus(getActivity()) == CommonMethods.USER_ONLINE){
+            MenuItem item2= menu.findItem(2);
+            MenuItem item3= menu.findItem(3);
+            item2.setVisible(false);
+            item3.setVisible(false);
+        } else {
+            MenuItem item= menu.findItem(1);
+            item.setVisible(false);
+        }
+
+        super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        ((Settings) getActivity()).getmCollapsingToolbarLayout().setTitle("Available to Download");
         View view =  inflater.inflate(R.layout.settings_resources_available, container, false);
         viewPager = (ViewPager) view.findViewById(R.id.viewpager);
         tabLayout = (TabLayout) view.findViewById(R.id.tabs);
@@ -51,8 +76,9 @@ public class ResourcesAvailableFragment extends Fragment {
 
 
         //============================================================================================
+        setHasOptionsMenu(true);
         boolean canGoBack = getActivity().getSupportFragmentManager().getBackStackEntryCount()>0;
-        Settings.updateCanGoBack(canGoBack, (Settings)getActivity());
+        Settings.updateCanGoBack(canGoBack, (Settings)getActivity(), "Available to Download");
         //============================================================================================
         return view;
     }

@@ -5,6 +5,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
@@ -18,6 +19,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewStub;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
@@ -51,15 +54,33 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-        mAppBarLayout = (AppBarLayout) findViewById(R.id.settings_appbarlayout);
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        //-----------------------------------------------------------------------------------------
+        ViewStub stub = (ViewStub) findViewById(R.id.layout_stub);
+        if(CommonMethods.checkUserStatus(this) == CommonMethods.USER_ONLINE) {
+            stub.setLayoutResource(R.layout.settings_collapsing_toolbar);
+            View inflatedView = stub.inflate();
+            //parent component
+            mAppBarLayout = (AppBarLayout) findViewById(R.id.inflated_bar_layout);
+            //children
+            collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+            mToolbar = (Toolbar) inflatedView.findViewById(R.id.toolbar);
+        } else {
+            stub.setLayoutResource(R.layout.settings_toolbar);
+            View inflatedView = stub.inflate();
+            //parent component
+            mAppBarLayout = (AppBarLayout) findViewById(R.id.inflated_bar_layout);
+            //children
+            mToolbar = (Toolbar) inflatedView.findViewById(R.id.toolbar);
+        }
+        //-----------------------------------------------------------------------------------------
         setSupportActionBar(mToolbar);
         setTitle(R.string.settings);
+
+        //set account icon instead of three dots
         Drawable drawable = ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_account_circle);
         mToolbar.setOverflowIcon(drawable);
 
-        updateCanGoBack(canGoBack, Settings.this);
+        updateCanGoBack(canGoBack, Settings.this, null);
         //Populate one Fragment to cover the WHOLE settings screen
         getSupportFragmentManager()
                 .beginTransaction()
@@ -70,17 +91,26 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
         CommonMethods.bottomBarActionHandler(bottomNavigationView, R.id.bnav_settings, Settings.this);
     }
 
+//    private void setExpandEnabled(boolean enabled) {
+//        mAppBarLayout.setExpanded(enabled, false);
+//        mAppBarLayout.setActivated(enabled);
+//        final AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) collapsingToolbarLayout.getLayoutParams();
+//        if (enabled) params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED);
+//        else params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS_COLLAPSED);
+//        collapsingToolbarLayout.setLayoutParams(params);
+//    }
+//
+//    public void lockAppBarClosed() {
+//        mAppBarLayout.setExpanded(false, false);
+//        mAppBarLayout.setActivated(false);
+//        CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams)mAppBarLayout.getLayoutParams();
+//        lp.height = (int) getResources().getDimension(R.dimen.toolbar_height);
+//    }
+
     @Override
     protected void onResume() {
         super.onResume();
         bottomNavigationView.setSelectedItemId(R.id.bnav_settings);
-    }
-
-    @Override
-    public boolean onPreferenceStartFragment(PreferenceFragmentCompat caller, Preference pref) {
-        //WHEN USER TAPS ON A SECTION IN SETTINGS AND ALLOWS YOU TO CUSTOMIZE transitions/animations
-        collapsingToolbarLayout.setTitle(pref.toString());
-        return false;
     }
 
     @Override
@@ -99,16 +129,41 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
         }
     }
 
-    public static void updateCanGoBack(boolean canGoBack, Settings activity){
+    @Override
+    public boolean onPreferenceStartFragment(PreferenceFragmentCompat caller, Preference pref) {
+        //WHEN USER TAPS ON A SECTION IN SETTINGS AND ALLOWS YOU TO CUSTOMIZE transitions/animations
+        if(CommonMethods.checkUserStatus(this) == CommonMethods.USER_ONLINE) {
+            collapsingToolbarLayout.setTitle(pref.toString());
+        } else {
+            mToolbar.setTitle(pref.toString());
+        }
+        return false;
+    }
+
+    public static void updateCanGoBack(boolean canGoBack, Settings activity, String title){
         //ActionBar arrow show only if INNER settings
         ActionBar actionBar = activity.getSupportActionBar();
 
         if(actionBar != null && canGoBack == false){
             actionBar.setDisplayHomeAsUpEnabled(false);
-            activity.getmCollapsingToolbarLayout().setTitle(activity.getResources().getString(R.string.settings));
+            if(CommonMethods.checkUserStatus(activity) == CommonMethods.USER_ONLINE) {
+                activity.getmCollapsingToolbarLayout().setTitle(activity.getResources().getString(R.string.settings));
+            } else {
+                activity.getmToolbar().setTitle(activity.getResources().getString(R.string.settings));
+            }
         } else {
+            //TODO: replace collapsing toolbar with normal toolbar
             actionBar.setDisplayHomeAsUpEnabled(true);
-            activity.getmAppBarLayout().setExpanded(false);
+            if(CommonMethods.checkUserStatus(activity) == CommonMethods.USER_ONLINE) {
+                activity.getmAppBarLayout().setExpanded(false);
+                if(title != null){
+                    activity.getmCollapsingToolbarLayout().setTitle(title);
+                }
+            } else {
+                if(title != null){
+                    activity.getmToolbar().setTitle(title);
+                }
+            }
 //            CollapsingToolbarLayout collapsingToolbar = activity.getmCollapsingToolbarLayout();
 //            AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) collapsingToolbar.getLayoutParams();
 //            params.setScrollFlags(0); // list other flags here by |
@@ -171,7 +226,7 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
                 getSupportFragmentManager().popBackStack();
                 boolean canGoBack = getSupportFragmentManager().getBackStackEntryCount()>1;
                 Log.d(TAG, "onOptionsItemSelected: "+canGoBack);
-                Settings.updateCanGoBack(canGoBack, Settings.this);
+                Settings.updateCanGoBack(canGoBack, Settings.this, null);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -181,7 +236,7 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
     @Override
     public void onBackPressed() {
         boolean canGoBack = getSupportFragmentManager().getBackStackEntryCount()>1;
-        Settings.updateCanGoBack(canGoBack, Settings.this);
+        Settings.updateCanGoBack(canGoBack, Settings.this, null);
         super.onBackPressed();
     }
 
