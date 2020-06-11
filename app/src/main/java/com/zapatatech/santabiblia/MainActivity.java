@@ -14,6 +14,8 @@ import com.zapatatech.santabiblia.utilities.CommonMethods;
 
 import java.util.Locale;
 
+import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
+
 public class MainActivity extends AppCompatActivity{
     private static final String TAG = "MainActivity";
     //FLAGS==========================
@@ -83,10 +85,17 @@ public class MainActivity extends AppCompatActivity{
                 finish();
             }
         } else { //CommonMethods.USER_ONLINE
-            if(account_type != null){
+            String accessToken = CommonMethods.getAccessToken(MainActivity.this);
+            if(account_type != null && accessToken != null){
                 //so we don't make too many network requests
                 //CHECK THE expiry date OF THE ACCESS_TOKEN, IF EXPIRED, VERIFY:
-                CommonMethods.retrofitVerifyCredentials(MainActivity.this);
+                if(CommonMethods.isAccessTokenExpired(accessToken)) {
+                    CommonMethods.retrofitVerifyCredentials(MainActivity.this);
+                } else {
+                    Intent intent = new Intent(MainActivity.this, Home.class);//.addFlags(FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    startActivity(intent);
+                    finish();
+                }
             } else {
                 Intent intent = new Intent(MainActivity.this, Login.class);
                 startActivity(intent);

@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
+import com.auth0.android.jwt.JWT;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -537,13 +538,17 @@ public class CommonMethods {
         mActivity.startActivity(intent);
     }
 
-    public static void goToLogin(Activity mActivity){
-        Intent intent = new Intent(mActivity, Home.class);
-        mActivity.startActivity(intent);
-        mActivity.finish();
+    //==================================================================================================
+    public static void decodeAccessToken(String jwt_token){
+        JWT jwt = new JWT(jwt_token);
+    }
+    public static boolean isAccessTokenExpired(String jwt_token){
+        JWT jwt = new JWT(jwt_token);
+        return jwt.isExpired(10); // 10 seconds leeway
     }
 
     //==================================================================================================
+
     public static void copyText(Context context, String title, String text){
         String content = title + "\n" + text;
         ((ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE)).setPrimaryClip(ClipData.newPlainText("Bible content", content));
