@@ -60,18 +60,40 @@ public class MainActivity extends AppCompatActivity{
      * ELSE -> take him to the Login Activity
      */
     private void showLoginOrHomePage(){
+        int userStatus = CommonMethods.checkUserStatus(this);
+        String account_type = CommonMethods.getAccountType(this);
         //TODO: Check the credentials of User are still valid
 //        if(CommonMethods.getAccountType(this, "google") == "google") {
 //            GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
 //            if(account != null) {
-//                //
 //            }
 //        }
         //==============================================================
         //ONLY ALLOW TO USE THE APP-> if USER_OFFLINE OR USER_ONLINE, not WHEN USER_NONE
-        Intent i = (CommonMethods.checkUserStatus(this) > CommonMethods.USER_NONE) ? new Intent(MainActivity.this, Home.class) : new Intent(MainActivity.this, Login.class);
-        startActivity(i);
-        finish();
+        if(userStatus == CommonMethods.USER_NONE) {
+            Intent intent = new Intent(MainActivity.this, Login.class);
+            startActivity(intent);
+            finish();
+        } else if(userStatus == CommonMethods.USER_OFFLINE) {
+            if(account_type != null){
+                CommonMethods.retrofitVerifyCredentials(MainActivity.this);
+            } else {
+                Intent intent = new Intent(MainActivity.this, Home.class);
+                startActivity(intent);
+                finish();
+            }
+        } else { //CommonMethods.USER_ONLINE
+            if(account_type != null){
+                //so we don't make too many network requests
+                //CHECK THE expiry date OF THE ACCESS_TOKEN, IF EXPIRED, VERIFY:
+                CommonMethods.retrofitVerifyCredentials(MainActivity.this);
+            } else {
+                Intent intent = new Intent(MainActivity.this, Login.class);
+                startActivity(intent);
+                finish();
+            }
+        }
+
     }
 
 }

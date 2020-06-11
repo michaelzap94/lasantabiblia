@@ -2,6 +2,7 @@ package com.zapatatech.santabiblia.utilities;
 
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -33,12 +34,21 @@ import com.zapatatech.santabiblia.R;
 import com.zapatatech.santabiblia.Search;
 import com.zapatatech.santabiblia.Settings;
 import com.zapatatech.santabiblia.SignUp;
+import com.zapatatech.santabiblia.interfaces.retrofit.RetrofitAuthService;
+import com.zapatatech.santabiblia.models.APIError;
 import com.zapatatech.santabiblia.models.AuthInfo;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.HttpException;
+import retrofit2.Response;
+
 import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
+import static android.content.Intent.makeMainActivity;
 
 public class CommonMethods {
     private static final String TAG = "CommonMethods";
@@ -274,7 +284,7 @@ public class CommonMethods {
         if(CommonMethods.getAccessToken(activity) != null && CommonMethods.getAccessToken(activity) != null ){
             int newStatus = updateUserStatus(activity, USER_ONLINE);
             if(newStatus == USER_ONLINE){
-                Intent intent = new Intent(activity, MainActivity.class);
+                Intent intent = new Intent(activity, Home.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);//CLEAR ALL ACTIVITIES
                 activity.startActivity(intent);
             } else {
@@ -284,16 +294,74 @@ public class CommonMethods {
             Toast.makeText(activity, "Tokens are not stored", Toast.LENGTH_SHORT).show();
         }
     }
+
+    public static void retrofitLogout(Activity mActivity){
+
+        String refreshToken = getRefreshToken(mActivity);
+        String accessToken = getAccessToken(mActivity);
+        if( refreshToken != null && accessToken != null ) {
+            RetrofitAuthService logOutService = RetrofitServiceGenerator.createService(RetrofitAuthService.class, accessToken);
+
+            HashMap<String, Object> logOutObject = new HashMap<>();
+            logOutObject.put("refresh", refreshToken);
+
+            Call<AuthInfo> call = logOutService.requestLogOut(logOutObject);
+            // Set up progress before call
+            ProgressDialog mProgressDialog = new ProgressDialog(mActivity);
+            mProgressDialog.setIndeterminate(true);
+            mProgressDialog.setCancelable(false);
+            mProgressDialog.setMessage("Logging you out...");
+            mProgressDialog.show();
+            call.enqueue(new Callback<AuthInfo >() {
+                @Override
+                public void onResponse(Call<AuthInfo> call, Response<AuthInfo> response) {
+                    if (response.isSuccessful()) {
+                        // user object available
+                        Log.d(TAG, "onResponse: logout success " + response.body());
+                        if(!response.body().getStatus().equals("success") ){
+                            String error = "Sorry, something went wrong";
+                            if(response.body().getDetail() != null) {
+                                error = response.body().getDetail();
+                            } else if (response.body().getError() != null) {
+                                error = response.body().getError().toString();
+                            }
+                            Log.d(TAG, "onResponse: logout failure: " + error);
+                        }
+                    } else {
+                        // parse the response body …
+                        APIError error = RetrofitErrorUtils.parseError(response);
+                        // … and use it to show error information
+                        Log.d(TAG, "onResponse: logout failure: " + error);
+                    }
+                    mProgressDialog.dismiss();
+                    //Remove Both tokens and change status to USER_NONE
+                    CommonMethods.logOutOfApp(mActivity);
+                }
+
+                @Override
+                public void onFailure(Call<AuthInfo> call, Throwable t) {
+                    // something went completely south (like no internet connection)
+                    Log.d("onFailure logout Error", t.getMessage());
+                    mProgressDialog.dismiss();
+                    //Remove Both tokens and change status to USER_NONE
+                    CommonMethods.logOutOfApp(mActivity);
+                }
+            });
+        } else {
+            //Remove Both tokens if any and change status to USER_NONE
+            CommonMethods.logOutOfApp(mActivity);
+        }
+    }
     public static void logOutOfApp(Activity activity){
         String accountName = CommonMethods.getAccountType(activity);
-        String account_type = (null != accountName) ? accountName : "offline";
+        String account_type = (null != accountName) ? accountName : "offline";//local WILL GO TO default too
         switch (account_type) {
             case "google": CommonMethods.googleLogOut(activity);
                 break;
             default: CommonMethods.deviceLogOut(activity);
         }
     }
-    public static void googleLogOut(Activity activity) {
+    private static void googleLogOut(Activity activity) {
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -303,15 +371,14 @@ public class CommonMethods {
         // Build a GoogleSignInClient with the options specified by gso.
         GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(activity, gso);
         mGoogleSignInClient.signOut()
-                .addOnCompleteListener(activity, new OnCompleteListener<Void>() {
+                .addOnCompleteListener(activity, new OnCompleteListener<Void>() {//SUCCESS OR FAILURE
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         deviceLogOut(activity);
                     }
                 });
     }
-
-    public static void deviceLogOut(Activity activity){
+    private static void deviceLogOut(Activity activity){
         if(CommonMethods.clearAccessToken(activity) && CommonMethods.clearRefreshToken(activity) && CommonMethods.clearAccountType(activity)){
             int newStatus = CommonMethods.updateUserStatus(activity, CommonMethods.USER_NONE);
             if(newStatus == CommonMethods.USER_NONE){
@@ -324,6 +391,156 @@ public class CommonMethods {
         } else {
             Toast.makeText(activity, "Tokens are not stored", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public static void retrofitVerifyCredentials(Activity mActivity){
+        String refreshToken = getRefreshToken(mActivity);
+        String accessToken = getAccessToken(mActivity);
+        if( accessToken != null && refreshToken != null ) {
+            RetrofitAuthService logOutService = RetrofitServiceGenerator.createService(RetrofitAuthService.class, accessToken);
+            HashMap<String, Object> authObj = new HashMap<>();
+            authObj.put("token", accessToken);
+
+            Call<AuthInfo> call = logOutService.requestVerify(authObj);
+            // Set up progress before call=========================================
+            ProgressDialog mProgressDialog = new ProgressDialog(mActivity);
+            mProgressDialog.setIndeterminate(true);
+            mProgressDialog.setCancelable(false);
+            mProgressDialog.setMessage("Verifying credentials...");
+            mProgressDialog.show();
+            //======================================================================
+            call.enqueue(new Callback<AuthInfo >() {
+                @Override
+                public void onResponse(Call<AuthInfo> call, Response<AuthInfo> response) {
+                    mProgressDialog.dismiss();
+                    if (response.isSuccessful()) { //200 means token is valid
+                        //UPDATE STATUS TO ONLINE
+                        CommonMethods.updateUserStatus(mActivity, CommonMethods.USER_ONLINE);
+                        //reuse credentials and go home
+                        goToHome(mActivity);
+                    } else {
+                        //if token is invalid, try to get new credentials using the refreshtoken
+                        CommonMethods.retrofitRefreshCredentials(mActivity, refreshToken);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<AuthInfo> call, Throwable throwable) {
+                    // NOT INTERNET OR SERVER DOWN GO OFFLINE
+                    Log.d("onFailure Error", throwable.getMessage());
+                    String message = "Sorry, something went wrong. You can use the app OFFLINE.";
+                    if (throwable instanceof HttpException) {
+                        // We had non-2XX http error
+                        message = "Sorry, we could not connect to the server. You can use the app OFFLINE.";
+                    }
+                    if (throwable instanceof IOException) {
+                        // A network or conversion error happened
+                        message = "A network error happened.\nYou can use the app OFFLINE.";
+                    }
+                    Toast.makeText(mActivity, message, Toast.LENGTH_LONG).show();
+                    mProgressDialog.dismiss();
+
+                    //UPDATE STATUS TO OFFLINE
+                    CommonMethods.updateUserStatus(mActivity, CommonMethods.USER_OFFLINE);
+                    //DO NOT REMOVE THE CREDENTIALS
+                    goToHome(mActivity);
+                }
+            });
+        } else {
+            //Remove Both tokens if any and change status to USER_NONE
+            CommonMethods.logOutOfApp(mActivity);
+        }
+    }
+
+    public static void retrofitRefreshCredentials(Activity mActivity, String refreshToken) {
+        RetrofitAuthService logOutService = RetrofitServiceGenerator.createService(RetrofitAuthService.class, null);
+        HashMap<String, Object> authObj = new HashMap<>();
+        authObj.put("refresh", refreshToken);
+
+
+        Call<AuthInfo> call = logOutService.requestRefresh(authObj);
+
+        // Set up progress before call
+        ProgressDialog mProgressDialog = new ProgressDialog(mActivity);
+        mProgressDialog.setIndeterminate(true);
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.setMessage("Refreshing credentials...");
+        mProgressDialog.show();
+        call.enqueue(new Callback<AuthInfo >() {
+            @Override
+            public void onResponse(Call<AuthInfo> call, Response<AuthInfo> response) {
+                if (response.isSuccessful()) { //200 SUCCESS REFRESHING
+                    // user object available
+                    Log.d(TAG, "onResponse: success" + response.body());
+                    if(response.body().getAccessToken() != null && response.body().getRefreshToken() != null ){
+                        //Store new credentials tokens
+                        CommonMethods.storeBothTokens(mActivity, response.body());
+                        //Reuse previous account type, as it should be the same
+                        //CommonMethods.storeAccountType(mActivity, account_type);
+                        //UPDATE STATUS TO ONLINE
+                        CommonMethods.updateUserStatus(mActivity, CommonMethods.USER_ONLINE);
+                        //go home
+                        goToHome(mActivity);
+
+                    } else { //No NEW access or refresh token -> LOG USER OUT
+                        String error = "Sorry, something went wrong";
+                        if(response.body().getDetail() != null) {
+                            error = response.body().getDetail();
+                        } else if (response.body().getError() != null) {
+                            error = response.body().getError().toString();
+                        }
+                        Toast.makeText(mActivity, error, Toast.LENGTH_SHORT).show();
+//                        if(account_type == "google") {
+//                            mGoogleSignInClient.signOut();
+//                        }
+                        CommonMethods.retrofitLogout(mActivity);
+                    }
+                } else { //401 Unauthorized -> TOKEN IS BLACKLISTED
+                    // parse the response body …
+                    APIError error = RetrofitErrorUtils.parseError(response);
+                    // … and use it to show error information
+                    Toast.makeText(mActivity, error.message(), Toast.LENGTH_SHORT).show();
+//                    if(account_type == "google") {
+//                        mGoogleSignInClient.signOut();
+//                    }
+                    CommonMethods.retrofitLogout(mActivity);
+                }
+                mProgressDialog.dismiss();
+            }
+
+            @Override
+            public void onFailure(Call<AuthInfo> call, Throwable throwable) {
+                // NOT INTERNET OR SERVER DOWN -> GO OFFLINE
+                Log.d("onFailure Error", throwable.getMessage());
+                String message = "Sorry, something went wrong. You can use the app OFFLINE.";
+                if (throwable instanceof HttpException) {
+                    // We had non-2XX http error
+                    message = "Sorry, we could not connect to the server. You can use the app OFFLINE.";
+                }
+                if (throwable instanceof IOException) {
+                    // A network or conversion error happened
+                    message = "A network error happened.\nYou can use the app OFFLINE.";
+                }
+                Toast.makeText(mActivity, message, Toast.LENGTH_LONG).show();
+                mProgressDialog.dismiss();
+                //UPDATE STATUS TO OFFLINE
+                CommonMethods.updateUserStatus(mActivity, CommonMethods.USER_OFFLINE);
+                //DO NOT REMOVE THE CREDENTIALS
+                goToHome(mActivity);
+            }
+        });
+    }
+
+    public static void goToHome(Activity mActivity){
+        Intent intent = new Intent(mActivity, Home.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);//CLEAR ALL ACTIVITIES
+        mActivity.startActivity(intent);
+    }
+
+    public static void goToLogin(Activity mActivity){
+        Intent intent = new Intent(mActivity, Home.class);
+        mActivity.startActivity(intent);
+        mActivity.finish();
     }
 
     //==================================================================================================

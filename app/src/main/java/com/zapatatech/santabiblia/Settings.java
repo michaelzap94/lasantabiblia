@@ -198,7 +198,7 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
             logOut.setOnMenuItemClickListener (new MenuItem.OnMenuItemClickListener(){
                 @Override
                 public boolean onMenuItemClick (MenuItem item){
-                    CommonMethods.logOutOfApp(Settings.this);
+                    CommonMethods.retrofitLogout(Settings.this);
                     return true;
                 }
             });
@@ -209,7 +209,14 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
             item.setOnMenuItemClickListener (new MenuItem.OnMenuItemClickListener(){
                 @Override
                 public boolean onMenuItemClick (MenuItem item){
-                    CommonMethods.logOutOfApp(Settings.this);
+                    String account_type = CommonMethods.getAccountType(Settings.this);
+                    if(account_type != null){
+                        //if you are offline because of internet or network unavailability but have credentials
+                        CommonMethods.retrofitVerifyCredentials(Settings.this);
+                    } else {
+                        //since you are not online, -> do not do retrofitLogout()
+                        CommonMethods.logOutOfApp(Settings.this);
+                    }
                     return true;
                 }
             });

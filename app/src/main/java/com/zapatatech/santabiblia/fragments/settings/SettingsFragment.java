@@ -100,7 +100,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 //Blacklist the current refresh token, so it cannot be used to create new access tokens
-                retrofitLogout();
+                CommonMethods.retrofitLogout(mActivity);
                 return true;
             }
         });
@@ -109,56 +109,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 //        PreferenceCategory category = new PreferenceCategory(screen.getContext());
 //        category.setTitle("Channel Configuration");
 //        screen.addPreference(category);
-    }
-
-    private void retrofitLogout(){
-
-        String refreshToken = getRefreshToken(mActivity);
-        String accessToken = getAccessToken(mActivity);
-        if( refreshToken != null && accessToken != null ) {
-            RetrofitAuthService logOutService = RetrofitServiceGenerator.createService(RetrofitAuthService.class, accessToken);
-
-            HashMap<String, Object> logOutObject = new HashMap<>();
-            logOutObject.put("refresh", refreshToken);
-
-            Call<AuthInfo> call = logOutService.requestLogOut(logOutObject);
-            call.enqueue(new Callback<AuthInfo >() {
-                @Override
-                public void onResponse(Call<AuthInfo> call, Response<AuthInfo> response) {
-                    if (response.isSuccessful()) {
-                        // user object available
-                        Log.d(TAG, "onResponse: success" + response.body());
-                        if(!response.body().getStatus().equals("success") ){
-                            String error = "Sorry, something went wrong";
-                            if(response.body().getDetail() != null) {
-                                error = response.body().getDetail();
-                            } else if (response.body().getError() != null) {
-                                error = response.body().getError().toString();
-                            }
-                            Toast.makeText(mActivity, error, Toast.LENGTH_SHORT).show();
-                        }
-                    } else {
-                        // parse the response body …
-                        APIError error = RetrofitErrorUtils.parseError(response);
-                        // … and use it to show error information
-                        Toast.makeText(mActivity, error.message(), Toast.LENGTH_SHORT).show();
-                    }
-                    //Remove Both tokens and change status to USER_NONE
-                    CommonMethods.logOutOfApp(mActivity);
-                }
-
-                @Override
-                public void onFailure(Call<AuthInfo> call, Throwable t) {
-                    // something went completely south (like no internet connection)
-                    Log.d("onFailure Error", t.getMessage());
-                    //Remove Both tokens and change status to USER_NONE
-                    CommonMethods.logOutOfApp(mActivity);
-                }
-            });
-        } else {
-            //Remove Both tokens if any and change status to USER_NONE
-            CommonMethods.logOutOfApp(mActivity);
-        }
     }
 
 }
