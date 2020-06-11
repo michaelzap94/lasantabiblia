@@ -145,15 +145,21 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
         ActionBar actionBar = activity.getSupportActionBar();
 
         if(actionBar != null && canGoBack == false){
+            String mtitle;
+            if(CommonMethods.checkUserStatus(activity) == CommonMethods.USER_ONLINE) {
+                mtitle = CommonMethods.decodeJWTAndCreateUser(activity).getName();
+            } else {
+                mtitle = activity.getString(R.string.settings);
+            }
             actionBar.setDisplayHomeAsUpEnabled(false);
             if(CommonMethods.checkUserStatus(activity) == CommonMethods.USER_ONLINE) {
-                activity.getmCollapsingToolbarLayout().setTitle(activity.getResources().getString(R.string.settings));
+                activity.getmCollapsingToolbarLayout().setTitle(mtitle);
             } else {
-                activity.getmToolbar().setTitle(activity.getResources().getString(R.string.settings));
+                activity.getmToolbar().setTitle(mtitle);
             }
         } else {
             //TODO: replace collapsing toolbar with normal toolbar
-            actionBar.setDisplayHomeAsUpEnabled(true);
+            activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             if(CommonMethods.checkUserStatus(activity) == CommonMethods.USER_ONLINE) {
                 activity.getmAppBarLayout().setExpanded(false);
                 if(title != null){

@@ -38,6 +38,7 @@ import com.zapatatech.santabiblia.SignUp;
 import com.zapatatech.santabiblia.interfaces.retrofit.RetrofitAuthService;
 import com.zapatatech.santabiblia.models.APIError;
 import com.zapatatech.santabiblia.models.AuthInfo;
+import com.zapatatech.santabiblia.models.User;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -539,8 +540,27 @@ public class CommonMethods {
     }
 
     //==================================================================================================
-    public static void decodeAccessToken(String jwt_token){
+    public static User decodeJWTAndCreateUser(String jwt_token){
         JWT jwt = new JWT(jwt_token);
+        return new User(jwt.getClaim("user_id").asString(),
+                jwt.getClaim("email").asString(),
+                jwt.getClaim("fullname").asString(),
+                jwt.getClaim("account_type").asString(),
+                jwt.getClaim("social_id").asString());
+    }
+    public static User decodeJWTAndCreateUser(Activity mActivity){
+        String jwt_token = CommonMethods.getAccessToken(mActivity);
+        if(jwt_token != null){
+            JWT jwt = new JWT(jwt_token);
+            Log.d(TAG, "decodeJWTAndCreateUser: " + jwt.getClaim("fullname").asString());
+            return new User(jwt.getClaim("user_id").asString(),
+                    jwt.getClaim("email").asString(),
+                    jwt.getClaim("fullname").asString(),
+                    jwt.getClaim("account_type").asString(),
+                    jwt.getClaim("social_id").asString());
+        } else {
+            return null;
+        }
     }
     public static boolean isAccessTokenExpired(String jwt_token){
         JWT jwt = new JWT(jwt_token);
