@@ -24,9 +24,9 @@ public class ResourcesRVA extends RecyclerView.Adapter<ResourcesRVA.ResourceView
     }
 
     //function available so View can update the RecyclerView List once the information is available.
-    public void updateCountries(List<Resource> newCountries) {
+    public void updateResources(List<Resource> newResources) {
         resources.clear();
-        resources.addAll(newCountries);
+        resources.addAll(newResources);
         //I have new data, delete everything and add new data
         notifyDataSetChanged();
     }

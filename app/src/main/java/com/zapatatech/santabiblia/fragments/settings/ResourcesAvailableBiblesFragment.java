@@ -129,7 +129,7 @@ public class ResourcesAvailableBiblesFragment extends Fragment {
         viewModel.resources.observe(getActivity(), (resourceModels) -> {
             if(resourceModels != null) {
                 resourcesList.setVisibility(View.VISIBLE);
-                adapter.updateCountries(resourceModels);
+                adapter.updateResources(resourceModels);
             }
         });
         viewModel.resourceLoadError.observe(getActivity(), isError -> {

@@ -1,6 +1,7 @@
 package com.zapatatech.santabiblia.fragments.settings;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,8 +28,9 @@ import java.util.ArrayList;
  * create an instance of this fragment.
  */
 public class ResourcesAvailableExtrasFragment extends Fragment {
-
+    private static final String TAG = "ResourcesAvailableExtra";
     private TextView listError;
+    private TextView listNoResources;
     private RecyclerView resourcesList;
     private ProgressBar loadingView;
     private SwipeRefreshLayout refreshLayout;
@@ -67,6 +69,7 @@ public class ResourcesAvailableExtrasFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         listError = view.findViewById(R.id.resources_available_error);
+        listNoResources = view.findViewById(R.id.no_resources_available);
         resourcesList = view.findViewById(R.id.resources_available_rv);
         loadingView = view.findViewById(R.id.resources_available_loading_view);
         refreshLayout = view.findViewById(R.id.resources_available_swipeRefreshLayout);
@@ -90,8 +93,14 @@ public class ResourcesAvailableExtrasFragment extends Fragment {
     private void observerViewModel() {
         viewModel.resources.observe(getActivity(), (resourceModels) -> {
             if(resourceModels != null) {
-                resourcesList.setVisibility(View.VISIBLE);
-                adapter.updateCountries(resourceModels);
+                if(resourceModels.size() > 0){
+                    listNoResources.setVisibility(View.GONE);
+                    resourcesList.setVisibility(View.VISIBLE);
+                    adapter.updateResources(resourceModels);
+                } else {
+                    resourcesList.setVisibility(View.GONE);
+                    listNoResources.setVisibility(View.VISIBLE);
+                }
             }
         });
         viewModel.resourceLoadError.observe(getActivity(), isError -> {
