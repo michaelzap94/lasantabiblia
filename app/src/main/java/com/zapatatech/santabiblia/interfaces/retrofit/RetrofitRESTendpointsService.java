@@ -16,15 +16,19 @@ public interface RetrofitRESTendpointsService {
     Call<List<Label>> getAllLabels();
 
     //Substitute {path} with this value
-    @GET("/resources/all")
+    @GET("/resources/all/")
     Single<List<Resource>> getResourcesAll();
 
     //Substitute {path} with this value
-    @GET("/resources/type/{path}")
+    @GET("/resources/extra/")
+    Single<List<Resource>> getResourcesExtra();
+
+    //Substitute {path} with this value
+    @GET("/resources/type/{path}/")
     Single<List<Resource>> getResourcesByType(@Path("path") String path );
 
     //Substitute {path} with this value
-    @GET("/resources/language/{lang}")
+    @GET("/resources/language/{lang}/")
     Single<List<Resource>> getResourcesByLang(@Path("lang") String lang );
 
     //Syntax sugar

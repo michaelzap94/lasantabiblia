@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableSingleObserver;
@@ -23,6 +24,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 
 public class ResourcesViewModel extends ViewModel {
+    public static String RESOURCE_TYPE_BIBLES = "bibles";
+    public static String RESOURCE_TYPE_EXTRA = "extra";
     //MutableLiveData is an observable where we set values
     public MutableLiveData<List<Resource>> resources = new MutableLiveData<List<Resource>>();
     public MutableLiveData<Boolean> resourceLoadError = new MutableLiveData<Boolean>();
@@ -37,8 +40,12 @@ public class ResourcesViewModel extends ViewModel {
     }
 
     //ViewModel receives a call from the view to refresh the information/data
-    public void refresh() {
-        fetchResources();
+    public void refreshBibles() {
+        fetchResources(RESOURCE_TYPE_BIBLES);
+    }
+    //ViewModel receives a call from the view to refresh the information/data
+    public void refreshExtra() {
+        fetchResources(RESOURCE_TYPE_EXTRA);
     }
 
     //Called when app is destroyed, here we need to handle if Screen is rotated.
@@ -49,13 +56,18 @@ public class ResourcesViewModel extends ViewModel {
         disposable.clear();
     }
 
-    private void fetchResources() {
+    private void fetchResources(String type) {
         loading.setValue(true);
         //RxJava: Wrap the API call in a disposable so we can Safely dispose of it, if app is destroyed.
-        //Single<List<Resource>> singleCall = resourcesService.getResourcesAll();
+        Single<List<Resource>> singleCall;
+        if(type == RESOURCE_TYPE_EXTRA ) {
+            singleCall = resourcesService.getResourcesExtra();
+        } else {
+            singleCall = resourcesService.getResourcesByType(RESOURCE_TYPE_BIBLES);
+        }
 
         disposable.add(
-                resourcesService.getResourcesAll()
+                singleCall
                         .subscribeOn(Schedulers.newThread())//enables communication on new Thread background
                         .observeOn(AndroidSchedulers.mainThread())//handle response on UI Thread
                         .subscribeWith(new DisposableSingleObserver<List<Resource>>() {//new DisposableSingleObserve so we can call it inside disposable.add()

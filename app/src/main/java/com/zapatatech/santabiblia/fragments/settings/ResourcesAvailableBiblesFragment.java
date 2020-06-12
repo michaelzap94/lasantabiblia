@@ -80,7 +80,7 @@ public class ResourcesAvailableBiblesFragment extends Fragment {
         // in case the Activity is destroyed and recreated(screen roation)
         //ViewModel will help us show the exact same data, and resume the application from when the user left last time.
         viewModel =  new ViewModelProvider(this).get(ResourcesViewModel.class);
-        viewModel.refresh();//refresh -> load data
+        viewModel.refreshBibles();//refresh -> load data
     }
 
     @Override
@@ -106,7 +106,7 @@ public class ResourcesAvailableBiblesFragment extends Fragment {
         // Set the listener to be notified when a refresh is triggered via the SWIPE UP gesture.
         //SwipeRefreshLayout refreshLayout
         refreshLayout.setOnRefreshListener(() -> {
-            viewModel.refresh();
+            viewModel.refreshBibles();
             refreshLayout.setRefreshing(false);
         });
         ///////////////////////////////////////
