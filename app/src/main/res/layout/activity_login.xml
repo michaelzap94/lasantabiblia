@@ -63,7 +63,7 @@
         android:layout_marginStart="@dimen/margin_large"
         android:layout_marginEnd="@dimen/margin_large"
         android:text="LOGIN"
-        android:onClick="startLogIn"/>
+        android:onClick="startLogInLocal"/>
 
     <Button
         android:id="@+id/login_go_to_signup"
@@ -113,7 +113,7 @@
         android:layout_marginEnd="@dimen/margin_large"
         android:layout_marginBottom="@dimen/margin_normal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"/>
 
     <RelativeLayout
         android:layout_width="match_parent"

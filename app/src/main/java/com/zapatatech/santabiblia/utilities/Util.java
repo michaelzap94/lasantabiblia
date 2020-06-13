@@ -4,6 +4,8 @@ import android.content.Context;
 import android.util.Patterns;
 import android.view.View;
 
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
+
 import java.util.regex.Pattern;
 
 public class Util {
@@ -18,5 +20,13 @@ public class Util {
     public static boolean validEmail(String email) {
         Pattern pattern = Patterns.EMAIL_ADDRESS;
         return pattern.matcher(email).matches();
+    }
+    //display a spiner while image is loading
+    public static CircularProgressDrawable getProgressDrawable(Context context) {
+        CircularProgressDrawable progressDrawable = new CircularProgressDrawable(context);
+        progressDrawable.setStrokeWidth(10f);
+        progressDrawable.setCenterRadius(50f);
+        progressDrawable.start();
+        return progressDrawable;
     }
 }

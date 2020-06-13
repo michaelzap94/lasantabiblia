@@ -2,6 +2,7 @@ package com.zapatatech.santabiblia;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -18,10 +19,12 @@ import com.zapatatech.santabiblia.utilities.RetrofitErrorUtils;
 import com.zapatatech.santabiblia.utilities.RetrofitServiceGenerator;
 import com.zapatatech.santabiblia.utilities.Util;
 
+import java.io.IOException;
 import java.util.HashMap;
 
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.HttpException;
 import retrofit2.Response;
 
 import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
@@ -98,6 +101,13 @@ public class SignUp extends AppCompatActivity {
         signUpObject.put("password2", password2Value);
 
         Call<AuthInfo> call = authService.requestSignUp(signUpObject);
+
+        // Set up progress before call
+        ProgressDialog mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setIndeterminate(true);
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.setMessage("Signing you up...");
+        mProgressDialog.show();
         call.enqueue(new Callback<AuthInfo >() {
             @Override
             public void onResponse(Call<AuthInfo> call, Response<AuthInfo> response) {
@@ -105,6 +115,8 @@ public class SignUp extends AppCompatActivity {
                     if(response.body().getAccessToken() != null && response.body().getRefreshToken() != null ){
                         //Store tokens
                         CommonMethods.storeBothTokens(SignUp.this, response.body());
+                        //save type of auth method
+                        CommonMethods.storeAccountType(SignUp.this, "local");
                         //Continue to App
                         CommonMethods.continueToApp(SignUp.this);
                     } else {
@@ -122,12 +134,25 @@ public class SignUp extends AppCompatActivity {
                     // … and use it to show error information
                     Toast.makeText(SignUp.this, error.message(), Toast.LENGTH_SHORT).show();
                 }
+                mProgressDialog.dismiss();
             }
 
             @Override
-            public void onFailure(Call<AuthInfo> call, Throwable t) {
+            public void onFailure(Call<AuthInfo> call, Throwable throwable) {
                 // something went completely south (like no internet connection)
-                Log.d("onFailure Error", t.getMessage());
+                Log.d("onFailure Error", throwable.getMessage());
+                String message = "Sorry, something went wrong";
+                if (throwable instanceof HttpException) {
+                    // We had non-2XX http error
+                    message = "Sorry, we could not connect to the server";
+                }
+                if (throwable instanceof IOException) {
+                    // A network or conversion error happened
+                    message = "A network or conversion error happened";
+                }
+
+                Toast.makeText(SignUp.this, message, Toast.LENGTH_SHORT).show();
+                mProgressDialog.dismiss();
             }
         });
     }

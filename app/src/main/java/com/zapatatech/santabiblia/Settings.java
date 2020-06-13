@@ -145,15 +145,21 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
         ActionBar actionBar = activity.getSupportActionBar();
 
         if(actionBar != null && canGoBack == false){
+            String mtitle;
+            if(CommonMethods.checkUserStatus(activity) == CommonMethods.USER_ONLINE) {
+                mtitle = CommonMethods.decodeJWTAndCreateUser(activity).getName();
+            } else {
+                mtitle = activity.getString(R.string.settings);
+            }
             actionBar.setDisplayHomeAsUpEnabled(false);
             if(CommonMethods.checkUserStatus(activity) == CommonMethods.USER_ONLINE) {
-                activity.getmCollapsingToolbarLayout().setTitle(activity.getResources().getString(R.string.settings));
+                activity.getmCollapsingToolbarLayout().setTitle(mtitle);
             } else {
-                activity.getmToolbar().setTitle(activity.getResources().getString(R.string.settings));
+                activity.getmToolbar().setTitle(mtitle);
             }
         } else {
             //TODO: replace collapsing toolbar with normal toolbar
-            actionBar.setDisplayHomeAsUpEnabled(true);
+            activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             if(CommonMethods.checkUserStatus(activity) == CommonMethods.USER_ONLINE) {
                 activity.getmAppBarLayout().setExpanded(false);
                 if(title != null){
@@ -198,7 +204,7 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
             logOut.setOnMenuItemClickListener (new MenuItem.OnMenuItemClickListener(){
                 @Override
                 public boolean onMenuItemClick (MenuItem item){
-                    CommonMethods.logOutOfApp(Settings.this);
+                    CommonMethods.retrofitLogout(Settings.this);
                     return true;
                 }
             });
@@ -209,7 +215,14 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
             item.setOnMenuItemClickListener (new MenuItem.OnMenuItemClickListener(){
                 @Override
                 public boolean onMenuItemClick (MenuItem item){
-                    CommonMethods.logOutOfApp(Settings.this);
+                    String account_type = CommonMethods.getAccountType(Settings.this);
+                    if(account_type != null){
+                        //if you are offline because of internet or network unavailability but have credentials
+                        CommonMethods.retrofitVerifyCredentials(Settings.this);
+                    } else {
+                        //since you are not online, -> do not do retrofitLogout()
+                        CommonMethods.logOutOfApp(Settings.this);
+                    }
                     return true;
                 }
             });

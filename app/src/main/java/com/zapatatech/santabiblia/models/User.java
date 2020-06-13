@@ -3,17 +3,19 @@ package com.zapatatech.santabiblia.models;
 public class User {
     private String user_id;
     private String email;
-    private String firstname;
-    private String lastname;
+    private String fullname;
+    private String account_type;
+    private String social_id;
 
-    public User(String user_id, String email, String firstname, String lastname) {
+    public User(String user_id, String email, String fullname, String account_type, String social_id) {
         this.user_id = user_id;
         this.email = email;
-        this.firstname = firstname;
-        this.lastname = lastname;
+        this.fullname = fullname;
+        this.account_type = account_type;
+        this.social_id = social_id;
     }
 
-    public String getUser_id() {
+    public String getUserId() {
         return user_id;
     }
 
@@ -21,11 +23,15 @@ public class User {
         return email;
     }
 
-    public String getFirstName() {
-        return firstname;
+    public String getName() {
+        return fullname;
     }
 
-    public String getLastName() {
-        return lastname;
+    public String getAccountType() {
+        return account_type;
+    }
+
+    public String getSocialId() {
+        return social_id;
     }
 }
