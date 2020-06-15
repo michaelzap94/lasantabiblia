@@ -17,10 +17,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.work.BackoffPolicy;
 import androidx.work.Constraints;
 import androidx.work.Data;
+import androidx.work.ExistingWorkPolicy;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 import androidx.work.WorkRequest;
 
@@ -29,6 +32,7 @@ import com.squareup.picasso.Picasso;
 import com.zapatatech.santabiblia.utilities.Util;
 
 import java.io.File;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivityRT extends AppCompatActivity {
     private static final String TAG = "MainActivityRT";
@@ -60,6 +64,12 @@ public class MainActivityRT extends AppCompatActivity {
         });
 
         //registerReceiver();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerWorkManagerListener();
     }
 
     //BROADCAST MANAGER -> TO BE USED WITH INTENT SERVICE=======================================
@@ -112,13 +122,13 @@ public class MainActivityRT extends AppCompatActivity {
 
         WorkManager mWorkManager = WorkManager.getInstance(MainActivityRT.this);
 
-        WorkRequest downloadWorkRequest = new OneTimeWorkRequest.Builder(DownloadWorker.class)
+        OneTimeWorkRequest downloadWorkRequest = new OneTimeWorkRequest.Builder(DownloadWorker.class)
                     .setConstraints(constraints)
-                    .addTag("downloadResource")
-//                    .setBackoffCriteria(
-//                            BackoffPolicy.LINEAR,
-//                            OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
-//                            TimeUnit.MILLISECONDS)
+                    .addTag("downloadResourceTag")
+                    .setBackoffCriteria(
+                            BackoffPolicy.EXPONENTIAL,
+                            OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                            TimeUnit.MILLISECONDS)
                     .setInputData(
                             new Data.Builder()
                                     .putString("RESOURCE_URL", resourceUrl)
@@ -127,18 +137,56 @@ public class MainActivityRT extends AppCompatActivity {
                     )
                     .build();
 
-        mWorkManager.enqueue(downloadWorkRequest);
+        mWorkManager.enqueueUniqueWork("downloadResourceUWID", ExistingWorkPolicy.REPLACE, downloadWorkRequest);
+        Log.d(TAG, "startWorkManager: downloadWorkRequest.getId()" + downloadWorkRequest.getId());
+        Log.d(TAG, "startWorkManager: ID" + downloadWorkRequest.getId());
+        //mWorkManager.enqueue(downloadWorkRequest);
         //================================================================================================
         //The returned value would be available in the task's WorkInfo:
-        mWorkManager.getWorkInfoByIdLiveData(downloadWorkRequest.getId())
-                .observe(this, info -> {
-                    Log.d(TAG, "startWorkManager: " + info.getState());
-                    if (info != null && info.getState().isFinished()) {
-                        boolean myResult = info.getOutputData().getBoolean("downloadComplete", false);
-                        //String fileName = info.getOutputData().getString("fileName");
+
+    }
+    //we have 3 options: getWorkInfoByIdLiveData -> LiveData<WorkInfo> info
+    // || getWorkInfosForUniqueWorkLiveData -> LiveData<List<WorkInfo>> infoList
+    // || getWorkInfosByTagLiveData -> LiveData<List<WorkInfo>> infoList
+    public void registerWorkManagerListener(){
+        //first cancel previous works using this tag
+        //WorkManager.getInstance(MainActivityRT.this).cancelAllWorkByTag("downloadResourceTag");
+
+//        WorkManager.getInstance(MainActivityRT.this).getWorkInfoByIdLiveData(downloadWorkRequest.getId())
+//                .observe(this, info -> {
+//                    Log.d(TAG, "startWorkManager: " + info.getState());
+//                    if (info != null && info.getState().isFinished()) {
+//                        boolean myResult = info.getOutputData().getBoolean("downloadComplete", false);
+//                        String fileName = info.getOutputData().getString("fileName");
+//                        processImage(fileName, myResult);
+//                    }
+//                });
+            WorkManager.getInstance(MainActivityRT.this).getWorkInfosByTagLiveData("downloadResourceTag")
+            .observe(MainActivityRT.this, listOfWorkInfo -> {
+                // If there are no matching work info, do nothing
+                if (listOfWorkInfo == null || listOfWorkInfo.isEmpty()) {
+                    return;
+                }
+                WorkInfo info = listOfWorkInfo.get(0);
+                Log.d(TAG, "startWorkManager: " + info.getState());
+                if (info != null && info.getState() == WorkInfo.State.RUNNING) {
+                    Log.d(TAG, "startWorkManager: STILL RUNNING");
+
+                } else if (info != null && info.getState().isFinished()) {
+
+                    boolean myResult = info.getOutputData().getBoolean("downloadComplete", false);
+                    String fileName = info.getOutputData().getString("fileName");
+                    if(myResult != false && fileName != null){
+                        //SUCCESS
                         processImage(fileName, myResult);
                     }
-                });
+                    //clears unfinished tasks
+                    //WorkManager.getInstance(MainActivityRT.this).cancelAllWorkByTag("downloadResourceUWID");
+
+                    //You can call the method pruneWork() on your WorkManager to clear the List<WorkStatus> && List<WorkInfo>
+                    WorkManager.getInstance(MainActivityRT.this).pruneWork();//kill the workmanager we start
+                }
+            });
     }
 
     //PERMISSIONS=================================================================================
@@ -176,6 +224,22 @@ public class MainActivityRT extends AppCompatActivity {
             File folder =  Util.getMyLocalDownloadFolder("bibles", MainActivityRT.this);
             File file = new File(folder,fileName);
             Picasso.get().load(file).into(imageView);
+
+            traverse(folder);
+        }
+    }
+
+    public void traverse (File dir) {
+        if (dir.exists()) {
+            File[] files = dir.listFiles();
+            for (int i = 0; i < files.length; ++i) {
+                File file = files[i];
+                if (file.isDirectory()) {
+                    traverse(file);
+                } else {
+                    Log.d(TAG, "traverse: " + file.getName());
+                }
+            }
         }
     }
 }

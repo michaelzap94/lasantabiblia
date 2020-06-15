@@ -71,7 +71,14 @@ public class DownloadWorker extends Worker {
         if(fileName == null || resourceUrl == null) {
             return Result.failure();
         }
+
         startNotificationBar();
+        //only attempt to retry 2 times
+        if (getRunAttemptCount() > 2) {
+            Log.d(TAG, "too many failed attemp, give up");
+            notificationManager.cancel(0);
+            return Result.failure();
+        }
         // Do the work here--in this case, upload the images.
         initRetrofit(resourceUrl, fileName);
         // Indicate whether the work finished successfully with the Result
@@ -80,7 +87,7 @@ public class DownloadWorker extends Worker {
         //...set the output, and we're done!
         Data output = new Data.Builder()
                 .putBoolean("downloadComplete", true)
-                //.putString("fileName", fileName)
+                .putString("fileName", fileName)
                 .build();
         return Result.success(output);
     }
@@ -89,7 +96,6 @@ public class DownloadWorker extends Worker {
     @Override
     public void onStopped() {
         super.onStopped();
-        Log.d(TAG, "onStopped: ");
         notificationManager.cancel(0);
     }
 
@@ -109,7 +115,6 @@ public class DownloadWorker extends Worker {
             //NotificationManager notificationManagerOreo = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             //notificationManagerOreo.createNotificationChannel(notificationChannel);
         }
-
 
         notificationBuilder = new NotificationCompat.Builder(this.context, "id")
                 .setSmallIcon(android.R.drawable.stat_sys_download)
@@ -234,6 +239,7 @@ public class DownloadWorker extends Worker {
         notificationManager.cancel(0);
         notificationBuilder.setProgress(0, 0, false);
         notificationBuilder.setContentText("Download Complete");
+        notificationBuilder.setSmallIcon(android.R.drawable.stat_sys_download_done);
         notificationManager.notify(0, notificationBuilder.build());
 
     }

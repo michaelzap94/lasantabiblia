@@ -3,6 +3,7 @@
     package="com.zapatatech.santabiblia">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 <!--    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>-->
 
     <application
@@ -83,7 +84,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".BackgroundNotificationService" />
+<!--        <activity-->
+<!--            android:name="com.zapatatech.santabiblia.DownloadManagerActivity"-->
+<!--            android:label="Download Manager" >-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
+<!--        <service android:name=".BackgroundNotificationService" />-->
     </application>
 
 </manifest>
