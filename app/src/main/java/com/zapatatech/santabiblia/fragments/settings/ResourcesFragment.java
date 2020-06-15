@@ -24,9 +24,11 @@ import com.zapatatech.santabiblia.adapters.RecyclerView.SettingsResourcesDownloa
 import com.zapatatech.santabiblia.utilities.CommonMethods;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class ResourcesFragment extends Fragment {
     private static final String TAG = "ResourcesFragment";
+    private static final String MAIN_CONTENT_DB = "content.db";
     private MaterialButton seeAvailable;
     private RecyclerView rvView;
     private SettingsResourcesDownloadedRVAdapter adapter;
@@ -54,9 +56,16 @@ public class ResourcesFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        list = new ArrayList<>();
 //        String[] resourcesAvailable = BibleCreator.getInstance(this.getContext()).listOfAssetsSpecific("bibles", "es");;
 //        list = new ArrayList<String>(Arrays.asList(resourcesAvailable));
-        list = BibleCreator.getInstance(this.getContext()).listOfAllDBAssets();
+
+        //list = BibleCreator.getInstance(this.getContext()).listOfAllDBAssets();
+        for (String dbName: getActivity().databaseList()) {
+            if(!dbName.contains("-journal") && !dbName.equals(MAIN_CONTENT_DB)) {
+                list.add(dbName);
+            }
+        }
         adapter = new SettingsResourcesDownloadedRVAdapter(getActivity(), list);
     }
 
