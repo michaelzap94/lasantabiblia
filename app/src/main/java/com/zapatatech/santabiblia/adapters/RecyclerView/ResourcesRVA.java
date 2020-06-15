@@ -63,8 +63,8 @@ public class ResourcesRVA extends RecyclerView.Adapter<ResourcesRVA.ResourceView
 
         void bind(Resource resource) {
             //Bind data to layout elements
-            resourceName.setText(resource.getName());
-            resourceSize.setText(resource.getSize());
+            resourceName.setText(resource.getFilename());
+            resourceSize.setText(resource.getResource());
             //Util.loadImage(resourceImage, resource.getFlag(), Util.getProgressDrawable(resourceImage.getContext()));
         }
     }
