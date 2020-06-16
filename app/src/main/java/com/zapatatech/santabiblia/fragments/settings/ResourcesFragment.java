@@ -22,6 +22,7 @@ import com.zapatatech.santabiblia.R;
 import com.zapatatech.santabiblia.Settings;
 import com.zapatatech.santabiblia.adapters.RecyclerView.SettingsResourcesDownloadedRVAdapter;
 import com.zapatatech.santabiblia.utilities.CommonMethods;
+import com.zapatatech.santabiblia.utilities.Util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,10 +30,12 @@ import java.util.Arrays;
 public class ResourcesFragment extends Fragment {
     private static final String TAG = "ResourcesFragment";
     private static final String MAIN_CONTENT_DB = "content.db";
+    private static final String TEMP_FILE_EXT = "-temp";
     private MaterialButton seeAvailable;
     private RecyclerView rvView;
     private SettingsResourcesDownloadedRVAdapter adapter;
     private ArrayList<String> list;
+    private ArrayList<String> listDisplayName;
     public ResourcesFragment() {
         // Required empty public constructor
     }
@@ -57,16 +60,15 @@ public class ResourcesFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         list = new ArrayList<>();
+        listDisplayName = new ArrayList<>();
 //        String[] resourcesAvailable = BibleCreator.getInstance(this.getContext()).listOfAssetsSpecific("bibles", "es");;
 //        list = new ArrayList<String>(Arrays.asList(resourcesAvailable));
 
         //list = BibleCreator.getInstance(this.getContext()).listOfAllDBAssets();
-        for (String dbName: getActivity().databaseList()) {
-            if(!dbName.contains("-journal") && !dbName.equals(MAIN_CONTENT_DB)) {
-                list.add(dbName);
-            }
-        }
-        adapter = new SettingsResourcesDownloadedRVAdapter(getActivity(), list);
+
+//        list = new ArrayList<String>(Arrays.asList(getActivity().databaseList()));
+
+        adapter = new SettingsResourcesDownloadedRVAdapter(getActivity(), list, listDisplayName);
     }
 
     @Override
@@ -106,10 +108,29 @@ public class ResourcesFragment extends Fragment {
                 fragmentTransaction.commit();
             }
         });
-
-        //observerViewModelRepository();
-
-
+        refreshAdapter();
     }
+
+    private void refreshAdapter(){
+//        ArrayList<String> newList = new ArrayList<>();
+//        for (String dbName: getActivity().databaseList()) {
+//            if(!dbName.contains("-journal") && !dbName.equals(MAIN_CONTENT_DB) && !dbName.contains(TEMP_FILE_EXT)) {
+//                newList.add(dbName);
+//            }
+//        }
+        ArrayList<String> newList = new ArrayList<>();
+        ArrayList<String> newListDisplayName = new ArrayList<>();
+        for (String dbName: getActivity().databaseList()) {
+            if(!dbName.contains("-journal") && !dbName.equals(MAIN_CONTENT_DB) && !dbName.contains(TEMP_FILE_EXT)) {
+                newList.add(dbName);
+                //split filename in _
+                String[] resultSplit = dbName.split("_");
+                String displayName = Util.joinArrayResourceName(" ", true, resultSplit);
+                newListDisplayName.add(displayName);
+            }
+        }
+        adapter.refreshData(newList, newListDisplayName);
+    }
+
 
 }

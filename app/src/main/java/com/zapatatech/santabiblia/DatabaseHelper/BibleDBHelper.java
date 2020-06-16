@@ -34,9 +34,12 @@ import static com.zapatatech.santabiblia.utilities.CommonMethods.MAIN_BIBLE_SELE
 public class BibleDBHelper {
 
     private static final String TAG = "BibleDBHelper";
-
-    private static String DB_NAME_MAIN_BIBLE_CONTENT = "RVR60.db";
+    //BIBLE shipped with APK in assets
+    //change according to language MAYBE?
+    private static String DB_NAME_MAIN_BIBLE_CONTENT = "RVR60.type-bible.db";
+    //------------------------------------------------
     private static String DB_NAME_CURRENT_BIBLE_CONTENT = null;
+    //TODO: remove this and only allow this files if downloaded, MAYBE?
     public static final String DB_NAME_BIBLE_CONCORDANCE = "concordance.db";
     public static final String DB_NAME_BIBLE_DICTIONARY = "ibalpedic.db";
     public static final String DB_NAME_BIBLE_COMMENTARIES = "RVR60commentaries.db";
@@ -56,7 +59,7 @@ public class BibleDBHelper {
             String bibleSelectedInMemory = prefs.getString(MAIN_BIBLE_SELECTED, null);
             if(bibleSelectedInMemory == null){
                 //DB_NAME_CURRENT_BIBLE_CONTENT is null in memory, so use DB_NAME_MAIN_BIBLE_CONTENT
-                bibleSelected = DB_NAME_MAIN_BIBLE_CONTENT;
+                bibleSelected = getMainBibleName();
             } else {
                 bibleSelected = bibleSelectedInMemory;
             }

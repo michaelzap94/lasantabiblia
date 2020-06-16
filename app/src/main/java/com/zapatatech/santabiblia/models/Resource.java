@@ -9,10 +9,12 @@ public class Resource {
     private String description;
     private int version;
     private String filename;
-    private String size;
+    private int size;
     private String resource;
+    private String state;
+    private int progress;
 
-    public Resource(int id, String url, String name, String resource_type, String language, String description, int version, String filename, String size, String resource) {
+    public Resource(int id, String url, String name, String resource_type, String language, String description, int version, String filename, int size, String resource) {
         this.id = id;
         this.url = url;
         this.name = name;
@@ -57,11 +59,16 @@ public class Resource {
         return filename;
     }
 
-    public String getSize() {
+    public int getSize() {
         return size;
     }
 
     public String getResource() {
         return resource;
     }
+
+    public void setTemporalState(String state){this.state = state;}
+    public void setTemporalProgress(int progress){this.progress = progress;}
+    public String getTemporalState(){return this.state;}
+    public int getTemporalProgress(){return this.progress;}
 }

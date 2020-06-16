@@ -32,6 +32,7 @@ import com.zapatatech.santabiblia.DatabaseHelper.BibleDBHelper;
 import com.zapatatech.santabiblia.adapters.RecyclerView.BibleCompareRVA;
 import com.zapatatech.santabiblia.models.Book;
 import com.zapatatech.santabiblia.utilities.BookHelper;
+import com.zapatatech.santabiblia.utilities.CommonMethods;
 import com.zapatatech.santabiblia.utilities.SwipeToDelete;
 import com.zapatatech.santabiblia.viewmodel.VersesViewModel;
 
@@ -60,6 +61,7 @@ public class BibleCompare extends AppCompatActivity {
     private CoordinatorLayout coordinatorLayout;
     private MaterialButton prevButton;
     private MaterialButton nextButton;
+    public Toast toast;
     int minSelectedVerse, maxSelectedVerse;
 
     private RecyclerView rvView;
@@ -170,7 +172,24 @@ public class BibleCompare extends AppCompatActivity {
             rvAdapter.refreshData(verseArrayList);
         });
     }
-    private ArrayList<String> getDownloadedBiblesNotSelected() {
+    private ArrayList[] getDownloadedBiblesNotSelected() {
+        Set<String> set = prefs.getStringSet(SELECTED_BIBLES_TO_COMPARE, null);
+
+        ArrayList[] biblesDownloaded = CommonMethods.getBiblesDownloaded(this);//2 elements returned: listBibles AND listBiblesDisplayName
+        ArrayList<String> allBiblesDownloaded = biblesDownloaded[0];
+        ArrayList<String> allBiblesDownloadedDisplayName = biblesDownloaded[1];
+        //------------------------------------------------------------------------------------------------
+        ArrayList<String> biblesNotSelected = new ArrayList<>();
+        ArrayList<String> biblesNotSelectedDisplayName = new ArrayList<>();
+        for (int i = 0; i < allBiblesDownloaded.size(); i++) {
+            if(!set.contains(allBiblesDownloaded.get(i))){
+                biblesNotSelected.add(allBiblesDownloaded.get(i));
+                biblesNotSelectedDisplayName.add(allBiblesDownloadedDisplayName.get(i));
+            }
+        }
+        return new ArrayList[]{biblesNotSelected, biblesNotSelectedDisplayName};
+    }
+    private ArrayList<String> getDownloadedBiblesNotSelectedAssets() {
         Set<String> set = prefs.getStringSet(SELECTED_BIBLES_TO_COMPARE, null);
         ArrayList<String> allBiblesDownloaded = BibleCreator.getInstance(this).listOfAssetsByType("bibles");
         ArrayList<String> biblesNotSelected = new ArrayList<>();
@@ -246,21 +265,23 @@ public class BibleCompare extends AppCompatActivity {
     }
     public void openBibleSelectorToCompare(){
         Context context = new ContextThemeWrapper(this, R.style.AppTheme2);
-        ArrayList<String> biblesDownloaded = getDownloadedBiblesNotSelected();
-        if(biblesDownloaded.size() > 0) {
-            String[] arrToShow = biblesDownloaded.toArray(new String[biblesDownloaded.size()]);
+        ArrayList[] biblesDownloadedNotSelectedHolder = getDownloadedBiblesNotSelected();//will return 2 elements [list, listDisplayName]
+        ArrayList<String> biblesDownloadedNotSelected = biblesDownloadedNotSelectedHolder[0];
+        ArrayList<String> biblesDownloadedNotSelectedDisplayName = biblesDownloadedNotSelectedHolder[1];
+        if(biblesDownloadedNotSelected.size() > 0 && biblesDownloadedNotSelectedDisplayName.size() > 0) {
+            String[] arrToShow = biblesDownloadedNotSelectedDisplayName.toArray(new String[biblesDownloadedNotSelectedDisplayName.size()]);
             new MaterialAlertDialogBuilder(context)
                     .setTitle("Downloaded Bibles:")
                     .setItems(arrToShow,  new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int position) {
                             Log.d(TAG, "onClick: position dialog: " + position);
-                            addToBiblesSelectedToCompare(biblesDownloaded.get(position));
+                            addToBiblesSelectedToCompare(biblesDownloadedNotSelected.get(position));
                             refreshBiblesSelectedToCompare();
                         }
                     }).show();
         } else {
-            Toast.makeText(this, "All downloaded bibles are shown", Toast.LENGTH_SHORT).show();
+            showOneToast("All downloaded bibles are shown");
         }
 
     }
@@ -323,5 +344,16 @@ public class BibleCompare extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         finish();
+    }
+
+
+    public void showOneToast (String st){ //"Toast toast" is declared in the class
+        try{
+            toast.getView().isShown();     // true if visible
+            toast.setText(st);
+        } catch (Exception e) {         // invisible if exception
+            toast = Toast.makeText(this, st, Toast.LENGTH_SHORT);
+        }
+        toast.show();  //finally display it
     }
 }

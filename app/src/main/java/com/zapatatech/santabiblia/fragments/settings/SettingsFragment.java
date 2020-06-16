@@ -27,6 +27,7 @@ import com.zapatatech.santabiblia.models.AuthInfo;
 import com.zapatatech.santabiblia.utilities.CommonMethods;
 import com.zapatatech.santabiblia.utilities.RetrofitErrorUtils;
 import com.zapatatech.santabiblia.utilities.RetrofitServiceGenerator;
+import com.zapatatech.santabiblia.utilities.Util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,6 +39,7 @@ import retrofit2.Response;
 import static com.zapatatech.santabiblia.utilities.CommonMethods.MAIN_BIBLE_SELECTED;
 import static com.zapatatech.santabiblia.utilities.CommonMethods.getAccessToken;
 import static com.zapatatech.santabiblia.utilities.CommonMethods.getRefreshToken;
+import static com.zapatatech.santabiblia.utilities.CommonMethods.logOutOfApp;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
     private static final String TAG = "SettingsFragment";
@@ -47,9 +49,17 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     protected static void setListPreferenceData(Context ctx, ListPreference lp) {
         String bibleSelected = PreferenceManager.getDefaultSharedPreferences(ctx).getString(MAIN_BIBLE_SELECTED, null);
 
-        ArrayList<String> listBibles = BibleCreator.getInstance(ctx).listOfAssetsByType("bibles");
-        CharSequence[] entries = listBibles.toArray(new CharSequence[listBibles.size()]);
-        CharSequence[] entryValues = entries;
+        //ArrayList<String> listBibles = BibleCreator.getInstance(ctx).listOfAssetsByType("bibles");
+
+        //BIBLES EXAMPLE: RVR60.type-bible.db | TRADUCCIÓN EN LENGUAJE ACTUAL.type-bible.db
+
+        ArrayList[] biblesDownloaded = CommonMethods.getBiblesDownloaded(ctx);//2 elements returned: listBibles AND listBiblesDisplayName
+
+        ArrayList<String> listBibles = biblesDownloaded[0];
+        ArrayList<String> listBiblesDisplayName = biblesDownloaded[1];
+
+        CharSequence[] entries = listBiblesDisplayName.toArray(new CharSequence[listBiblesDisplayName.size()]);
+        CharSequence[] entryValues = listBibles.toArray(new CharSequence[listBibles.size()]);
         lp.setEntries(entries);
         lp.setDefaultValue(bibleSelected);
         lp.setEntryValues(entryValues);

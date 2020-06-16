@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zapatatech.santabiblia.R;
+import com.zapatatech.santabiblia.utilities.Util;
 
 import java.util.ArrayList;
 
@@ -70,8 +71,11 @@ public class BibleCompareRVA extends RecyclerView.Adapter<BibleCompareRVA.ViewHo
         void bind() {
             //Bind data to layout elements
             String[] result = results.get(getAdapterPosition());
-            Log.d(TAG, "bind: " + getAdapterPosition() + " " + result[0]);
-            txtView_title.setText(result[0]);
+
+            String[] resultSplit = result[0].split("_");
+            String displayName = Util.joinArrayResourceName(" ", true, resultSplit);
+            txtView_title.setText(displayName);
+
             Spanned textSpanned;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 textSpanned = Html.fromHtml(result[1], Html.FROM_HTML_MODE_COMPACT);
