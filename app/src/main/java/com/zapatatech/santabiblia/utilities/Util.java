@@ -9,6 +9,7 @@ import android.view.View;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
 import java.io.File;
+import java.util.List;
 import java.util.regex.Pattern;
 
 public class Util {
@@ -80,6 +81,42 @@ public class Util {
 
     public static String getDBPath(Context context){
         return "/data/data/" + context.getPackageName() + "/" + "databases/";
+    }
+
+    public static String joinList(String separator, boolean capitalizeTrue, List<String> input) {
+        if (input == null || input.size() <= 0) return "";
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < input.size(); i++) {
+            sb.append(capitalizeTrue ? capitalize(input.get(i)) :  input.get(i));
+            // if not the last item
+            if (i != input.size() - 1) {
+                sb.append(separator);
+            }
+        }
+        return sb.toString();
+    }
+
+    public static String joinArrayResourceName(String separator, boolean capitalizeTrue, String[] input) {
+        if (input == null || input.length <= 0) return "";
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < input.length; i++) {
+            // if not the last item
+            if (i != input.length - 1) {
+                sb.append(capitalizeTrue ? capitalize(input[i]) : input[i]);
+                sb.append(separator);
+            } else {//last item
+                String lastItem = input[i].split("\\.")[0];
+                sb.append(capitalizeTrue ? capitalize(lastItem) : lastItem);
+            }
+        }
+        return sb.toString();
+    }
+
+    public static String capitalize(String str) {
+        if(str == null || str.isEmpty()) {
+            return str;
+        }
+        return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
 
 }

@@ -27,6 +27,7 @@ import com.zapatatech.santabiblia.models.AuthInfo;
 import com.zapatatech.santabiblia.utilities.CommonMethods;
 import com.zapatatech.santabiblia.utilities.RetrofitErrorUtils;
 import com.zapatatech.santabiblia.utilities.RetrofitServiceGenerator;
+import com.zapatatech.santabiblia.utilities.Util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,18 +39,35 @@ import retrofit2.Response;
 import static com.zapatatech.santabiblia.utilities.CommonMethods.MAIN_BIBLE_SELECTED;
 import static com.zapatatech.santabiblia.utilities.CommonMethods.getAccessToken;
 import static com.zapatatech.santabiblia.utilities.CommonMethods.getRefreshToken;
+import static com.zapatatech.santabiblia.utilities.CommonMethods.logOutOfApp;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
     private static final String TAG = "SettingsFragment";
+    private static final String MAIN_CONTENT_DB = "content.db";
+    private static final String TEMP_FILE_EXT = "-temp";
     private Activity mActivity;
     private PreferenceScreen screen;
 
     protected static void setListPreferenceData(Context ctx, ListPreference lp) {
         String bibleSelected = PreferenceManager.getDefaultSharedPreferences(ctx).getString(MAIN_BIBLE_SELECTED, null);
 
-        ArrayList<String> listBibles = BibleCreator.getInstance(ctx).listOfAssetsByType("bibles");
-        CharSequence[] entries = listBibles.toArray(new CharSequence[listBibles.size()]);
-        CharSequence[] entryValues = entries;
+        //ArrayList<String> listBibles = BibleCreator.getInstance(ctx).listOfAssetsByType("bibles");
+
+        //TODO: implement logic to only extract bibles
+        ArrayList<String> listBibles = new ArrayList<>();
+        ArrayList<String> listBiblesDisplayName = new ArrayList<>();
+        for (String dbName: ctx.databaseList()) {
+            if(!dbName.contains("-journal") && !dbName.equals(MAIN_CONTENT_DB) && !dbName.contains(TEMP_FILE_EXT)) {
+                listBibles.add(dbName);
+                //split filename in _
+                String[] resultSplit = dbName.split("_");
+                String displayName = Util.joinArrayResourceName(" ", true, resultSplit);
+                listBiblesDisplayName.add(displayName);
+            }
+        }
+
+        CharSequence[] entries = listBiblesDisplayName.toArray(new CharSequence[listBiblesDisplayName.size()]);
+        CharSequence[] entryValues = listBibles.toArray(new CharSequence[listBibles.size()]);
         lp.setEntries(entries);
         lp.setDefaultValue(bibleSelected);
         lp.setEntryValues(entryValues);
