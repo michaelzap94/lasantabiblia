@@ -83,6 +83,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!--    In order to use our ContentProvider, we need to declare it in the manifest.xml file. It is important to note that:-->
+        <!--    android:authorities must match our ContentProvider's authority exactly, and-->
+        <!--    android:syncable must be true.-->
+        <provider
+            android:name="com.zapatatech.santabiblia.DatabaseHelper.ContentDBContentProvider"
+            android:authorities="com.zapatatech.santabiblia"
+            android:exported="false"
+            android:syncable="true"/>
     </application>
 
 </manifest>
