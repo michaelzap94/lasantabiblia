@@ -122,8 +122,7 @@ public class BibleCreator {
     }
     private void copyDataBase(String type, String lang, String db_name) throws IOException {
         String mPath = (type != null && lang != null) ? "databases/" + type + "/" + lang + "/": "databases/";
-        //first create an empty db:
-        SQLiteDatabase db = myContext.openOrCreateDatabase(db_name, MODE_PRIVATE, null);
+
         InputStream myInput = myContext.getAssets().open(mPath+db_name);
         String outFileName = DB_PATH + db_name;
         OutputStream myOutput = new FileOutputStream(outFileName);
@@ -135,6 +134,8 @@ public class BibleCreator {
         myOutput.flush();
         myOutput.close();
         myInput.close();
+        //first create an empty db:
+        SQLiteDatabase db = myContext.openOrCreateDatabase(db_name, MODE_PRIVATE, null);
         db.close();
     }
     //==================================================================

@@ -61,6 +61,9 @@ public class ResourcesFragment extends Fragment {
 //        list = new ArrayList<String>(Arrays.asList(resourcesAvailable));
 
         //list = BibleCreator.getInstance(this.getContext()).listOfAllDBAssets();
+
+//        list = new ArrayList<String>(Arrays.asList(getActivity().databaseList()));
+
         for (String dbName: getActivity().databaseList()) {
             if(!dbName.contains("-journal") && !dbName.equals(MAIN_CONTENT_DB)) {
                 list.add(dbName);
@@ -106,10 +109,8 @@ public class ResourcesFragment extends Fragment {
                 fragmentTransaction.commit();
             }
         });
-
         //observerViewModelRepository();
-
-
     }
+
 
 }

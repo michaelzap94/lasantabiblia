@@ -1,6 +1,8 @@
 package com.zapatatech.santabiblia.adapters.RecyclerView;
 
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,8 +10,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.work.WorkInfo;
 
 import com.zapatatech.santabiblia.R;
+import com.zapatatech.santabiblia.models.Resource;
+import com.zapatatech.santabiblia.utilities.CommonMethods;
+import com.zapatatech.santabiblia.utilities.Util;
 
 import java.util.ArrayList;
 
@@ -29,7 +35,7 @@ public class SettingsResourcesDownloadedRVAdapter extends RecyclerView.Adapter<S
     @NonNull
     @Override
     public SettingsResourcesDownloadedRVAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.verses_marked_dialog_edit_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.resource_item, parent, false);
         return new SettingsResourcesDownloadedRVAdapter.ViewHolder(view);
     }
     @Override
@@ -46,14 +52,37 @@ public class SettingsResourcesDownloadedRVAdapter extends RecyclerView.Adapter<S
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView name;
-        public ViewHolder(View v) {
-            super(v);
-            name = v.findViewById(R.id.verses_marked_dialog_edit_item_tv);
+        TextView resourceName;
+        //TextView resourceInfo;
+        TextView resourceState;
+
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            resourceName = itemView.findViewById(R.id.fileName);
+            //resourceInfo = itemView.findViewById(R.id.fileSize);
+            resourceState = itemView.findViewById(R.id.fileState);
         }
+
         void bind() {
             String nameValue = list.get(getAdapterPosition());
-            name.setText(nameValue);
+            resourceName.setText(nameValue);
+            //-------------------------------------
+            resourceState.setText("Remove");
+            resourceState.setTextColor(Color.RED);
+            resourceState.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_delete, 0, 0, 0);
+            resourceState.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    context.deleteDatabase(nameValue);
+                    removeAt(getAdapterPosition());
+                }
+            });
+
         }
+    }
+
+    public void removeAt(int position) {
+        list.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, list.size());
     }
 }

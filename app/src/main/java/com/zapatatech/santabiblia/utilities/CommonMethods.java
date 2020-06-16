@@ -14,8 +14,19 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.Observer;
 import androidx.preference.PreferenceManager;
+import androidx.work.BackoffPolicy;
+import androidx.work.Constraints;
+import androidx.work.Data;
+import androidx.work.ExistingWorkPolicy;
+import androidx.work.NetworkType;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkInfo;
+import androidx.work.WorkManager;
 
 import com.auth0.android.jwt.JWT;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -24,6 +35,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.zapatatech.santabiblia.Bible;
 import com.zapatatech.santabiblia.Dashboard;
 import com.zapatatech.santabiblia.DatabaseHelper.BibleCreator;
@@ -42,7 +54,10 @@ import com.zapatatech.santabiblia.models.User;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -59,6 +74,8 @@ public class CommonMethods {
     public static final int USER_ONLINE = 1;
     public static final int USER_OFFLINE = 2;
     //flags==================================================
+    public static final String DOWNLOAD_RESOURCE_TAG = "DOWNLOAD_RESOURCE_TAG";
+
 
     public static final String USER_STATUS = "USER_ONLINE";
     public static final String ACCESS_TOKEN_SP = "ACCESS_TOKEN_SP";
@@ -565,6 +582,148 @@ public class CommonMethods {
     public static boolean isAccessTokenExpired(String jwt_token){
         JWT jwt = new JWT(jwt_token);
         return jwt.isExpired(10); // 10 seconds leeway
+    }
+
+    //==================================================================================================
+    public static void startWorkManager(Activity mActivity, String resourceUrl, String fileName){
+        //CONSTRAINTS
+        Constraints constraints = new Constraints.Builder()
+                .setRequiresStorageNotLow(true)
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build();
+
+        WorkManager mWorkManager = WorkManager.getInstance(mActivity);
+
+        OneTimeWorkRequest downloadWorkRequest = new OneTimeWorkRequest.Builder(DownloadResourceWM.class)
+                .setConstraints(constraints)
+                .addTag(DOWNLOAD_RESOURCE_TAG)
+                .setBackoffCriteria(
+                        BackoffPolicy.EXPONENTIAL,
+                        OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                        TimeUnit.MILLISECONDS)
+                .setInputData(
+                        new Data.Builder()
+                                .putString("RESOURCE_URL", resourceUrl)
+                                .putString("RESOURCE_FILENAME", fileName)
+                                .build()
+                )
+                .build();
+
+        mWorkManager.enqueueUniqueWork(fileName, ExistingWorkPolicy.REPLACE, downloadWorkRequest);
+    }
+
+    public static boolean isTaskEnqueuedOrRunning(Activity mActivity, String tag){
+        //tag should be unique
+        WorkManager instance = WorkManager.getInstance(mActivity);
+        ListenableFuture<List<WorkInfo>> statuses = instance.getWorkInfosByTag(tag);
+        try {
+            boolean running = false;
+            List<WorkInfo> workInfoList = statuses.get();
+            for (WorkInfo workInfo : workInfoList) {
+                WorkInfo.State state = workInfo.getState();
+                running = state == WorkInfo.State.RUNNING | state == WorkInfo.State.ENQUEUED;
+            }
+            return running;
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+            return false;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static WorkInfo.State getWorkState(Activity mActivity, String tag) {
+        //tag should be unique
+        WorkManager instance = WorkManager.getInstance(mActivity);
+        ListenableFuture<List<WorkInfo>> statuses = instance.getWorkInfosByTag(tag);
+        try {
+            WorkInfo.State state = null;
+            List<WorkInfo> workInfoList = statuses.get();
+            for (WorkInfo workInfo : workInfoList) {
+                state = workInfo.getState();
+            }
+            return state;
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+            return null;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void registerWorkManagerListenerTag(Activity mActivity, String fileNameTag, Callable<Void> func){
+        WorkManager.getInstance(mActivity).getWorkInfosByTagLiveData(fileNameTag)
+                .observe((LifecycleOwner) mActivity, listOfWorkInfo -> {
+                    // If there are no matching work info, do nothing
+                    if (listOfWorkInfo == null || listOfWorkInfo.isEmpty()) {
+                        return;
+                    }
+                    WorkInfo info = listOfWorkInfo.get(0);
+                    Log.d(TAG, "startWorkManager: " + info.getState());
+                    if (info != null && info.getState() == WorkInfo.State.RUNNING) {
+                        Log.d(TAG, "startWorkManager: STILL RUNNING");
+
+                    } else if (info != null && info.getState().isFinished()) {
+
+                        boolean myResult = info.getOutputData().getBoolean("downloadComplete", false);
+                        //String fileName = info.getOutputData().getString("fileName");
+                        if(myResult){
+                            //SUCCESS
+                            try {
+                                func.call();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        //clears unfinished tasks
+                        //WorkManager.getInstance(MainActivityRT.this).cancelAllWorkByTag("downloadResourceUWID");
+
+                        //You can call the method pruneWork() on your WorkManager to clear the List<WorkStatus> && List<WorkInfo>
+                        WorkManager.getInstance(mActivity).pruneWork();//kill the workmanager we start
+                    }
+                });
+    }
+
+    public void registerWorkManagerListenerTagAll(Activity mActivity, Callable<Void> func){
+        WorkManager.getInstance(mActivity).getWorkInfosByTagLiveData(DOWNLOAD_RESOURCE_TAG)
+                .observe((LifecycleOwner) mActivity, new Observer<List<WorkInfo>>() {
+                    @Override
+                    public void onChanged(@Nullable List<WorkInfo> workInfoList) {
+                        if (workInfoList.size() > 0) {
+                            for (WorkInfo workInfo: workInfoList) {
+                                Log.d(TAG, "startWorkManager: " + workInfo.getState());
+                                if (workInfo != null && workInfo.getState() == WorkInfo.State.RUNNING) {
+                                    Log.d(TAG, "startWorkManager: STILL RUNNING");
+                                    String fileNameProcessing = workInfo.getProgress().getString("fileNameProcessing");
+                                    int progress = workInfo.getProgress().getInt("progress", -1);
+                                    if(fileNameProcessing!=null){
+
+                                    } else {
+                                        //fileName dit not start processing or is not processing
+                                    }
+
+                                } else if (workInfo != null && workInfo.getState().isFinished()) {
+                                    boolean myResult = workInfo.getOutputData().getBoolean("downloadComplete", false);
+                                    //String fileName = info.getOutputData().getString("fileName");
+                                    if(myResult){
+                                        //SUCCESS
+                                        try {
+                                            func.call();
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                    //clears unfinished tasks
+                                    //WorkManager.getInstance(MainActivityRT.this).cancelAllWorkByTag("downloadResourceUWID");
+                                    //You can call the method pruneWork() on your WorkManager to clear the List<WorkStatus> && List<WorkInfo>
+                                    WorkManager.getInstance(mActivity).pruneWork();//kill the workmanager we start
+                                }
+                            }
+                        }
+                    }
+                });
     }
 
     //==================================================================================================

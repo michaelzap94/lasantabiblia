@@ -13,10 +13,12 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/margin_tiny">
         <LinearLayout
+            android:layout_weight="2"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="vertical">
 
@@ -38,6 +40,41 @@
                 android:padding="8dp"
                 android:text="SIZE"/>
 
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_gravity="center_vertical"
+            android:layout_weight="2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_weight="4"
+                android:id="@+id/fileState"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/Green_ColorPrimaryDark"
+                android:drawableTint="@color/Green_ColorPrimaryDark"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:textSize="18sp"
+                android:text="Download"/>
+
+            <ProgressBar
+                android:visibility="gone"
+                android:id="@+id/fileProgress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="20dp"
+                android:maxHeight="30dp"
+                android:minWidth="40dp"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:max="100"
+                android:indeterminate="false"
+                android:progress="0"/>
         </LinearLayout>
 
     </LinearLayout>

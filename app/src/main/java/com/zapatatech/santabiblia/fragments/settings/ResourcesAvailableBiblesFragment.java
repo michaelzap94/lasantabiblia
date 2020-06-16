@@ -1,6 +1,8 @@
 package com.zapatatech.santabiblia.fragments.settings;
 
+import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,17 +12,24 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.work.WorkInfo;
+import androidx.work.WorkManager;
 
 import com.zapatatech.santabiblia.R;
 import com.zapatatech.santabiblia.adapters.RecyclerView.ResourcesRVA;
+import com.zapatatech.santabiblia.utilities.CommonMethods;
 import com.zapatatech.santabiblia.viewmodel.ResourcesViewModel;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -28,6 +37,7 @@ import java.util.ArrayList;
  * create an instance of this fragment.
  */
 public class ResourcesAvailableBiblesFragment extends Fragment {
+    private static final String TAG = "ResourcesAvailableBible";
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -38,7 +48,7 @@ public class ResourcesAvailableBiblesFragment extends Fragment {
     private String mParam2;
 
     private TextView listError;
-    private RecyclerView resourcesList;
+    private RecyclerView resourcesListRV;
     private ProgressBar loadingView;
     private SwipeRefreshLayout refreshLayout;
     private ResourcesViewModel viewModel;
@@ -94,13 +104,14 @@ public class ResourcesAvailableBiblesFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         listError = view.findViewById(R.id.resources_available_error);
-        resourcesList = view.findViewById(R.id.resources_available_rv);
+        resourcesListRV = view.findViewById(R.id.resources_available_rv);
         loadingView = view.findViewById(R.id.resources_available_loading_view);
         refreshLayout = view.findViewById(R.id.resources_available_swipeRefreshLayout);
         //////////////////////////////////////////////
-        resourcesList.setLayoutManager(new LinearLayoutManager(getActivity()));
+        resourcesListRV.setLayoutManager(new LinearLayoutManager(getActivity()));
+        resourcesListRV.setItemAnimator(null);
         //attach the RecyclerView adapter to the RecyclerView View
-        resourcesList.setAdapter(adapter);
+        resourcesListRV.setAdapter(adapter);
         /////////////////////////////////////////
         /////////////////////////////////////////
         // Set the listener to be notified when a refresh is triggered via the SWIPE UP gesture.
@@ -111,6 +122,7 @@ public class ResourcesAvailableBiblesFragment extends Fragment {
         });
         ///////////////////////////////////////
         observerViewModel();
+        registerWorkManagerListenerTagAll(getActivity());
     }
 
     private void observerViewModel() {
@@ -128,7 +140,7 @@ public class ResourcesAvailableBiblesFragment extends Fragment {
         // We can now update the RecyclerView.
         viewModel.resources.observe(getActivity(), (resourceModels) -> {
             if(resourceModels != null) {
-                resourcesList.setVisibility(View.VISIBLE);
+                resourcesListRV.setVisibility(View.VISIBLE);
                 adapter.updateResources(resourceModels);
             }
         });
@@ -142,9 +154,47 @@ public class ResourcesAvailableBiblesFragment extends Fragment {
                 loadingView.setVisibility(isLoading ? View.VISIBLE : View.GONE);
                 if(isLoading) {
                     listError.setVisibility(View.GONE);
-                    resourcesList.setVisibility(View.GONE);
+                    resourcesListRV.setVisibility(View.GONE);
                 }
             }
         });
+    }
+
+    public void registerWorkManagerListenerTagAll(Activity mActivity){
+        WorkManager.getInstance(mActivity).getWorkInfosByTagLiveData(CommonMethods.DOWNLOAD_RESOURCE_TAG)
+                .observe((LifecycleOwner) mActivity, new Observer<List<WorkInfo>>() {
+                    @Override
+                    public void onChanged(@Nullable List<WorkInfo> workInfoList) {
+                        if (workInfoList.size() > 0) {
+                            for (WorkInfo workInfo: workInfoList) {
+                                Log.d(TAG, "startWorkManager: " + workInfo.getState());
+                                if (workInfo != null && workInfo.getState() == WorkInfo.State.RUNNING) {
+                                    String fileNameProcessing = workInfo.getProgress().getString("fileNameProcessing");
+                                    int progress = workInfo.getProgress().getInt("progress", -1);
+                                    Log.d(TAG, "startWorkManager: STILL RUNNING AFTER: " + fileNameProcessing);
+                                    Log.d(TAG, "startWorkManager: STILL RUNNING AFTER: " + progress);
+                                    if(fileNameProcessing!=null){
+                                        adapter.updateResourceStateProgressByName(fileNameProcessing, progress);
+                                    } else {
+                                        //fileName dit not start processing or is not processing
+                                    }
+
+                                } else if (workInfo != null && workInfo.getState().isFinished()) {
+                                    Log.d(TAG, "startWorkManager: completed");
+                                    boolean myResult = workInfo.getOutputData().getBoolean("downloadComplete", false);
+                                    String fileName = workInfo.getOutputData().getString("fileName");
+                                    if(myResult){
+                                        //SUCCESS
+                                        adapter.updateResourceStateByName(fileName, "completed");
+                                    }
+                                    //clears unfinished tasks
+                                    //WorkManager.getInstance(MainActivityRT.this).cancelAllWorkByTag("downloadResourceUWID");
+                                    //You can call the method pruneWork() on your WorkManager to clear the List<WorkStatus> && List<WorkInfo>
+                                    WorkManager.getInstance(mActivity).pruneWork();//kill the workmanager we started before this
+                                }
+                            }
+                        }
+                    }
+                });
     }
 }
