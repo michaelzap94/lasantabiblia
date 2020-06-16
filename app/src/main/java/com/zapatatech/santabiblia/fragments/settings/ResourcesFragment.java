@@ -29,6 +29,7 @@ import java.util.Arrays;
 public class ResourcesFragment extends Fragment {
     private static final String TAG = "ResourcesFragment";
     private static final String MAIN_CONTENT_DB = "content.db";
+    private static final String TEMP_FILE_EXT = "-temp";
     private MaterialButton seeAvailable;
     private RecyclerView rvView;
     private SettingsResourcesDownloadedRVAdapter adapter;
@@ -64,11 +65,6 @@ public class ResourcesFragment extends Fragment {
 
 //        list = new ArrayList<String>(Arrays.asList(getActivity().databaseList()));
 
-        for (String dbName: getActivity().databaseList()) {
-            if(!dbName.contains("-journal") && !dbName.equals(MAIN_CONTENT_DB)) {
-                list.add(dbName);
-            }
-        }
         adapter = new SettingsResourcesDownloadedRVAdapter(getActivity(), list);
     }
 
@@ -109,7 +105,17 @@ public class ResourcesFragment extends Fragment {
                 fragmentTransaction.commit();
             }
         });
-        //observerViewModelRepository();
+        refreshAdapter();
+    }
+
+    private void refreshAdapter(){
+        ArrayList<String> newList = new ArrayList<>();
+        for (String dbName: getActivity().databaseList()) {
+            if(!dbName.contains("-journal") && !dbName.equals(MAIN_CONTENT_DB) && !dbName.contains(TEMP_FILE_EXT)) {
+                newList.add(dbName);
+            }
+        }
+        adapter.refreshData(newList);
     }
 
 

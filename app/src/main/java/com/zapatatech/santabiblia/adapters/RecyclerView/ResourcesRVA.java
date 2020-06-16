@@ -165,7 +165,7 @@ public class ResourcesRVA extends RecyclerView.Adapter<ResourcesRVA.ResourceView
             //------------------------------------------------------------------------------------
             //Bind data to layout elements
             resourceName.setText(resource.getName());
-            resourceInfo.setText(resource.getResource());
+            resourceInfo.setText(resource.getDescription());
         }
     }
 

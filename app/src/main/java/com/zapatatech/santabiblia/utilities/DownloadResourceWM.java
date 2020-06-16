@@ -134,9 +134,9 @@ public class DownloadResourceWM  extends Worker {
             if(result){
                 return true;
             } else {
-                //if for some reason the process did not CREATE the db, delete anything we have written to the disk so far;
-                boolean deleteDBResult = deleteDB(fileName);
-                Log.d(TAG, "deleteDB: " + deleteDBResult);
+                //if for some reason the process did not CREATE the db file, delete anything we have written to the disk so far;
+                boolean deleteFileResult = deleteFile(fileName);
+                Log.d(TAG, "deleteDB: " + deleteFileResult);
                 return false;
             }
         } catch (IOException e) {
@@ -153,7 +153,8 @@ public class DownloadResourceWM  extends Worker {
 //            if (!folder.exists()) {
 //                folder.mkdirs();
 //            }
-            File outputFile = new File(Util.getDBPath(this.context), fileName);
+            //WRITE TO A TEMPORAL FILE
+            File outputFile = new File(Util.getDBPath(this.context), getTempFileName(fileName));
 
             //THEN OVERWRITE THE FLE:
             InputStream inputStream = null;
@@ -224,21 +225,50 @@ public class DownloadResourceWM  extends Worker {
     private boolean createDB(boolean downloadComplete, String fileName) {
         Log.d(TAG, "createDB: " + downloadComplete);
         if(downloadComplete) {
-            //CREATE empty db:
-            try {
-                SQLiteDatabase db = this.context.openOrCreateDatabase(fileName, MODE_PRIVATE, null);
-                db.close();
-                return true;
-            } catch (Exception e) {
-                e.printStackTrace();
+            //Rename file:
+            boolean renameSuccess = renameFile(fileName);
+            if(renameSuccess){
+                //CREATE empty db:
+                try {
+                    SQLiteDatabase db = this.context.openOrCreateDatabase(fileName, MODE_PRIVATE, null);
+                    db.close();
+                    return true;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            } else {
                 return false;
             }
         } else {
             return false;
         }
     }
-    private boolean deleteDB(String fileName) {
-        return this.context.deleteDatabase(fileName);
+
+    private boolean renameFile(String fileName){
+        try{
+            File from      = new File(Util.getDBPath(this.context), getTempFileName(fileName));
+            File to        = new File(Util.getDBPath(this.context), fileName);
+            return from.renameTo(to);
+        } catch (Exception e) {
+            Log.e(TAG, "renameFile: ", e);
+            return false;
+        }
+    }
+
+    private boolean deleteFile(String fileName) {
+        boolean deleteResult = false;
+        File outputFile = new File(Util.getDBPath(this.context), getTempFileName(fileName));
+        if(outputFile.exists()){
+            deleteResult = outputFile.delete();
+            Log.d(TAG, "deleteDB: file: " + deleteResult);
+        }
+        return deleteResult;
+        //return this.context.deleteDatabase(fileName);
+    }
+
+    private String getTempFileName(String fileName){
+        return fileName + "-temp";
     }
 
 }
