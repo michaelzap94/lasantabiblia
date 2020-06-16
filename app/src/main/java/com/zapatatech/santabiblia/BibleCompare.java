@@ -32,6 +32,7 @@ import com.zapatatech.santabiblia.DatabaseHelper.BibleDBHelper;
 import com.zapatatech.santabiblia.adapters.RecyclerView.BibleCompareRVA;
 import com.zapatatech.santabiblia.models.Book;
 import com.zapatatech.santabiblia.utilities.BookHelper;
+import com.zapatatech.santabiblia.utilities.CommonMethods;
 import com.zapatatech.santabiblia.utilities.SwipeToDelete;
 import com.zapatatech.santabiblia.viewmodel.VersesViewModel;
 
@@ -60,6 +61,7 @@ public class BibleCompare extends AppCompatActivity {
     private CoordinatorLayout coordinatorLayout;
     private MaterialButton prevButton;
     private MaterialButton nextButton;
+    public Toast toast;
     int minSelectedVerse, maxSelectedVerse;
 
     private RecyclerView rvView;
@@ -260,7 +262,7 @@ public class BibleCompare extends AppCompatActivity {
                         }
                     }).show();
         } else {
-            Toast.makeText(this, "All downloaded bibles are shown", Toast.LENGTH_SHORT).show();
+            showOneToast("All downloaded bibles are shown");
         }
 
     }
@@ -323,5 +325,16 @@ public class BibleCompare extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         finish();
+    }
+
+
+    public void showOneToast (String st){ //"Toast toast" is declared in the class
+        try{
+            toast.getView().isShown();     // true if visible
+            toast.setText(st);
+        } catch (Exception e) {         // invisible if exception
+            toast = Toast.makeText(this, st, Toast.LENGTH_SHORT);
+        }
+        toast.show();  //finally display it
     }
 }

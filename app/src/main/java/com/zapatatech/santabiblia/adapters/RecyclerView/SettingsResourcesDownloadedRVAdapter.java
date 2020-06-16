@@ -23,13 +23,17 @@ public class SettingsResourcesDownloadedRVAdapter extends RecyclerView.Adapter<S
     private static final String TAG = "SettingsResourcesDownlo";
     private Context context;
     private ArrayList<String> list;
-    public SettingsResourcesDownloadedRVAdapter(Context context, ArrayList<String> list) {
+    private ArrayList<String> listDisplayName;
+    public SettingsResourcesDownloadedRVAdapter(Context context, ArrayList<String> list, ArrayList<String> listDisplayName) {
         this.context = context;
         this.list = list;
+        this.listDisplayName = listDisplayName;
     }
-    public void refreshData(ArrayList<String> _list){
+    public void refreshData(ArrayList<String> _list, ArrayList<String> _listDisplayName){
         list.clear();
+        listDisplayName.clear();
         list.addAll(_list);
+        listDisplayName.addAll(_listDisplayName);
         notifyDataSetChanged();
     }
     @NonNull
@@ -59,20 +63,21 @@ public class SettingsResourcesDownloadedRVAdapter extends RecyclerView.Adapter<S
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             resourceName = itemView.findViewById(R.id.fileName);
-            //resourceInfo = itemView.findViewById(R.id.fileSize);
+            //resourceInfo = itemView.findViewById(R.id.fileInfo);
             resourceState = itemView.findViewById(R.id.fileState);
         }
 
         void bind() {
-            String nameValue = list.get(getAdapterPosition());
-            resourceName.setText(nameValue);
+            String fileName = list.get(getAdapterPosition());
+            String displayName = listDisplayName.get(getAdapterPosition());
+            resourceName.setText(displayName);
             //-------------------------------------
             resourceState.setText("Remove");
             resourceState.setTextColor(Color.RED);
-            resourceState.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_delete, 0, 0, 0);
+            resourceState.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_delete, 0);
             resourceState.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    context.deleteDatabase(nameValue);
+                    context.deleteDatabase(fileName);
                     removeAt(getAdapterPosition());
                 }
             });

@@ -110,7 +110,7 @@ public class ResourcesRVA extends RecyclerView.Adapter<ResourcesRVA.ResourceView
         public ResourceViewHolder(@NonNull View itemView) {
             super(itemView);
             resourceName = itemView.findViewById(R.id.fileName);
-            resourceInfo = itemView.findViewById(R.id.fileSize);
+            resourceInfo = itemView.findViewById(R.id.fileInfo);
             resourceState = itemView.findViewById(R.id.fileState);
             resourceProgress = (ProgressBar) itemView.findViewById(R.id.fileProgress);
         }
@@ -121,7 +121,7 @@ public class ResourcesRVA extends RecyclerView.Adapter<ResourcesRVA.ResourceView
                 Log.d(TAG, "bind: processing " + resource.getTemporalProgress());
                 resourceProgress.setVisibility(View.VISIBLE);
                 resourceState.setText("Downloading...");
-                resourceState.setCompoundDrawablesWithIntrinsicBounds(android.R.drawable.stat_sys_download_done, 0, 0, 0);
+                resourceState.setCompoundDrawablesWithIntrinsicBounds(0, 0, android.R.drawable.stat_sys_download_done, 0);
                 resourceProgress.setProgress(resource.getTemporalProgress());
                 resourceState.setClickable(false);
             } else if(resource.getTemporalState() == "completed") {
@@ -129,7 +129,7 @@ public class ResourcesRVA extends RecyclerView.Adapter<ResourcesRVA.ResourceView
                 resourceProgress.setVisibility(View.GONE);
                 resourceState.setText("Downloaded");
                 resourceState.setTextColor(Color.GRAY);
-                resourceState.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check_circle, 0, 0, 0);
+                resourceState.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_check_circle, 0);
                 resourceState.setClickable(false);
             } else {
                 resourceProgress.setVisibility(View.GONE);
@@ -138,11 +138,11 @@ public class ResourcesRVA extends RecyclerView.Adapter<ResourcesRVA.ResourceView
                     Log.d(TAG, "bind: isInstalled " + resource.getFilename());
                     resourceState.setText("Downloaded");
                     resourceState.setTextColor(Color.GRAY);
-                    resourceState.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check_circle, 0, 0, 0);
+                    resourceState.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_check_circle, 0);
                     resourceState.setClickable(false);
                 } else {
                     Log.d(TAG, "bind: ELSE");
-                    resourceState.setCompoundDrawablesWithIntrinsicBounds(android.R.drawable.stat_sys_download_done, 0, 0, 0);
+                    resourceState.setCompoundDrawablesWithIntrinsicBounds(0, 0, android.R.drawable.stat_sys_download_done, 0);
                     resourceState.setText("Download");
                     resourceState.setOnClickListener(new View.OnClickListener() {
                         public void onClick(View v) {
@@ -165,6 +165,7 @@ public class ResourcesRVA extends RecyclerView.Adapter<ResourcesRVA.ResourceView
             //------------------------------------------------------------------------------------
             //Bind data to layout elements
             resourceName.setText(resource.getName());
+            resourceInfo.setVisibility(View.VISIBLE);
             resourceInfo.setText(resource.getDescription());
         }
     }

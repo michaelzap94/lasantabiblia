@@ -44,6 +44,7 @@ import static com.zapatatech.santabiblia.utilities.CommonMethods.logOutOfApp;
 public class SettingsFragment extends PreferenceFragmentCompat {
     private static final String TAG = "SettingsFragment";
     private static final String MAIN_CONTENT_DB = "content.db";
+    private static final String RESOURCE_TYPE_BIBLE = "type-bible";
     private static final String TEMP_FILE_EXT = "-temp";
     private Activity mActivity;
     private PreferenceScreen screen;
@@ -53,11 +54,12 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         //ArrayList<String> listBibles = BibleCreator.getInstance(ctx).listOfAssetsByType("bibles");
 
-        //TODO: implement logic to only extract bibles
+        //BIBLES EXAMPLE: RVR60.type-bible.db | TRADUCCIÓN EN LENGUAJE ACTUAL.type-bible.db
+
         ArrayList<String> listBibles = new ArrayList<>();
         ArrayList<String> listBiblesDisplayName = new ArrayList<>();
         for (String dbName: ctx.databaseList()) {
-            if(!dbName.contains("-journal") && !dbName.equals(MAIN_CONTENT_DB) && !dbName.contains(TEMP_FILE_EXT)) {
+            if(!dbName.contains("-journal") && !dbName.equals(MAIN_CONTENT_DB) && !dbName.contains(TEMP_FILE_EXT) && dbName.contains(RESOURCE_TYPE_BIBLE)) {
                 listBibles.add(dbName);
                 //split filename in _
                 String[] resultSplit = dbName.split("_");
