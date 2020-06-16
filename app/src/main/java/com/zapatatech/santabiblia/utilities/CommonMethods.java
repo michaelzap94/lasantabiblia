@@ -54,6 +54,7 @@ import com.zapatatech.santabiblia.models.AuthInfo;
 import com.zapatatech.santabiblia.models.User;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -76,7 +77,9 @@ public class CommonMethods {
     public static final int USER_OFFLINE = 2;
     //flags==================================================
     public static final String DOWNLOAD_RESOURCE_TAG = "DOWNLOAD_RESOURCE_TAG";
-
+    public static final String MAIN_CONTENT_DB = "content.db";
+    public static final String RESOURCE_TYPE_BIBLE = "type-bible";
+    public static final String TEMP_FILE_EXT = "-temp";
 
     public static final String USER_STATUS = "USER_ONLINE";
     public static final String ACCESS_TOKEN_SP = "ACCESS_TOKEN_SP";
@@ -727,6 +730,21 @@ public class CommonMethods {
                 });
     }
 
+    //==================================================================================================
+    public static ArrayList[] getBiblesDownloaded(Context ctx){
+        ArrayList<String> listBibles = new ArrayList<>();
+        ArrayList<String> listBiblesDisplayName = new ArrayList<>();
+        for (String dbName: ctx.databaseList()) {
+            if(!dbName.contains("-journal") && !dbName.equals(MAIN_CONTENT_DB) && !dbName.contains(TEMP_FILE_EXT) && dbName.contains(RESOURCE_TYPE_BIBLE)) {
+                listBibles.add(dbName);
+                //split filename in _
+                String[] resultSplit = dbName.split("_");
+                String displayName = Util.joinArrayResourceName(" ", true, resultSplit);
+                listBiblesDisplayName.add(displayName);
+            }
+        }
+        return new ArrayList[]{listBibles, listBiblesDisplayName};
+    }
     //==================================================================================================
 
     public static void copyText(Context context, String title, String text){
