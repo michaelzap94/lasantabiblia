@@ -8,6 +8,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.MenuItem;
@@ -35,6 +36,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -618,6 +620,7 @@ public class CommonMethods {
             }
             //---------------------------------------------------------------------------------------------------
             int clientVersion = syncUp.getVersion();
+            Log.d(TAG, "retrofitStartSyncUp: " + clientVersion);
             Single<JsonObject> singleCall = checkServerStateService.checkServerStateJSONRx(clientVersion);
             disposable.add(singleCall
                 .subscribeOn(Schedulers.newThread())//enables communication on new Thread background
@@ -626,6 +629,21 @@ public class CommonMethods {
                     @Override
                     public void onSuccess(JsonObject json) {
                         Log.d(TAG, "onResponse: " + json);//JSON
+                        Log.d(TAG, "onSuccess: version " + json.get("result").getAsBoolean());
+                        boolean sameVersion = json.get("result").getAsBoolean();
+                        if(sameVersion){
+                            if(syncUp.getState() == 0) {
+                                //NEEDS TO SYNC: OVERRIDE(upload)
+                                Toast.makeText(mActivity, "Sync in process...", Toast.LENGTH_SHORT).show();
+                                CommonMethods.uploadAndOverrideServer(syncUp);
+                            } else {
+                                //UP TO DATE: update sync data
+                                Toast.makeText(mActivity, "Your data is Up To Date", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            //PROMPT USER FOR: OVERRIDE(override) or SYNC UP(download)
+                            CommonMethods.askUserToOverrideOrSync(mActivity, syncUp);
+                        }
                     }
 
                     @Override
@@ -671,6 +689,34 @@ public class CommonMethods {
             CommonMethods.logOutOfApp(mActivity);
         }
     }
+
+    public static void askUserToOverrideOrSync(Activity mActivity, SyncUp syncUp){
+        Resources resources = mActivity.getResources();
+        new MaterialAlertDialogBuilder(mActivity)
+                .setTitle(resources.getString(R.string.syncup_prompt_title))
+                .setMessage(resources.getString(R.string.syncup_prompt_message))
+                .setNeutralButton(resources.getString(R.string.cancel), (dialog, which) -> {
+                    dialog.dismiss();
+                })
+                .setNegativeButton(resources.getString(R.string.override), (dialog, which) -> {
+                    // Respond to negative button press
+                    CommonMethods.uploadAndOverrideServer(syncUp);
+                })
+                .setPositiveButton(resources.getString(R.string.sync_up), (dialog, which) -> {
+                    // Respond to positive button press
+                    CommonMethods.downloadAndOverrideDevice(syncUp);
+                })
+                .show();
+    }
+
+    public static void uploadAndOverrideServer(SyncUp syncUp){
+
+    }
+
+    public static void downloadAndOverrideDevice(SyncUp syncUp){
+
+    }
+
     //==================================================================================================
     public static void startWorkManager(Activity mActivity, String resourceUrl, String fileName){
         //CONSTRAINTS

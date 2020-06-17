@@ -45,6 +45,7 @@ public interface RetrofitSyncUp {
     @GET("syncup/check/")
     Single<JsonObject> getServerStateJSONRx();//this will be json object already
 
+    @FormUrlEncoded
     @POST("syncup/check/")
     Single<JsonObject> checkServerStateJSONRx(@Field("version") int version);//this will be json object already
 
