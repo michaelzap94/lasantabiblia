@@ -4,6 +4,13 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!--    CONTENT PROVIDER PERMISSIONS-->
+<!--    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>-->
+<!--    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>-->
+<!--    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>-->
+<!--    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>-->
+<!--    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />-->
+<!--    <uses-permission android:name="android.permission.READ_SYNC_STATS"/>-->
 
     <application
         android:allowBackup="true"
@@ -87,11 +94,11 @@
         <!--    In order to use our ContentProvider, we need to declare it in the manifest.xml file. It is important to note that:-->
         <!--    android:authorities must match our ContentProvider's authority exactly, and-->
         <!--    android:syncable must be true.-->
-        <provider
-            android:name="com.zapatatech.santabiblia.DatabaseHelper.ContentDBContentProvider"
-            android:authorities="com.zapatatech.santabiblia"
-            android:exported="false"
-            android:syncable="true"/>
+<!--        <provider-->
+<!--            android:name="com.zapatatech.santabiblia.DatabaseHelper.ContentDBContentProvider"-->
+<!--            android:authorities="com.zapatatech.santabiblia"-->
+<!--            android:exported="false"-->
+<!--            android:syncable="true"/>-->
     </application>
 
 </manifest>

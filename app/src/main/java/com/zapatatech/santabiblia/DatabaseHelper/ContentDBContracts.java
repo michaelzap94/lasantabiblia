@@ -22,13 +22,37 @@ class ContentDBContracts {
     static final String PATH_LABELS = "labels";
     static final String PATH_VERSES_MARKED = "verses_marked";
     static final String PATH_VERSES_LEARNED = "verses_learned";
+    static final String PATH_SYNC_UP = "sync_up";
 
     // Database information
     static final String DB_NAME = "content.db";
     static final int DB_VERSION = 1;
 
     /**
-     * This represents our SQLite table for our articles.
+     * This represents our SQLite table for our sync up.
+     */
+    public static abstract class SYNC_UPS implements BaseColumns {
+        public static final String NAME = "sync_up";
+//        public static final String COL_ID = "_id";
+        public static final String COL_EMAIL = "email";
+        public static final String COL_VERSION = "version";
+        public static final String COL_STATE = "state";
+        public static final String COL_UPDATED = "updated";
+
+        // Content URI represents the base location for the table LABELS
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_SYNC_UP).build();
+        // These are special type prefixes that specify if a URI returns a list or a specific item
+        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/" + CONTENT_URI + "/" + PATH_SYNC_UP;
+        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/" + CONTENT_URI + "/" + PATH_SYNC_UP;
+
+        // Define a function to build a URI to find a specific movie by it's identifier
+        public static Uri buildLabelsUri(long id){
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+    }
+
+    /**
+     * This represents our SQLite table for our labels.
      */
     public static abstract class LABELS implements BaseColumns {
         public static final String NAME = "labels";

@@ -5,9 +5,14 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.zapatatech.santabiblia.models.Book;
 import com.zapatatech.santabiblia.models.Label;
+import com.zapatatech.santabiblia.models.SyncUp;
 import com.zapatatech.santabiblia.models.VersesMarked;
 import com.zapatatech.santabiblia.utilities.BookHelper;
 import com.zapatatech.santabiblia.utilities.CommonMethods;
@@ -64,7 +69,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         ArrayList<Label> list = new ArrayList();
         try {
             String query = "SELECT * FROM labels";
-            innerCursor = this.getReadableDatabase().rawQuery(query, null);
+            innerCursor = this.db.rawQuery(query, null);
             if (innerCursor.moveToFirst()) {
                 rowCount = innerCursor.getCount();
                 for (i = 0; i < rowCount; i++) {
@@ -187,7 +192,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
             } else {
                 query = (_uuid == null) ? "SELECT * FROM verses_marked WHERE label_id=" + label_id : "SELECT * FROM verses_marked WHERE label_id=" + label_id + " AND UUID ='" + _uuid + "'";
             }
-            Cursor labelSpecificRows = this.getReadableDatabase().rawQuery(query, null);
+            Cursor labelSpecificRows = this.db.rawQuery(query, null);
             if (labelSpecificRows.moveToFirst()) {
                 labelSpecificRowsCount = labelSpecificRows.getCount();
                 for (i = 0; i < labelSpecificRowsCount; i++) {
@@ -227,7 +232,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
 //                    } else {
 //                        innerQuery = "SELECT verse , text FROM verses WHERE book_number = ? AND chapter = ? ORDER BY book_number, chapter, verse";
 //                    }
-//                    Cursor innerCursor = this.getReadableDatabase().rawQuery(innerQuery, null);
+//                    Cursor innerCursor = this.db.rawQuery(innerQuery, null);
                     Integer  indexIfInHistory = history.get(uuid);
                     Cursor innerCursor = BibleDBHelper.getInstance(context).openDataBaseNoHelper(BibleDBHelper.getSelectedBibleName(context)).rawQuery(innerQuery, null);
                     if (innerCursor.moveToFirst()) {
@@ -277,7 +282,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
     public int getVersesMarkedNumber(int label_id) {
         try {
             String query = "SELECT * FROM verses_marked WHERE label_id=" + label_id;
-            Cursor labelSpecificRows = this.getReadableDatabase().rawQuery(query, null);
+            Cursor labelSpecificRows = this.db.rawQuery(query, null);
             return labelSpecificRows.getCount();
         } catch (Exception e) {
         }
@@ -310,19 +315,82 @@ public class ContentDBHelper extends SQLiteOpenHelper {
     public ArrayList<VersesMarked> getVersesMarkedLearned(int learned){
         return getVersesMarked(CommonMethods.LABEL_ID_MEMORIZE, null, learned);
     }
-
     public int getVersesLearnedNumber() {
         try {
             String query = "SELECT * FROM verses_learned";
-            Cursor labelSpecificRows = this.getReadableDatabase().rawQuery(query, null);
+            Cursor labelSpecificRows = this.db.rawQuery(query, null);
             return labelSpecificRows.getCount();
         } catch (Exception e) {
         }
         return -1;
     }
+    //==============================================================================================
+    public SyncUp getSyncUp(String email){
+        SyncUp result = null;
+        String query = "SELECT * FROM syncup WHERE='" + email +"'";
+        Cursor cursor = null;
+        try{
+            cursor = this.db.rawQuery(query, null);
+            if (cursor.moveToFirst()) {
+//                do {
+                    int version = cursor.getInt(cursor.getColumnIndex(ContentDBContracts.SYNC_UPS.COL_VERSION));
+                    int state = cursor.getInt(cursor.getColumnIndex(ContentDBContracts.SYNC_UPS.COL_STATE));
+                    String updated = cursor.getString(cursor.getColumnIndex(ContentDBContracts.SYNC_UPS.COL_UPDATED));
+                    Log.d(TAG, "getLocalServerDBVersion: " + updated);
+
+                    result = new SyncUp(email, version, state, updated);
+//                    break;
+//                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "getLocalServerDBVersion: ", e);
+        } finally {
+            if(cursor != null){
+                cursor.close();
+            }
+        }
+        return result;
+    }
+
+    public boolean insertOrUpdateSyncUp(@NonNull String email, Integer version, Integer state, String updated){
+        boolean success = false;
+        ContentValues initialValues = new ContentValues();
+//        initialValues.put(ContentDBContracts.SYNC_UPS.COL_ID, 1); // id will always be 1
+        initialValues.put(ContentDBContracts.SYNC_UPS.COL_VERSION, email);
+        if(version!=null) initialValues.put(ContentDBContracts.SYNC_UPS.COL_VERSION, version);
+        if(state!=null) initialValues.put(ContentDBContracts.SYNC_UPS.COL_STATE, state);
+        if(updated!=null) initialValues.put(ContentDBContracts.SYNC_UPS.COL_UPDATED, updated);
+
+        int id = (int) this.db.insertWithOnConflict("syncup", null, initialValues, SQLiteDatabase.CONFLICT_IGNORE);
+        if (id == -1) {
+            //value already exists
+            success = this.db.update("syncup", initialValues, "email=?", new String[] {email}) > 0;  // it will always be one, since we are keeping only one record
+        } else {
+            //first time
+            success = true;
+        }
+        return success;
+    }
+
+    public void insertSyncUpIfNotExist(@NonNull String email){
+        db.execSQL("INSERT OR IGNORE INTO syncup(email) VALUES('"+ email +"')");
+    }
+
+    public boolean updateSyncUp(@NonNull String email, Integer version, Integer state, String updated){
+        ContentValues initialValues = new ContentValues();
+//        initialValues.put(ContentDBContracts.SYNC_UPS.COL_ID, 1); // id will always be 1
+        initialValues.put(ContentDBContracts.SYNC_UPS.COL_VERSION, email);
+        if(version!=null) initialValues.put(ContentDBContracts.SYNC_UPS.COL_VERSION, version);
+        if(state!=null) initialValues.put(ContentDBContracts.SYNC_UPS.COL_STATE, state);
+        if(updated!=null) initialValues.put(ContentDBContracts.SYNC_UPS.COL_UPDATED, updated);
+        return this.db.update("syncup", initialValues, "email=?", new String[] {email}) > 0;  // it will always be one, since we are keeping only one record
+    }
+
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        db.execSQL("CREATE TABLE syncup (email VARCHAR PRIMARY KEY, version INTEGER DEFAULT 0, state INTEGER DEFAULT 0, updated datetime DEFAULT current_timestamp)");
+
         db.execSQL("CREATE TABLE labels (_id INTEGER PRIMARY KEY, name VARCHAR NOT NULL, color VARCHAR NOT NULL, permanent INTEGER DEFAULT 0)");
         db.execSQL("CREATE TABLE verses_marked (_id INTEGER PRIMARY KEY, label_id INTEGER NOT NULL, book_number INTEGER NOT NULL, chapter INTEGER NOT NULL, verseFrom INTEGER NOT NULL, verseTo INTEGER NOT NULL, " +
                 " label_name VARCHAR NOT NULL, label_color VARCHAR NOT NULL, label_permanent INTEGER DEFAULT 0, note VARCHAR, date_created datetime DEFAULT current_timestamp, date_updated datetime DEFAULT current_timestamp, UUID VARCHAR NOT NULL, state INTEGER DEFAULT 0," +

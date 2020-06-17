@@ -32,6 +32,7 @@ import com.zapatatech.santabiblia.utilities.Util;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import io.reactivex.disposables.CompositeDisposable;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -45,6 +46,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     private static final String TAG = "SettingsFragment";
     private Activity mActivity;
     private PreferenceScreen screen;
+    private CompositeDisposable disposable = new CompositeDisposable();
+
 
     protected static void setListPreferenceData(Context ctx, ListPreference lp) {
         String bibleSelected = PreferenceManager.getDefaultSharedPreferences(ctx).getString(MAIN_BIBLE_SELECTED, null);
@@ -97,6 +100,17 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         backUp.setIcon(R.drawable.ic_sync);
         backUp.setOrder(0);
         thirdCategory.addPreference(backUp);
+        backUp.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                try{
+                    CommonMethods.retrofitStartSyncUp(mActivity, disposable);
+                } catch (Exception e) {
+                    Toast.makeText(mActivity, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            }
+        });
         //================================================================================================
         //add Sign out button programatically
         final PreferenceCategory lastCategory = (PreferenceCategory) findPreference("pref_section_last");

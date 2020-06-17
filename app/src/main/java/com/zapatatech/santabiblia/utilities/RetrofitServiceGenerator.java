@@ -19,7 +19,8 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 public class RetrofitServiceGenerator {
     private static final String TAG = "RetrofitServiceGenerato";
     public static final String BASE_URL = "http://192.168.0.14:8000";
-    // Create a new REST client with the given API base url
+
+    // Create a new REST client with the given API base url USING GSON-> requires a POJO OR ResponseBody
     private static Retrofit.Builder builder = new Retrofit.Builder()
                     .baseUrl(BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create());
@@ -30,14 +31,16 @@ public class RetrofitServiceGenerator {
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create());//RxJava2CallAdapterFactory converts List into a Single Observable of the List,
             // this will allow REtrofit to convert JSON from the api into a Single element which was specified to be List<CountryModel> in the CountriesApi Interface
 
-    public static Retrofit retrofitWithRx = builderWithRx.build();
     public static Retrofit retrofit = builder.build();
-
+    public static Retrofit retrofitWithRx = builderWithRx.build();
+    //=====================================================================================
     private static OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+    //=====================================================================================
 
     //ADD LOGGING OF REQUESTS AND RESPONSES 2)=================================================
     private static HttpLoggingInterceptor logging = new HttpLoggingInterceptor()
             .setLevel(HttpLoggingInterceptor.Level.BODY);//USE Level.NONE for RELEASE/PRODUCTION
+
     //=====================================================================================
     /**
      *
@@ -70,7 +73,7 @@ public class RetrofitServiceGenerator {
 //    }
 
     public static <S> S createService( Class<S> serviceClass, final String authToken) {
-        mAddLogging();
+        mAddLogging(builder);
         if (!TextUtils.isEmpty(authToken)) {
             RetrofitAuthInterceptor interceptor = new RetrofitAuthInterceptor(authToken);
             //creates the custom Interceptor using the authToken
@@ -85,16 +88,15 @@ public class RetrofitServiceGenerator {
     }
     //=====================================================================================
 
-    private static void mAddLogging(){
+    private static void mAddLogging(Retrofit.Builder _builder){
         //ADD LOGGING OF REQUESTS AND RESPONSES 1)============================================
         //Check if the logging interceptor is already present
         if (!httpClient.interceptors().contains(logging)) {
             httpClient.addInterceptor(logging);//if not, then add it
-            builder.client(httpClient.build());
+            _builder.client(httpClient.build());
             //Make sure to not build the retrofit object on every createService call
-            retrofit = builder.build();
+            retrofit = _builder.build();
         }
-        //=====================================================================================
     }
 
     //=====================================================================================

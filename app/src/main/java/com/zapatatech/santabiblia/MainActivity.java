@@ -78,8 +78,10 @@ public class MainActivity extends AppCompatActivity{
             finish();
         } else if(userStatus == CommonMethods.USER_OFFLINE) {
             if(account_type != null){
+                //user is offline because of INTERNET down but he has credentials
                 CommonMethods.retrofitVerifyCredentials(MainActivity.this);
             } else {
+                //user is offline because he does not have credentials and chose 'offline'
                 Intent intent = new Intent(MainActivity.this, Home.class);
                 startActivity(intent);
                 finish();

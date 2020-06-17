@@ -11,7 +11,7 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-class ContentDBContentProvider  extends ContentProvider {
+public class ContentDBContentProvider  extends ContentProvider {
     // Use an int for each URI we will run, this represents the different queries
     private static final int LABEL = 100;
     private static final int LABEL_ID = 101;
