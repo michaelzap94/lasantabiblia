@@ -327,7 +327,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
     //==============================================================================================
     public SyncUp getSyncUp(String email){
         SyncUp result = null;
-        String query = "SELECT * FROM syncup WHERE='" + email +"'";
+        String query = "SELECT * FROM syncup WHERE email='" + email +"'";
         Cursor cursor = null;
         try{
             cursor = this.db.rawQuery(query, null);
