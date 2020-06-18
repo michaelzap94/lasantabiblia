@@ -188,7 +188,7 @@ public class Home extends BaseActivityTopDrawer  {
         chapter_bookmarked = prefs.getInt(CommonMethods.CHAPTER_BOOKMARKED, 0);
         if(chapter_bookmarked != 0 && book_bookmarked != 0) {
             Log.d(TAG, "onResume: book_bookmarked " + book_bookmarked);
-            String book = BookHelper.getBook(book_bookmarked).getName();
+            String book = BookHelper.getInstance().getBook(book_bookmarked).getName();
             bookmark_button.setText(book + " " + chapter_bookmarked);
             bookmark_button.setEnabled(true);
         } else {
@@ -200,7 +200,7 @@ public class Home extends BaseActivityTopDrawer  {
         chapter_lastseen = prefs.getInt(CommonMethods.CHAPTER_LASTSEEN, 0);
         if(chapter_lastseen != 0 && book_lastseen != 0) {
             Log.d(TAG, "onResume: book_lastseen " + book_lastseen);
-            String book = BookHelper.getBook(book_lastseen).getName();
+            String book = BookHelper.getInstance().getBook(book_lastseen).getName();
             last_seen_button.setText(book + " " + chapter_lastseen);
             last_seen_button.setEnabled(true);
         } else {

@@ -222,7 +222,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
                     }
 
                     Label specificLabel = new Label(label_id, label_name, label_color, label_permanent);
-                    Book specificBook = BookHelper.getBook(book_number);
+                    Book specificBook = BookHelper.getInstance().getBook(book_number);
                     String innerQuery = "SELECT verse , text FROM verses WHERE " +
                                                                         "book_number = "+book_number+" AND " +
                                                                         "chapter = "+chapter+" AND " +

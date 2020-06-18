@@ -135,7 +135,7 @@ public class BibleDBHelper {
                         note = labelSpecificRows.getString(noteCol);
                     }
                     Label specificLabel = new Label(label_id, label_name, label_color, label_permanent, uuid);
-                    Book specificBook = BookHelper.getBook(book_number);
+                    Book specificBook = BookHelper.getInstance().getBook(book_number);
 
 
 
@@ -527,7 +527,7 @@ public class BibleDBHelper {
     }
 
     public String makeTitle(String book, String chapter, String verseFirst, String verseSecond){
-        Book bookObject = BookHelper.getBook(Integer.parseInt(book));
+        Book bookObject = BookHelper.getInstance().getBook(Integer.parseInt(book));
         String title = bookObject.getName() + " " + chapter;
         if(verseFirst != null){
             title = title + ":" + verseFirst;

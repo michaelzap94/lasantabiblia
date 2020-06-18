@@ -51,8 +51,11 @@ public interface RetrofitSyncUp {
     @POST("syncup/check/")
     Call<ResponseBody> checkServerState( @Field("version") int version);
     //==================================================================================================
-    @GET("auth/test/labels/")
-    Call<List<Label>> getAllLabels();
+    @GET("syncup/process/")
+    Call<ResponseBody> syncUpWithServer();
+
+    @POST("syncup/process/")
+    Call<List<Label>> overrideServer();
 
     //DOWNLOADING FILE==================================================================================
     //Please note, that we're specifying ResponseBody as return type. You should not use anything else here,

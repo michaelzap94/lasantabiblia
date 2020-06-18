@@ -48,7 +48,7 @@ public class VersesLabelNoteDialog extends DialogFragment {
 
         List<Integer> selectedItems = rvAdapter.getSelectedItems();
         String titleBookAndCaps = BookHelper.getTitleBookAndCaps(chapter_number, selectedItems);
-        String currentBookName = BookHelper.getBook(book_number).getName();
+        String currentBookName = BookHelper.getInstance().getBook(book_number).getName();
 
         this.title = currentBookName + " " + titleBookAndCaps;
         this.dialogTitle = "Add Note to \""+mLabel.getName() + "\":";

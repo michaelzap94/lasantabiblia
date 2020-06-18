@@ -39,6 +39,7 @@ public class SyncUpServerWM extends Worker {
     //public RetrofitSyncUp syncupService = RetrofitServiceGenerator.createServiceRx(RetrofitSyncUp.class, null);
     //====================================================================================================
     private NotificationManager notificationManager;
+    private NotificationCompat.Builder notificationBuilder;
 
     public SyncUpServerWM(
             @NonNull Context context,
@@ -58,71 +59,71 @@ public class SyncUpServerWM extends Worker {
             return Result.failure();
         }
 
-        if (getRunAttemptCount() > 2) {
-            Log.d(TAG, "too many failed attemp, give up");
-//            notificationManager.cancel(0);
+        if(!isStopped()) {
+
+            setProgressAsync(new Data.Builder().putBoolean("processing", true).build());
+
+            String progress = "Starting Sync Up";
+            //mark this as important: WILL RUN IN THE BACKGROUND IF APP IS CLOSED
+            setForegroundAsync(createForegroundInfo(progress));
+            //only attempt to retry 2 times
+            if (getRunAttemptCount() > 2) {
+                Log.d(TAG, "too many failed attemp, give up");
+                notificationManager.cancel(SYNCUP_NOTIFICATION_ID);
+                return Result.failure();
+            }
+            // Do the work here--in this case, upload the images.
+            boolean result = initRetrofit(client_version, client_state);
+            if (result) {
+                Data output = new Data.Builder().putBoolean("syncupComplete", true).build();
+                return Result.success(output);
+            } else {
+                //Log.d(TAG, "doWork: isStopped inner " + isStopped());
+                notificationManager.cancel(SYNCUP_NOTIFICATION_ID);
+                return Result.failure();
+            }
+        } else {
+            Log.d(TAG, "doWork: isStopped ELSE");
+            notificationManager.cancel(SYNCUP_NOTIFICATION_ID);
             return Result.failure();
         }
-
-        // Mark the Worker as important
-        String progress = "Starting Download";
-        setForegroundAsync(createForegroundInfo(progress));
-
-//        Data processingData = new Data.Builder()
-//                .putInt("progress", 0)
-//                .putString("fileNameProcessing", fileName)
-//                .build();
-//        setProgressAsync(processingData);
-
-//        startNotificationBar(fileName);
-        //only attempt to retry 2 times
-
-        // Do the work here--in this case, upload the images.
-//        boolean result = initRetrofit(resourceUrl, fileName);
-//        if(result) {
-//            Data output = new Data.Builder()
-//                    .putBoolean("downloadComplete", true)
-//                    .putString("fileName", fileName)
-//                    .build();
-//            return Result.success(output);
-//        } else {
-////            notificationManager.cancel(0);
-            return Result.failure();
-//        }
     }
 
 
     @Override
     public void onStopped() {
         super.onStopped();
+        notificationManager.cancel(SYNCUP_NOTIFICATION_ID);
     }
 
 //    //start Retrofit setup, synchronous since this is running in the background already
-//    private boolean initRetrofit(String fileURL, String fileName) {
-//        Log.d(TAG, "initRetrofit: " + fileURL);
-//        Call<ResponseBody> request = syncupService.downloadResource(fileURL);
+    private boolean initRetrofit(String client_version, String client_state) {
+//        Log.d(TAG, "initRetrofit: " + client_state);
+//
+//        Call<ResponseBody> request = syncupService.syncUpWithServer();
 //        try {
-//            //convertFile(request.execute().body(), fileName);
-//            //boolean result = writeResponseBodyToDisk(request.execute().body(), fileName);
-////            if(result){
-////                return true;
-////            } else {
-////                //if for some reason the process did not CREATE the db file, delete anything we have written to the disk so far;
-////                //boolean deleteFileResult = deleteFile(fileName);
-////                Log.d(TAG, "deleteDB: " + deleteFileResult);
-////                return false;
-////            }
+//            boolean result = writeResponseBodyToDisk(request.execute().body(), fileName);
+//            if(result){
+//                return true;
+//            } else {
+//                //if for some reason the process did not CREATE the db file, delete anything we have written to the disk so far;
+//                //boolean deleteFileResult = deleteFile(fileName);
+//                Log.d(TAG, "deleteDB: " + deleteFileResult);
+//                return false;
+//            }
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //            return false;
 //        }
-//    }
+        //TODO: remove
+        return true;
+    }
 
     @NonNull
     private ForegroundInfo createForegroundInfo(@NonNull String progress) {
         // Build a notification using bytesRead and contentLength
 
-        Context context = getApplicationContext();
+        //Context context = getApplicationContext();
         String title = "Synchronizing data";//context.getString(R.string.notification_title);
         String cancel = "Cancel";//context.getString(R.string.cancel_download);
         // This PendingIntent can be used to cancel the worker
