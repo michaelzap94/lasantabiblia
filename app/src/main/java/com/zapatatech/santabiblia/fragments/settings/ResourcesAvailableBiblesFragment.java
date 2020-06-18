@@ -167,22 +167,56 @@ public class ResourcesAvailableBiblesFragment extends Fragment {
                     public void onChanged(@Nullable List<WorkInfo> workInfoList) {
                         if (workInfoList.size() > 0) {
                             for (WorkInfo workInfo: workInfoList) {
-                                Log.d(TAG, "startWorkManagerDownloadResource: " + workInfo.getState());
+                                Log.d(TAG, "startWorkManagerDownloadResource: workInfo.toString(): " + workInfo.toString());
+                                Log.d(TAG, "startWorkManagerDownloadResource: workInfo.getState(): " + workInfo.getState());
                                 if (workInfo != null && workInfo.getState() == WorkInfo.State.RUNNING) {
+                                    //SENT while WM is processing so we can update our own progress bar
                                     String fileNameProcessing = workInfo.getProgress().getString("fileNameProcessing");
                                     int progress = workInfo.getProgress().getInt("progress", -1);
-                                    Log.d(TAG, "startWorkManagerDownloadResource: STILL RUNNING AFTER: " + fileNameProcessing);
-                                    Log.d(TAG, "startWorkManagerDownloadResource: STILL RUNNING AFTER: " + progress);
+//                                    Log.d(TAG, "startWorkManagerDownloadResource: STILL RUNNING AFTER: " + fileNameProcessing);
+//                                    Log.d(TAG, "startWorkManagerDownloadResource: STILL RUNNING AFTER: " + progress);
                                     if(fileNameProcessing!=null){
                                         adapter.updateResourceStateProgressByName(fileNameProcessing, progress);
                                     } else {
                                         //fileName dit not start processing or is not processing
                                     }
 
-                                } else if (workInfo != null && workInfo.getState().isFinished()) {
-                                    Log.d(TAG, "startWorkManagerDownloadResource: completed");
+                                } else if (workInfo != null && workInfo.getState()  == WorkInfo.State.SUCCEEDED) {
+                                    Log.d(TAG, "startWorkManagerDownloadResource: SUCCEEDED " + workInfo.toString());
+                                    Log.d(TAG, "startWorkManagerDownloadResource: SUCCEEDED isFinished " + workInfo.getState().isFinished());
                                     boolean myResult = workInfo.getOutputData().getBoolean("downloadComplete", false);
                                     String fileName = workInfo.getOutputData().getString("fileName");
+                                    Log.d(TAG, "startWorkManagerDownloadResource: SUCCEEDED myResult: "+myResult);
+                                    Log.d(TAG, "startWorkManagerDownloadResource: SUCCEEDED fileName: "+fileName);
+                                    if(myResult && fileName != null){
+                                        //SUCCESS
+                                        adapter.updateResourceStateByName(fileName, "completed");
+                                    }
+                                    //clears unfinished tasks
+                                    //WorkManager.getInstance(MainActivityRT.this).cancelAllWorkByTag("downloadResourceUWID");
+                                    //You can call the method pruneWork() on your WorkManager to clear the List<WorkStatus> && List<WorkInfo>
+                                    WorkManager.getInstance(mActivity).pruneWork();//kill the workmanager we started before this
+                                } else if (workInfo != null && workInfo.getState()  == WorkInfo.State.CANCELLED) {
+                                    Log.d(TAG, "startWorkManagerDownloadResource: cancelled " + workInfo.toString());
+                                    Log.d(TAG, "startWorkManagerDownloadResource: cancelled isFinished " + workInfo.getState().isFinished());
+                                    //boolean myResult = workInfo.getOutputData().getBoolean("downloadComplete", false);
+                                    String fileName = workInfo.getProgress().getString("fileNameProcessing");
+                                    //Log.d(TAG, "startWorkManagerDownloadResource: cancelled myResult: "+myResult);
+                                    Log.d(TAG, "startWorkManagerDownloadResource: cancelled fileName: "+fileName);
+                                    if(fileName != null){
+                                        //SUCCESS
+                                        adapter.updateResourceStateByName(fileName, "cancelled");
+                                        //clears unfinished tasks
+                                        WorkManager.getInstance(mActivity).cancelUniqueWork(fileName);
+                                    }
+                                    //You can call the method pruneWork() on your WorkManager to clear the List<WorkStatus> && List<WorkInfo>
+                                    WorkManager.getInstance(mActivity).pruneWork();//kill all finished tasks
+                                } else if (workInfo != null && workInfo.getState().isFinished()) {
+                                    Log.d(TAG, "startWorkManagerDownloadResource: completed " + workInfo.toString());
+                                    boolean myResult = workInfo.getOutputData().getBoolean("downloadComplete", false);
+                                    String fileName = workInfo.getOutputData().getString("fileName");
+                                    Log.d(TAG, "startWorkManagerDownloadResource: completed myResult: "+myResult);
+                                    Log.d(TAG, "startWorkManagerDownloadResource: completed fileName: "+fileName);
                                     if(myResult){
                                         //SUCCESS
                                         adapter.updateResourceStateByName(fileName, "completed");
