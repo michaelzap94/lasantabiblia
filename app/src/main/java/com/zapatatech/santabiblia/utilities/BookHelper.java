@@ -159,19 +159,13 @@ public class BookHelper {
         ArrayList<Book> books;
         if (book_number < 470) {
             books = getbooksOT();
-            //Log.d(TAG, "getBook: getbooksOT " + books.size());
-
             if (books != null) {
-                int bookIndex = getBookIndex(book_number);
-                //Log.d(TAG, "getBook: " + bookIndex);
-                return (Book) books.get(bookIndex-1);
+                return (Book) books.get(getBookIndex(book_number)-1);
             }
         } else {
             books = getbooksNT();
             if (books != null) {
-                int bookIndex = getBookIndex(book_number);
-//                Log.d(TAG, "getBook: " + bookIndex);
-                return (Book) books.get(bookIndex - 40);
+                return (Book) books.get(getBookIndex(book_number) - 40);
             }
         }
         return null;
@@ -200,7 +194,6 @@ public class BookHelper {
             indexMap.put(570,50);indexMap.put(580,51);indexMap.put(590,52);indexMap.put(600,53);indexMap.put(610,54);indexMap.put(620,55);
             indexMap.put(630,56);indexMap.put(640,57);indexMap.put(650,58);indexMap.put(660,59);indexMap.put(670,60);indexMap.put(680,61);
             indexMap.put(690,62);indexMap.put(700,63);indexMap.put(710,64);indexMap.put(720,65);indexMap.put(730,66);
-            indexMap = Collections.unmodifiableMap(indexMap);
         }
         if (indexMap.containsKey(book_number)) {
             return indexMap.get(book_number);
