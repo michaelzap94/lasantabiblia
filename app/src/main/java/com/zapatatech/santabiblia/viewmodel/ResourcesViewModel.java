@@ -1,18 +1,12 @@
 package com.zapatatech.santabiblia.viewmodel;
 
-import android.app.ProgressDialog;
-
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.zapatatech.santabiblia.interfaces.retrofit.RetrofitAuthService;
 import com.zapatatech.santabiblia.interfaces.retrofit.RetrofitRESTendpointsService;
-import com.zapatatech.santabiblia.models.AuthInfo;
-import com.zapatatech.santabiblia.models.Resource;
-import com.zapatatech.santabiblia.utilities.RetrofitServiceGenerator;
+import com.zapatatech.santabiblia.retrofit.Pojos.POJOResource;
+import com.zapatatech.santabiblia.retrofit.RetrofitServiceGenerator;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import io.reactivex.Single;
@@ -20,14 +14,12 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
-import retrofit2.Call;
-import retrofit2.Callback;
 
 public class ResourcesViewModel extends ViewModel {
     public static String RESOURCE_TYPE_BIBLES = "bibles";
     public static String RESOURCE_TYPE_EXTRA = "extra";
     //MutableLiveData is an observable where we set values
-    public MutableLiveData<List<Resource>> resources = new MutableLiveData<List<Resource>>();
+    public MutableLiveData<List<POJOResource>> resources = new MutableLiveData<List<POJOResource>>();
     public MutableLiveData<Boolean> resourceLoadError = new MutableLiveData<Boolean>();
     public MutableLiveData<Boolean> loading = new MutableLiveData<Boolean>();
 
@@ -59,7 +51,7 @@ public class ResourcesViewModel extends ViewModel {
     private void fetchResources(String type) {
         loading.setValue(true);
         //RxJava: Wrap the API call in a disposable so we can Safely dispose of it, if app is destroyed.
-        Single<List<Resource>> singleCall;
+        Single<List<POJOResource>> singleCall;
         if(type == RESOURCE_TYPE_EXTRA ) {
             singleCall = resourcesService.getResourcesExtra();
         } else {
@@ -70,10 +62,10 @@ public class ResourcesViewModel extends ViewModel {
                 singleCall
                         .subscribeOn(Schedulers.newThread())//enables communication on new Thread background
                         .observeOn(AndroidSchedulers.mainThread())//handle response on UI Thread
-                        .subscribeWith(new DisposableSingleObserver<List<Resource>>() {//new DisposableSingleObserve so we can call it inside disposable.add()
+                        .subscribeWith(new DisposableSingleObserver<List<POJOResource>>() {//new DisposableSingleObserve so we can call it inside disposable.add()
 
                             @Override
-                            public void onSuccess(List<Resource> resourceModels) {
+                            public void onSuccess(List<POJOResource> resourceModels) {
                                 //set the resourceModels DATA to the MutableLiveData(Object that creates values)
                                 // so that this is returned in the callback in the MainActivity and refreshed the RecyclerView
                                 resources.setValue(resourceModels);

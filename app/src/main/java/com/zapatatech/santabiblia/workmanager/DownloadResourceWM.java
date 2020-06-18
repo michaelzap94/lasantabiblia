@@ -1,4 +1,4 @@
-package com.zapatatech.santabiblia.utilities;
+package com.zapatatech.santabiblia.workmanager;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Build;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
@@ -16,8 +15,9 @@ import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import com.zapatatech.santabiblia.interfaces.retrofit.RetrofitRESTendpointsService;
+import com.zapatatech.santabiblia.retrofit.RetrofitServiceGenerator;
+import com.zapatatech.santabiblia.utilities.Util;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;

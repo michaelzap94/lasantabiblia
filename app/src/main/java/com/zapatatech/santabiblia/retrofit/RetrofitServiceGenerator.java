@@ -1,7 +1,8 @@
-package com.zapatatech.santabiblia.utilities;
+package com.zapatatech.santabiblia.retrofit;
 
 import android.text.TextUtils;
-import android.util.Log;
+
+import com.zapatatech.santabiblia.retrofit.RetrofitAuthInterceptor;
 
 import okhttp3.OkHttpClient;
 //import okhttp3.logging.HttpLoggingInterceptor;

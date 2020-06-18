@@ -1,7 +1,7 @@
 package com.zapatatech.santabiblia.interfaces.retrofit;
 
 import com.zapatatech.santabiblia.models.Label;
-import com.zapatatech.santabiblia.models.Resource;
+import com.zapatatech.santabiblia.retrofit.Pojos.POJOResource;
 
 import java.util.List;
 
@@ -22,19 +22,19 @@ public interface RetrofitRESTendpointsService {
 
     //Substitute {path} with this value
     @GET("/resources/all/")
-    Single<List<Resource>> getResourcesAll();
+    Single<List<POJOResource>> getResourcesAll();
 
     //Substitute {path} with this value
     @GET("/resources/extra/")
-    Single<List<Resource>> getResourcesExtra();
+    Single<List<POJOResource>> getResourcesExtra();
 
     //Substitute {path} with this value
     @GET("/resources/type/{path}/")
-    Single<List<Resource>> getResourcesByType(@Path("path") String path );
+    Single<List<POJOResource>> getResourcesByType(@Path("path") String path );
 
     //Substitute {path} with this value
     @GET("/resources/language/{lang}/")
-    Single<List<Resource>> getResourcesByLang(@Path("lang") String lang );
+    Single<List<POJOResource>> getResourcesByLang(@Path("lang") String lang );
 
     //DOWNLOADING FILE==================================================================================
     //Please note, that we're specifying ResponseBody as return type. You should not use anything else here,

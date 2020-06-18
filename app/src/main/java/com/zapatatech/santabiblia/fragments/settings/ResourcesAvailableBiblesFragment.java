@@ -167,12 +167,12 @@ public class ResourcesAvailableBiblesFragment extends Fragment {
                     public void onChanged(@Nullable List<WorkInfo> workInfoList) {
                         if (workInfoList.size() > 0) {
                             for (WorkInfo workInfo: workInfoList) {
-                                Log.d(TAG, "startWorkManager: " + workInfo.getState());
+                                Log.d(TAG, "startWorkManagerDownloadResource: " + workInfo.getState());
                                 if (workInfo != null && workInfo.getState() == WorkInfo.State.RUNNING) {
                                     String fileNameProcessing = workInfo.getProgress().getString("fileNameProcessing");
                                     int progress = workInfo.getProgress().getInt("progress", -1);
-                                    Log.d(TAG, "startWorkManager: STILL RUNNING AFTER: " + fileNameProcessing);
-                                    Log.d(TAG, "startWorkManager: STILL RUNNING AFTER: " + progress);
+                                    Log.d(TAG, "startWorkManagerDownloadResource: STILL RUNNING AFTER: " + fileNameProcessing);
+                                    Log.d(TAG, "startWorkManagerDownloadResource: STILL RUNNING AFTER: " + progress);
                                     if(fileNameProcessing!=null){
                                         adapter.updateResourceStateProgressByName(fileNameProcessing, progress);
                                     } else {
@@ -180,7 +180,7 @@ public class ResourcesAvailableBiblesFragment extends Fragment {
                                     }
 
                                 } else if (workInfo != null && workInfo.getState().isFinished()) {
-                                    Log.d(TAG, "startWorkManager: completed");
+                                    Log.d(TAG, "startWorkManagerDownloadResource: completed");
                                     boolean myResult = workInfo.getOutputData().getBoolean("downloadComplete", false);
                                     String fileName = workInfo.getOutputData().getString("fileName");
                                     if(myResult){

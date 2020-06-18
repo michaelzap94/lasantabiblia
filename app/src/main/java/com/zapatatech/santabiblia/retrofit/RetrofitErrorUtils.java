@@ -1,4 +1,4 @@
-package com.zapatatech.santabiblia.utilities;
+package com.zapatatech.santabiblia.retrofit;
 
 import com.zapatatech.santabiblia.models.APIError;
 

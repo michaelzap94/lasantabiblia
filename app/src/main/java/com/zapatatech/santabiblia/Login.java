@@ -6,13 +6,11 @@ import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -36,8 +34,8 @@ import com.zapatatech.santabiblia.models.APIError;
 import com.zapatatech.santabiblia.models.Label;
 import com.zapatatech.santabiblia.models.AuthInfo;
 import com.zapatatech.santabiblia.utilities.CommonMethods;
-import com.zapatatech.santabiblia.utilities.RetrofitErrorUtils;
-import com.zapatatech.santabiblia.utilities.RetrofitServiceGenerator;
+import com.zapatatech.santabiblia.retrofit.RetrofitErrorUtils;
+import com.zapatatech.santabiblia.retrofit.RetrofitServiceGenerator;
 import com.zapatatech.santabiblia.utilities.Util;
 
 import java.io.IOException;

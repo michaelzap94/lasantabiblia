@@ -38,32 +38,28 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.zapatatech.santabiblia.Bible;
-import com.zapatatech.santabiblia.BibleCompare;
 import com.zapatatech.santabiblia.Dashboard;
 import com.zapatatech.santabiblia.DatabaseHelper.BibleCreator;
 import com.zapatatech.santabiblia.DatabaseHelper.BibleDBHelper;
 import com.zapatatech.santabiblia.DatabaseHelper.ContentDBHelper;
 import com.zapatatech.santabiblia.Home;
-import com.zapatatech.santabiblia.Login;
 import com.zapatatech.santabiblia.MainActivity;
 import com.zapatatech.santabiblia.R;
 import com.zapatatech.santabiblia.Search;
 import com.zapatatech.santabiblia.Settings;
-import com.zapatatech.santabiblia.SignUp;
 import com.zapatatech.santabiblia.interfaces.retrofit.RetrofitAuthService;
 import com.zapatatech.santabiblia.interfaces.retrofit.RetrofitSyncUp;
 import com.zapatatech.santabiblia.models.APIError;
 import com.zapatatech.santabiblia.models.AuthInfo;
-import com.zapatatech.santabiblia.models.Resource;
-import com.zapatatech.santabiblia.models.SyncUp;
+import com.zapatatech.santabiblia.retrofit.Pojos.POJOSyncUp;
 import com.zapatatech.santabiblia.models.User;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.zapatatech.santabiblia.retrofit.RetrofitErrorUtils;
+import com.zapatatech.santabiblia.retrofit.RetrofitServiceGenerator;
+import com.zapatatech.santabiblia.workmanager.DownloadResourceWM;
+import com.zapatatech.santabiblia.workmanager.OverrideServerWM;
+import com.zapatatech.santabiblia.workmanager.SyncUpServerWM;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -74,20 +70,16 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Single;
-import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.HttpException;
 import retrofit2.Response;
 
 import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
-import static android.content.Intent.makeMainActivity;
 
 public class CommonMethods {
     private static final String TAG = "CommonMethods";
@@ -96,6 +88,11 @@ public class CommonMethods {
     public static final int USER_ONLINE = 1;
     public static final int USER_OFFLINE = 2;
     //flags==================================================
+    private static final String DATA_SYNCUP_TAG = "DATA_SYNCUP_TAG";
+    private static final String DATA_OVERRIDE_TAG = "DATA_OVERRIDE_TAG";
+    private static final String DATA_SYNCUP_UNIQUE = "DATA_SYNCUP_UNIQUE";
+    private static final String DATA_OVERRIDE_UNIQUE = "DATA_OVERRIDE_UNIQUE";
+
     public static final String DOWNLOAD_RESOURCE_TAG = "DOWNLOAD_RESOURCE_TAG";
     public static final String MAIN_CONTENT_DB = "content.db";
     public static final String RESOURCE_TYPE_BIBLE = "type-bible";
@@ -113,6 +110,7 @@ public class CommonMethods {
     public static final String CHAPTER_LASTSEEN = "CHAPTER_LASTSEEN";
     public static final String BOOK_LASTSEEN = "BOOK_LASTSEEN";
     public static final int LABEL_ID_MEMORIZE = 1;
+
     //DEFAULT DBS========================================================================================
     public static void checkDefaultDatabaseExistLoad(Context context){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -614,7 +612,7 @@ public class CommonMethods {
             RetrofitSyncUp checkServerStateService = RetrofitServiceGenerator.createServiceRx(RetrofitSyncUp.class, accessToken);
             //GET SYNC UP RECORD-------------------------------------------------------------------------
             String email = CommonMethods.decodeJWTAndCreateUser(accessToken).getEmail();
-            SyncUp syncUp = ContentDBHelper.getInstance(mActivity).getSyncUp(email);
+            POJOSyncUp syncUp = ContentDBHelper.getInstance(mActivity).getSyncUp(email);
             if(syncUp == null){
                 throw new Exception("No sync up record found");
             }
@@ -635,7 +633,7 @@ public class CommonMethods {
                             if(syncUp.getState() == 0) {
                                 //NEEDS TO SYNC: OVERRIDE(upload)
                                 Toast.makeText(mActivity, "Sync in process...", Toast.LENGTH_SHORT).show();
-                                CommonMethods.uploadAndOverrideServer(syncUp);
+                                CommonMethods.startWorkManagerUploadData(mActivity, syncUp);
                             } else {
                                 //UP TO DATE: update sync data
                                 Toast.makeText(mActivity, "Your data is Up To Date", Toast.LENGTH_SHORT).show();
@@ -690,7 +688,7 @@ public class CommonMethods {
         }
     }
 
-    public static void askUserToOverrideOrSync(Activity mActivity, SyncUp syncUp){
+    public static void askUserToOverrideOrSync(Activity mActivity, POJOSyncUp syncUp){
         Resources resources = mActivity.getResources();
         new MaterialAlertDialogBuilder(mActivity)
                 .setTitle(resources.getString(R.string.syncup_prompt_title))
@@ -699,26 +697,80 @@ public class CommonMethods {
                     dialog.dismiss();
                 })
                 .setNegativeButton(resources.getString(R.string.override), (dialog, which) -> {
-                    // Respond to negative button press
-                    CommonMethods.uploadAndOverrideServer(syncUp);
+                    if(syncUp.getState() == 0) {
+                    } else {
+                    }
+                    CommonMethods.startWorkManagerUploadData(mActivity, syncUp);
                 })
                 .setPositiveButton(resources.getString(R.string.sync_up), (dialog, which) -> {
-                    // Respond to positive button press
-                    CommonMethods.downloadAndOverrideDevice(syncUp);
+                    if(syncUp.getState() == 0) {
+                    } else {
+                    }
+                    CommonMethods.startWorkManagerSyncUpData(mActivity, syncUp);
                 })
                 .show();
     }
 
-    public static void uploadAndOverrideServer(SyncUp syncUp){
+    //==================================================================================================
+    public static void startWorkManagerSyncUpData(Activity mActivity, POJOSyncUp syncUp){
+        if(syncUp != null){
+            //CONSTRAINTS
+            Constraints constraints = new Constraints.Builder()
+                    .setRequiresBatteryNotLow(true)
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build();
 
+            WorkManager mWorkManager = WorkManager.getInstance(mActivity);
+
+            OneTimeWorkRequest syncupWorkRequest = new OneTimeWorkRequest.Builder(SyncUpServerWM.class)
+                    .setConstraints(constraints)
+                    .addTag(DATA_SYNCUP_TAG)
+                    .setBackoffCriteria(
+                            BackoffPolicy.EXPONENTIAL,
+                            OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                            TimeUnit.MILLISECONDS)
+                    .setInputData(
+                            new Data.Builder()
+                                    .putInt("CLIENT_VERSION", syncUp.getVersion())
+                                    .putInt("CLIENT_STATE", syncUp.getState())
+                                    .build()
+                    )
+                    .build();
+
+            mWorkManager.enqueueUniqueWork(DATA_SYNCUP_UNIQUE, ExistingWorkPolicy.KEEP, syncupWorkRequest);
+        }
     }
+    public static void startWorkManagerUploadData(Activity mActivity, POJOSyncUp syncUp){
+        if(syncUp != null){
+            //CONSTRAINTS
+            Constraints constraints = new Constraints.Builder()
+                    .setRequiresBatteryNotLow(true)
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build();
 
-    public static void downloadAndOverrideDevice(SyncUp syncUp){
+            WorkManager mWorkManager = WorkManager.getInstance(mActivity);
 
+            OneTimeWorkRequest overrideWorkRequest = new OneTimeWorkRequest.Builder(OverrideServerWM.class)
+                    .setConstraints(constraints)
+                    .addTag(DATA_SYNCUP_TAG)
+                    .setBackoffCriteria(
+                            BackoffPolicy.EXPONENTIAL,
+                            OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                            TimeUnit.MILLISECONDS)
+                    .setInputData(
+                            new Data.Builder()
+                                    .putInt("CLIENT_VERSION", syncUp.getVersion())
+                                    .putInt("CLIENT_STATE", syncUp.getState())
+                                    .build()
+                    )
+                    .build();
+
+            mWorkManager.enqueueUniqueWork(DATA_SYNCUP_UNIQUE, ExistingWorkPolicy.KEEP, overrideWorkRequest);
+        }
     }
 
     //==================================================================================================
-    public static void startWorkManager(Activity mActivity, String resourceUrl, String fileName){
+    public static void startWorkManagerDownloadResource(Activity mActivity, String resourceUrl, String fileName){
         //CONSTRAINTS
         Constraints constraints = new Constraints.Builder()
                 .setRequiresStorageNotLow(true)
@@ -794,9 +846,9 @@ public class CommonMethods {
                         return;
                     }
                     WorkInfo info = listOfWorkInfo.get(0);
-                    Log.d(TAG, "startWorkManager: " + info.getState());
+                    Log.d(TAG, "startWorkManagerDownloadResource: " + info.getState());
                     if (info != null && info.getState() == WorkInfo.State.RUNNING) {
-                        Log.d(TAG, "startWorkManager: STILL RUNNING");
+                        Log.d(TAG, "startWorkManagerDownloadResource: STILL RUNNING");
 
                     } else if (info != null && info.getState().isFinished()) {
 
@@ -826,9 +878,9 @@ public class CommonMethods {
                     public void onChanged(@Nullable List<WorkInfo> workInfoList) {
                         if (workInfoList.size() > 0) {
                             for (WorkInfo workInfo: workInfoList) {
-                                Log.d(TAG, "startWorkManager: " + workInfo.getState());
+                                Log.d(TAG, "startWorkManagerDownloadResource: " + workInfo.getState());
                                 if (workInfo != null && workInfo.getState() == WorkInfo.State.RUNNING) {
-                                    Log.d(TAG, "startWorkManager: STILL RUNNING");
+                                    Log.d(TAG, "startWorkManagerDownloadResource: STILL RUNNING");
                                     String fileNameProcessing = workInfo.getProgress().getString("fileNameProcessing");
                                     int progress = workInfo.getProgress().getInt("progress", -1);
                                     if(fileNameProcessing!=null){

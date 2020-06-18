@@ -9,7 +9,7 @@ public class SearchResult {
     private String title;
     private Spanned contentSpanned;
     private int book_number;
-        private int chapter_number;
+    private int chapter_number;
     private int verse;
     private boolean isClickable;
 

@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -15,8 +14,8 @@ import com.zapatatech.santabiblia.interfaces.retrofit.RetrofitAuthService;
 import com.zapatatech.santabiblia.models.APIError;
 import com.zapatatech.santabiblia.models.AuthInfo;
 import com.zapatatech.santabiblia.utilities.CommonMethods;
-import com.zapatatech.santabiblia.utilities.RetrofitErrorUtils;
-import com.zapatatech.santabiblia.utilities.RetrofitServiceGenerator;
+import com.zapatatech.santabiblia.retrofit.RetrofitErrorUtils;
+import com.zapatatech.santabiblia.retrofit.RetrofitServiceGenerator;
 import com.zapatatech.santabiblia.utilities.Util;
 
 import java.io.IOException;

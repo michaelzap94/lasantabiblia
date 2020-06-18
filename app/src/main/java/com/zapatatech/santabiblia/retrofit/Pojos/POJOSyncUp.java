@@ -1,13 +1,13 @@
-package com.zapatatech.santabiblia.models;
+package com.zapatatech.santabiblia.retrofit.Pojos;
 
 
-public class SyncUp {
+public class POJOSyncUp {
     private String email;
     private int version;
     private int state;
     private String updated;
 
-    public SyncUp(String email, int version, int state, String updated) {
+    public POJOSyncUp(String email, int version, int state, String updated) {
         this.email = email;
         this.version = version;
         this.state = state;

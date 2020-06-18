@@ -1,9 +1,7 @@
 package com.zapatatech.santabiblia.interfaces.retrofit;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.zapatatech.santabiblia.models.Label;
-import com.zapatatech.santabiblia.models.Resource;
 
 import java.util.List;
 
@@ -11,7 +9,6 @@ import io.reactivex.Observable;
 import io.reactivex.Single;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
