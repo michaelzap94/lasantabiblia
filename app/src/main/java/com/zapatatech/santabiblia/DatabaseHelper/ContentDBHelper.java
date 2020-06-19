@@ -54,9 +54,10 @@ public class ContentDBHelper extends SQLiteOpenHelper {
     public ContentDBHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
         this.context = context;
-        this.db = getWritableDatabase();
         //it will return null if no Credentials stored
         this.user = CommonMethods.decodeJWTAndCreateUser(context);
+        this.db = getWritableDatabase();//start onCreate();
+
     }
     public void addUserToSingleton(Context context){this.user = CommonMethods.decodeJWTAndCreateUser(context);}
     public void removeUserFromSingleton(){
