@@ -179,7 +179,7 @@ public class Login extends AppCompatActivity {
 //        RetrofitGitHubClient client =  retrofit.create(RetrofitGitHubClient.class);
 
         // Create a very simple REST adapter which points the GitHub API endpoint.
-        RetrofitRESTendpointsService client =  RetrofitServiceGenerator.createService(RetrofitRESTendpointsService.class, auth_token);
+        RetrofitRESTendpointsService client =  RetrofitServiceGenerator.createService(RetrofitRESTendpointsService.class, auth_token, false);
         // Fetch a list of the Github repositories.
         Call<List<Label>> call = client.getAllLabels();
         // Execute the call asynchronously. Get a positive or negative callback.
@@ -232,7 +232,7 @@ public class Login extends AppCompatActivity {
     }
 
     private void retrofitLogin(HashMap<String, Object> loginObject){
-        RetrofitAuthService loginService = RetrofitServiceGenerator.createService(RetrofitAuthService.class, null);
+        RetrofitAuthService loginService = RetrofitServiceGenerator.createService(RetrofitAuthService.class, null, false);
         Call<AuthInfo> call;
         final String account_type;//default
         //doing this, because account_type can be null, if so, I cannot convert a null to string

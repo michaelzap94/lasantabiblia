@@ -91,7 +91,7 @@ public class SignUp extends AppCompatActivity {
     }
 
     private void retrofitSignUp(String nameValue, String emailValue, String password1Value, String password2Value){
-        RetrofitAuthService authService = RetrofitServiceGenerator.createService(RetrofitAuthService.class, null);
+        RetrofitAuthService authService = RetrofitServiceGenerator.createService(RetrofitAuthService.class, null, false);
 
         HashMap<String, Object> signUpObject = new HashMap<>();
         signUpObject.put("fullname", nameValue);

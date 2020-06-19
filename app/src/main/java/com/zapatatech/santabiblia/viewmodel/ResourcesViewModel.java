@@ -23,7 +23,7 @@ public class ResourcesViewModel extends ViewModel {
     public MutableLiveData<Boolean> resourceLoadError = new MutableLiveData<Boolean>();
     public MutableLiveData<Boolean> loading = new MutableLiveData<Boolean>();
 
-    public RetrofitRESTendpointsService resourcesService = RetrofitServiceGenerator.createServiceRx(RetrofitRESTendpointsService.class, null);
+    public RetrofitRESTendpointsService resourcesService = RetrofitServiceGenerator.createServiceRx(RetrofitRESTendpointsService.class, null, false);
     //Dispose of anything inside it
     private CompositeDisposable disposable = new CompositeDisposable();
 

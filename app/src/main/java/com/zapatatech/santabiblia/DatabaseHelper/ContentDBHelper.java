@@ -12,9 +12,11 @@ import androidx.annotation.NonNull;
 import com.zapatatech.santabiblia.fragments.dialogs.VersesLearned;
 import com.zapatatech.santabiblia.models.Book;
 import com.zapatatech.santabiblia.models.Label;
+import com.zapatatech.santabiblia.models.User;
 import com.zapatatech.santabiblia.retrofit.Pojos.POJOLabel;
 import com.zapatatech.santabiblia.retrofit.Pojos.POJOSyncUp;
 import com.zapatatech.santabiblia.models.VersesMarked;
+import com.zapatatech.santabiblia.retrofit.Pojos.POJOSyncUpHelper;
 import com.zapatatech.santabiblia.retrofit.Pojos.POJOVersesLearned;
 import com.zapatatech.santabiblia.retrofit.Pojos.POJOVersesMarked;
 import com.zapatatech.santabiblia.utilities.BookHelper;
@@ -33,6 +35,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
     private Context context;
     private static ContentDBHelper dbHelperSingleton = null;
     private final SQLiteDatabase db;
+    private User user;
 
     /**
      * We use a Singleton to prevent leaking the SQLiteDatabase or Context.
@@ -52,6 +55,12 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         super(context, DB_NAME, null, DB_VERSION);
         this.context = context;
         this.db = getWritableDatabase();
+        //it will return null if no Credentials stored
+        this.user = CommonMethods.decodeJWTAndCreateUser(context);
+    }
+    public void addUserToSingleton(Context context){this.user = CommonMethods.decodeJWTAndCreateUser(context);}
+    public void removeUserFromSingleton(){
+        this.user = null;
     }
     public boolean createLabel(String name, String color){
         ContentValues cv = new ContentValues();
@@ -375,34 +384,43 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         db.execSQL("INSERT OR IGNORE INTO syncup(email) VALUES('"+ email +"')");
     }
     public boolean updateSyncUp(@NonNull String email, Integer version, Integer state, String updated){
+        Log.d(TAG, "updateSyncUp: " + email);
+        Log.d(TAG, "updateSyncUp: " + version);
+        Log.d(TAG, "updateSyncUp: " + state);
+        Log.d(TAG, "updateSyncUp: " + updated);
         ContentValues initialValues = new ContentValues();
 //        initialValues.put(ContentDBContracts.SYNC_UPS.COL_ID, 1); // id will always be 1
-        initialValues.put(ContentDBContracts.SYNC_UPS.COL_VERSION, email);
+        //initialValues.put(ContentDBContracts.SYNC_UPS.COL_VERSION, email);
         if(version!=null) initialValues.put(ContentDBContracts.SYNC_UPS.COL_VERSION, version);
         if(state!=null) initialValues.put(ContentDBContracts.SYNC_UPS.COL_STATE, state);
         if(updated!=null) initialValues.put(ContentDBContracts.SYNC_UPS.COL_UPDATED, updated);
-        return this.db.update("syncup", initialValues, "email=?", new String[] {email}) > 0;  // it will always be one, since we are keeping only one record
+        return this.db.update("syncup", initialValues, "email=?", new String[] {email}) > 0;
     }
 
     public ArrayList<POJOLabel> getAllLabelsRaw(){
+        int userId = 0;
+        if(user != null ){
+            userId = user.getUserId();
+        }
         Cursor innerCursor;
         int rowCount;
         int i;
         ArrayList<POJOLabel> list = new ArrayList();
         try {
-            String query = "SELECT * FROM labels";
+            String query = "SELECT * FROM labels WHERE user_id = " + userId;
             innerCursor = this.db.rawQuery(query, null);
             if (innerCursor.moveToFirst()) {
                 rowCount = innerCursor.getCount();
                 for (i = 0; i < rowCount; i++) {
 
-                    int id = innerCursor.getInt(innerCursor.getColumnIndex("_id"));
+                    int user_id = innerCursor.getInt(innerCursor.getColumnIndex("user_id"));
+                    int _id = innerCursor.getInt(innerCursor.getColumnIndex("_id"));
                     String name = innerCursor.getString(innerCursor.getColumnIndex("name"));
                     String color = innerCursor.getString(innerCursor.getColumnIndex("color"));
                     int permanent = innerCursor.getInt(innerCursor.getColumnIndex("permanent"));
                     int state = innerCursor.getInt(innerCursor.getColumnIndex("state"));
 
-                    list.add(new POJOLabel(id, name, color, permanent, state));
+                    list.add(new POJOLabel(user_id, _id, name, color, permanent, state));
                     innerCursor.moveToNext();
                 }
             }
@@ -413,17 +431,22 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         return list;
     }
     public ArrayList<POJOVersesMarked> getAllVersesMarkedRaw(){
+        int userId = 0;
+        if(user != null ){
+            userId = user.getUserId();
+        }
         Cursor innerCursor;
         int rowCount;
         int i;
         ArrayList<POJOVersesMarked> list = new ArrayList();
         try {
-            String query = "SELECT * FROM verses_marked";
+            String query = "SELECT * FROM verses_marked WHERE user_id = " + userId;
             innerCursor = this.db.rawQuery(query, null);
             if (innerCursor.moveToFirst()) {
                 rowCount = innerCursor.getCount();
                 for (i = 0; i < rowCount; i++) {
 
+                    int user_id = innerCursor.getInt(innerCursor.getColumnIndex("user_id"));
                     int _id = innerCursor.getInt(innerCursor.getColumnIndex("_id"));
                     int label_id = innerCursor.getInt(innerCursor.getColumnIndex("label_id"));
                     String uuid = innerCursor.getString(innerCursor.getColumnIndex("UUID"));
@@ -440,7 +463,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
                     int state = innerCursor.getInt(innerCursor.getColumnIndex("state"));
 
 
-                    list.add(new POJOVersesMarked(_id, label_id, book_number, chapter, verseFrom, verseTo, label_name, label_color, label_permanent, note, date_created, date_updated, uuid, state));
+                    list.add(new POJOVersesMarked(user_id, _id, label_id, book_number, chapter, verseFrom, verseTo, label_name, label_color, label_permanent, note, date_created, date_updated, uuid, state));
                     innerCursor.moveToNext();
                 }
             }
@@ -451,17 +474,22 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         return list;
     }
     public ArrayList<POJOVersesLearned> getAllVersesLearnedRaw(){
+        int userId = 0;
+        if(user != null ){
+            userId = user.getUserId();
+        }
         Cursor innerCursor;
         int rowCount;
         int i;
         ArrayList<POJOVersesLearned> list = new ArrayList();
         try {
-            String query = "SELECT * FROM verses_learned";
+            String query = "SELECT * FROM verses_learned WHERE user_id = " + userId;
             innerCursor = this.db.rawQuery(query, null);
             if (innerCursor.moveToFirst()) {
                 rowCount = innerCursor.getCount();
                 for (i = 0; i < rowCount; i++) {
 
+                    int user_id = innerCursor.getInt(innerCursor.getColumnIndex("user_id"));
                     int _id = innerCursor.getInt(innerCursor.getColumnIndex("_id"));
                     int label_id = innerCursor.getInt(innerCursor.getColumnIndex("label_id"));
                     String uuid = innerCursor.getString(innerCursor.getColumnIndex("UUID"));
@@ -469,7 +497,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
                     int priority = innerCursor.getInt(innerCursor.getColumnIndex("priority"));
                     int state = innerCursor.getInt(innerCursor.getColumnIndex("state"));
 
-                    list.add(new POJOVersesLearned(_id, label_id, uuid, learned, priority, state));
+                    list.add(new POJOVersesLearned(user_id, _id, label_id, uuid, learned, priority, state));
                     innerCursor.moveToNext();
                 }
             }
@@ -480,21 +508,111 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         return list;
     }
 
+    public boolean overrideLocalData(POJOSyncUpHelper data){
+        if(user == null){
+            return false;
+        }
+        List<POJOLabel> labels = data.getLabels();
+        List<POJOVersesMarked> versesMarked = data.getVerses_marked();
+        List<POJOVersesLearned> versesLearned = data.getVerses_learned();
+        boolean success = true;
+        SQLiteDatabase db = this.db;
+        db.beginTransaction();
+        try{
+            //delete all existing data
+//            db.execSQL("DELETE FROM labels WHERE user_id = ?", user.getUserId());
+//            db.execSQL("DELETE FROM verses_marked WHERE user_id = ?", user.getUserId());
+//            db.execSQL("DELETE FROM verses_learned WHERE user_id = ?", user.getUserId());
+            db.execSQL("DELETE FROM labels");
+            db.execSQL("DELETE FROM verses_marked");
+            db.execSQL("DELETE FROM verses_learned");
+
+            if(labels != null && labels.size() > 0){
+                ContentValues cv = new ContentValues();
+                for (int i = 0; i < labels.size(); i++) {
+                    cv.put("user_id", labels.get(i).getUserId());
+                    cv.put("_id", labels.get(i).get_id());
+                    cv.put("name", labels.get(i).getName());
+                    cv.put("color", labels.get(i).getColor());
+                    cv.put("permanent", labels.get(i).getPermanent());
+                    cv.put("state", labels.get(i).getState());
+                    db.insert("labels", null, cv);
+                }
+            }
+
+            if(versesMarked != null && versesMarked.size() > 0){
+                ContentValues cv = new ContentValues();
+                for (int i = 0; i < versesMarked.size(); i++) {
+                    cv.put("user_id", versesMarked.get(i).getUserId());
+                    cv.put("_id", versesMarked.get(i).get_id());
+                    cv.put("label_id", versesMarked.get(i).getLabel_id());
+                    cv.put("book_number", versesMarked.get(i).getBook_number());
+                    cv.put("chapter", versesMarked.get(i).getChapter());
+                    cv.put("verseFrom", versesMarked.get(i).getVerseFrom());
+                    cv.put("verseTo", versesMarked.get(i).getVerseTo());
+                    cv.put("label_name", (versesMarked.get(i).getLabel_name()));
+                    cv.put("label_color", (versesMarked.get(i).getLabel_color()));
+                    cv.put("label_permanent", (versesMarked.get(i).getLabel_permanent()));
+                    cv.put("note", (versesMarked.get(i).getNote()));
+                    cv.put("date_created", (versesMarked.get(i).getDate_created()));
+                    cv.put("date_updated", (versesMarked.get(i).getDate_updated()));
+                    cv.put("UUID", (versesMarked.get(i).getUUID()));
+                    cv.put("state", (versesMarked.get(i).getState()));
+                    db.insert("verses_marked", null, cv);
+                }
+            }
+
+            if(versesLearned != null && versesLearned.size() > 0){
+                ContentValues cv = new ContentValues();
+                for (int i = 0; i < versesLearned.size(); i++) {
+                    cv.put("user_id", versesLearned.get(i).getUserId());
+                    cv.put("_id", versesLearned.get(i).getUserId());
+                    cv.put("UUID", versesLearned.get(i).getUUID());
+                    cv.put("label_id", versesLearned.get(i).getLabel_id());
+                    cv.put("learned", versesLearned.get(i).getLearned());
+                    cv.put("priority", versesLearned.get(i).getPriority());
+                    cv.put("state", versesLearned.get(i).getState());
+                    db.insert("verses_learned", null, cv);
+                }
+            }
+
+            //finally update the SyncUp version
+            updateSyncUp(user.getEmail(), data.getVersion(), 1, null);
+
+            db.setTransactionSuccessful();
+        } catch (Exception e){
+            e.printStackTrace();
+            success = false;
+        } finally {
+            db.endTransaction();
+        }
+        return success;
+    }
+    //==============================================================================================
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE syncup (email VARCHAR PRIMARY KEY, version INTEGER DEFAULT 0, updated datetime DEFAULT current_timestamp, state INTEGER DEFAULT 0)");
-
-        db.execSQL("CREATE TABLE labels (_id INTEGER PRIMARY KEY, name VARCHAR NOT NULL, color VARCHAR NOT NULL, permanent INTEGER DEFAULT 0, state INTEGER DEFAULT 0)");
-        db.execSQL("CREATE TABLE verses_marked (_id INTEGER PRIMARY KEY, label_id INTEGER NOT NULL, book_number INTEGER NOT NULL, chapter INTEGER NOT NULL, verseFrom INTEGER NOT NULL, verseTo INTEGER NOT NULL, " +
+        db.execSQL("CREATE TABLE labels (_id INTEGER PRIMARY KEY, user_id INTEGER DEFAULT 0, name VARCHAR NOT NULL, color VARCHAR NOT NULL, permanent INTEGER DEFAULT 0, state INTEGER DEFAULT 0)");
+        db.execSQL("CREATE TABLE verses_marked (_id INTEGER PRIMARY KEY, user_id INTEGER DEFAULT 0, label_id INTEGER NOT NULL, book_number INTEGER NOT NULL, chapter INTEGER NOT NULL, verseFrom INTEGER NOT NULL, verseTo INTEGER NOT NULL, " +
                 " label_name VARCHAR NOT NULL, label_color VARCHAR NOT NULL, label_permanent INTEGER DEFAULT 0, note VARCHAR, date_created datetime DEFAULT current_timestamp, date_updated datetime DEFAULT current_timestamp, UUID VARCHAR NOT NULL, state INTEGER DEFAULT 0," +
                 " FOREIGN KEY (label_id) REFERENCES labels (_id) ON DELETE CASCADE)");
-        db.execSQL("CREATE TABLE verses_learned (_id INTEGER PRIMARY KEY, UUID VARCHAR NOT NULL, label_id INTEGER NOT NULL, learned INTEGER DEFAULT 0, priority INTEGER DEFAULT 0, state INTEGER DEFAULT 0)");
+        db.execSQL("CREATE TABLE verses_learned (_id INTEGER PRIMARY KEY, user_id INTEGER DEFAULT 0, UUID VARCHAR NOT NULL, label_id INTEGER NOT NULL, learned INTEGER DEFAULT 0, priority INTEGER DEFAULT 0, state INTEGER DEFAULT 0)");
 
-
-        db.execSQL("INSERT INTO labels (name,color,permanent) VALUES( \"Memorize\", \"#00ff00\", 1)");
-        db.execSQL("INSERT INTO labels (name,color,permanent) VALUES( \"Favourites\", \"#ffd700\", 1)");
+        initPutData(db);
     }
+
+    private void initPutData(SQLiteDatabase db){
+        Log.d(TAG, "initPutData: " + user);
+        if(user == null){
+            db.execSQL("INSERT INTO labels (name,color,permanent) VALUES( \"Memorize\", \"#00ff00\", 1)");
+            db.execSQL("INSERT INTO labels (name,color,permanent) VALUES( \"Favourites\", \"#ffd700\", 1)");
+        } else {
+            db.execSQL("INSERT INTO labels (user_id, name,color,permanent) VALUES( "+user.getUserId()+", \"Memorize\", \"#00ff00\", 1)");
+            db.execSQL("INSERT INTO labels (user_id, name,color,permanent) VALUES( "+user.getUserId()+", \"Favourites\", \"#ffd700\", 1)");
+        }
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS [" + ContentDBContracts.LABELS.NAME + "];");

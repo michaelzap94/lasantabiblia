@@ -1,6 +1,7 @@
 package com.zapatatech.santabiblia.retrofit.Pojos;
 
 public class POJOVersesMarked {
+    private int user;
     private int _id;
     private int label_id;
     private int book_number;
@@ -16,7 +17,8 @@ public class POJOVersesMarked {
     private String UUID;
     private int state;
 
-    public POJOVersesMarked(int _id, int label_id, int book_number, int chapter, int verseFrom, int verseTo, String label_name, String label_color, int label_permanent, String note, String date_created, String date_updated, String UUID, int state) {
+    public POJOVersesMarked(int user, int _id, int label_id, int book_number, int chapter, int verseFrom, int verseTo, String label_name, String label_color, int label_permanent, String note, String date_created, String date_updated, String UUID, int state) {
+        this.user = user;
         this._id = _id;
         this.label_id = label_id;
         this.book_number = book_number;
@@ -32,6 +34,11 @@ public class POJOVersesMarked {
         this.UUID = UUID;
         this.state = state;
     }
+
+    public int getUserId() {
+        return user;
+    }
+
 
     public int get_id() {
         return _id;

@@ -1,6 +1,7 @@
 package com.zapatatech.santabiblia.retrofit.Pojos;
 
 public class POJOVersesLearned {
+    private int user;
     private int _id;
     private int label_id;
     private String UUID;
@@ -8,13 +9,18 @@ public class POJOVersesLearned {
     private int priority;
     private int state;
 
-    public POJOVersesLearned(int _id, int label_id, String UUID, int learned, int priority, int state) {
+    public POJOVersesLearned(int user, int _id, int label_id, String UUID, int learned, int priority, int state) {
+        this.user = user;
         this._id = _id;
         this.label_id = label_id;
         this.UUID = UUID;
         this.learned = learned;
         this.priority = priority;
         this.state = state;
+    }
+
+    public int getUserId() {
+        return user;
     }
 
     public int get_id() {

@@ -40,7 +40,7 @@ public class DownloadResourceWM  extends Worker {
     public static final int DOWNLOAD_RESOURCE_NOTIFICATION_ID = 0;
     public static final String DOWNLOAD_RESOURCE_NOTIFICATION_CHANNEL_ID = "DOWNLOAD_RESOURCE_NOTIFICATION_CHANNEL_ID";
     //====================================================================================================
-    public RetrofitRESTendpointsService resourcesService = RetrofitServiceGenerator.createService(RetrofitRESTendpointsService.class, null);
+    public RetrofitRESTendpointsService resourcesService = RetrofitServiceGenerator.createService(RetrofitRESTendpointsService.class, null, false);
     //public RetrofitRESTendpointsService resourcesService = RetrofitServiceGenerator.createServiceRx(RetrofitRESTendpointsService.class, null);
     //====================================================================================================
     private NotificationCompat.Builder notificationBuilder;
@@ -228,7 +228,7 @@ public class DownloadResourceWM  extends Worker {
     @RequiresApi(Build.VERSION_CODES.O)
     private void createChannel() {
         // Create a Notification channel
-        NotificationChannel notificationChannel = new NotificationChannel(DOWNLOAD_RESOURCE_NOTIFICATION_CHANNEL_ID, "SyncUpChannel", NotificationManager.IMPORTANCE_LOW);
+        NotificationChannel notificationChannel = new NotificationChannel(DOWNLOAD_RESOURCE_NOTIFICATION_CHANNEL_ID, "DownloadResourceChannel", NotificationManager.IMPORTANCE_LOW);
         notificationChannel.setDescription("no sound");
         notificationChannel.setSound(null, null);
         notificationChannel.enableLights(false);

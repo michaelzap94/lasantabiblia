@@ -58,7 +58,6 @@ import com.zapatatech.santabiblia.models.User;
 import com.zapatatech.santabiblia.retrofit.RetrofitErrorUtils;
 import com.zapatatech.santabiblia.retrofit.RetrofitServiceGenerator;
 import com.zapatatech.santabiblia.workmanager.DownloadResourceWM;
-import com.zapatatech.santabiblia.workmanager.OverrideServerWM;
 import com.zapatatech.santabiblia.workmanager.SyncUpServerWM;
 
 import java.io.IOException;
@@ -88,10 +87,12 @@ public class CommonMethods {
     public static final int USER_ONLINE = 1;
     public static final int USER_OFFLINE = 2;
     //flags==================================================
-    private static final String DATA_SYNCUP_TAG = "DATA_SYNCUP_TAG";
-    private static final String DATA_OVERRIDE_TAG = "DATA_OVERRIDE_TAG";
-    private static final String DATA_SYNCUP_UNIQUE = "DATA_SYNCUP_UNIQUE";
-    private static final String DATA_OVERRIDE_UNIQUE = "DATA_OVERRIDE_UNIQUE";
+    public static final String DATA_SYNCUP_TAG = "DATA_SYNCUP_TAG";
+    public static final String DATA_OVERRIDE_TAG = "DATA_OVERRIDE_TAG";
+    public static final String DATA_SYNCUP_UNIQUE = "DATA_SYNCUP_UNIQUE";
+    public static final String DATA_OVERRIDE_UNIQUE = "DATA_OVERRIDE_UNIQUE";
+    public static final int DATA_OVERRIDE_FLAG = 0;
+    public static final int DATA_SYNCUP_FLAG = 1;
 
     public static final String DOWNLOAD_RESOURCE_TAG = "DOWNLOAD_RESOURCE_TAG";
     public static final String MAIN_CONTENT_DB = "content.db";
@@ -324,6 +325,8 @@ public class CommonMethods {
     public static void continueToApp(Activity activity){
         String accessToken = CommonMethods.getAccessToken(activity);
         if(accessToken != null && CommonMethods.getAccessToken(activity) != null ){
+            //ADD USER TO DB SINGLETON
+            ContentDBHelper.getInstance(activity).addUserToSingleton(activity);
             //CREATE FIRST RECORD FOR SYNC UP for this user IF NOT PRESENT ALREADY
             String email = CommonMethods.decodeJWTAndCreateUser(accessToken).getEmail();
             ContentDBHelper.getInstance(activity).insertSyncUpIfNotExist(email);
@@ -346,7 +349,7 @@ public class CommonMethods {
         String refreshToken = getRefreshToken(mActivity);
         String accessToken = getAccessToken(mActivity);
         if( refreshToken != null && accessToken != null ) {
-            RetrofitAuthService logOutService = RetrofitServiceGenerator.createService(RetrofitAuthService.class, accessToken);
+            RetrofitAuthService logOutService = RetrofitServiceGenerator.createService(RetrofitAuthService.class, accessToken, false);
 
             HashMap<String, Object> logOutObject = new HashMap<>();
             logOutObject.put("refresh", refreshToken);
@@ -426,6 +429,7 @@ public class CommonMethods {
     }
     private static void deviceLogOut(Activity activity){
         if(CommonMethods.clearAccessToken(activity) && CommonMethods.clearRefreshToken(activity) && CommonMethods.clearAccountType(activity)){
+            ContentDBHelper.getInstance(activity).removeUserFromSingleton();
             int newStatus = CommonMethods.updateUserStatus(activity, CommonMethods.USER_NONE);
             if(newStatus == CommonMethods.USER_NONE){
                 Intent intent = new Intent(activity, MainActivity.class);
@@ -443,7 +447,7 @@ public class CommonMethods {
         String refreshToken = getRefreshToken(mActivity);
         String accessToken = getAccessToken(mActivity);
         if( accessToken != null && refreshToken != null ) {
-            RetrofitAuthService logOutService = RetrofitServiceGenerator.createService(RetrofitAuthService.class, accessToken);
+            RetrofitAuthService logOutService = RetrofitServiceGenerator.createService(RetrofitAuthService.class, accessToken, false);
             HashMap<String, Object> authObj = new HashMap<>();
             authObj.put("token", accessToken);
 
@@ -496,7 +500,7 @@ public class CommonMethods {
     }
 
     public static void retrofitRefreshCredentials(Activity mActivity, String refreshToken) {
-        RetrofitAuthService logOutService = RetrofitServiceGenerator.createService(RetrofitAuthService.class, null);
+        RetrofitAuthService logOutService = RetrofitServiceGenerator.createService(RetrofitAuthService.class, null, false);
         HashMap<String, Object> authObj = new HashMap<>();
         authObj.put("refresh", refreshToken);
 
@@ -579,18 +583,18 @@ public class CommonMethods {
     //==================================================================================================
     public static User decodeJWTAndCreateUser(String jwt_token){
         JWT jwt = new JWT(jwt_token);
-        return new User(jwt.getClaim("user_id").asString(),
+        return new User(jwt.getClaim("user_id").asInt(),
                 jwt.getClaim("email").asString(),
                 jwt.getClaim("fullname").asString(),
                 jwt.getClaim("account_type").asString(),
                 jwt.getClaim("social_id").asString());
     }
-    public static User decodeJWTAndCreateUser(Activity mActivity){
+    public static User decodeJWTAndCreateUser(Context mActivity){
         String jwt_token = CommonMethods.getAccessToken(mActivity);
         if(jwt_token != null){
             JWT jwt = new JWT(jwt_token);
             Log.d(TAG, "decodeJWTAndCreateUser: " + jwt.getClaim("fullname").asString());
-            return new User(jwt.getClaim("user_id").asString(),
+            return new User(jwt.getClaim("user_id").asInt(),
                     jwt.getClaim("email").asString(),
                     jwt.getClaim("fullname").asString(),
                     jwt.getClaim("account_type").asString(),
@@ -609,7 +613,9 @@ public class CommonMethods {
         String refreshToken = getRefreshToken(mActivity);
         String accessToken = getAccessToken(mActivity);
         if( refreshToken != null && accessToken != null ) {
-            RetrofitSyncUp checkServerStateService = RetrofitServiceGenerator.createServiceRx(RetrofitSyncUp.class, accessToken);
+            Log.d(TAG, "retrofitStartSyncUp: accessToken " + accessToken);
+
+            RetrofitSyncUp checkServerStateService = RetrofitServiceGenerator.createServiceRx(RetrofitSyncUp.class, accessToken, false);
             //GET SYNC UP RECORD-------------------------------------------------------------------------
             String email = CommonMethods.decodeJWTAndCreateUser(accessToken).getEmail();
             POJOSyncUp syncUp = ContentDBHelper.getInstance(mActivity).getSyncUp(email);
@@ -633,7 +639,7 @@ public class CommonMethods {
                             if(syncUp.getState() == 0) {
                                 //NEEDS TO SYNC: OVERRIDE(upload)
                                 Toast.makeText(mActivity, "Sync in process...", Toast.LENGTH_SHORT).show();
-                                CommonMethods.startWorkManagerUploadData(mActivity, syncUp);
+                                CommonMethods.startWorkManagerSyncUpData(mActivity, syncUp, DATA_OVERRIDE_FLAG);
                             } else {
                                 //UP TO DATE: update sync data
                                 Toast.makeText(mActivity, "Your data is Up To Date", Toast.LENGTH_SHORT).show();
@@ -697,22 +703,18 @@ public class CommonMethods {
                     dialog.dismiss();
                 })
                 .setNegativeButton(resources.getString(R.string.override), (dialog, which) -> {
-                    if(syncUp.getState() == 0) {
-                    } else {
-                    }
-                    CommonMethods.startWorkManagerUploadData(mActivity, syncUp);
+                    CommonMethods.startWorkManagerSyncUpData(mActivity, syncUp, DATA_OVERRIDE_FLAG);
+                    Toast.makeText(mActivity, "Sync in process...", Toast.LENGTH_SHORT).show();
                 })
                 .setPositiveButton(resources.getString(R.string.sync_up), (dialog, which) -> {
-                    if(syncUp.getState() == 0) {
-                    } else {
-                    }
-                    CommonMethods.startWorkManagerSyncUpData(mActivity, syncUp);
+                    CommonMethods.startWorkManagerSyncUpData(mActivity, syncUp, DATA_SYNCUP_FLAG);
+                    Toast.makeText(mActivity, "Sync in process...", Toast.LENGTH_SHORT).show();
                 })
                 .show();
     }
 
     //==================================================================================================
-    public static void startWorkManagerSyncUpData(Activity mActivity, POJOSyncUp syncUp){
+    public static void startWorkManagerSyncUpData(Activity mActivity, POJOSyncUp syncUp, int syncUpOrOverride){
         if(syncUp != null){
             //CONSTRAINTS
             Constraints constraints = new Constraints.Builder()
@@ -733,39 +735,12 @@ public class CommonMethods {
                             new Data.Builder()
                                     .putInt("CLIENT_VERSION", syncUp.getVersion())
                                     .putInt("CLIENT_STATE", syncUp.getState())
+                                    .putInt("ACTION_FLAG", syncUpOrOverride)
                                     .build()
                     )
                     .build();
 
             mWorkManager.enqueueUniqueWork(DATA_SYNCUP_UNIQUE, ExistingWorkPolicy.KEEP, syncupWorkRequest);
-        }
-    }
-    public static void startWorkManagerUploadData(Activity mActivity, POJOSyncUp syncUp){
-        if(syncUp != null){
-            //CONSTRAINTS
-            Constraints constraints = new Constraints.Builder()
-                    .setRequiresBatteryNotLow(true)
-                    .setRequiredNetworkType(NetworkType.CONNECTED)
-                    .build();
-
-            WorkManager mWorkManager = WorkManager.getInstance(mActivity);
-
-            OneTimeWorkRequest overrideWorkRequest = new OneTimeWorkRequest.Builder(OverrideServerWM.class)
-                    .setConstraints(constraints)
-                    .addTag(DATA_SYNCUP_TAG)
-                    .setBackoffCriteria(
-                            BackoffPolicy.EXPONENTIAL,
-                            OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
-                            TimeUnit.MILLISECONDS)
-                    .setInputData(
-                            new Data.Builder()
-                                    .putInt("CLIENT_VERSION", syncUp.getVersion())
-                                    .putInt("CLIENT_STATE", syncUp.getState())
-                                    .build()
-                    )
-                    .build();
-
-            mWorkManager.enqueueUniqueWork(DATA_SYNCUP_UNIQUE, ExistingWorkPolicy.KEEP, overrideWorkRequest);
         }
     }
 

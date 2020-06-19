@@ -1,13 +1,15 @@
 package com.zapatatech.santabiblia.retrofit.Pojos;
 
 public class POJOLabel {
+    private int user;
     private int _id;
     private String name;
     private String color;
     private int permanent;
     private int state;
 
-    public POJOLabel(int _id, String name, String color, int permanent, int state) {
+    public POJOLabel(int user, int _id, String name, String color, int permanent, int state) {
+        this.user = user;
         this._id = _id;
         this.name = name;
         this.color = color;
@@ -15,7 +17,11 @@ public class POJOLabel {
         this.state = state;
     }
 
-    public int getId() {
+    public int getUserId() {
+        return user;
+    }
+
+    public int get_id() {
         return _id;
     }
 

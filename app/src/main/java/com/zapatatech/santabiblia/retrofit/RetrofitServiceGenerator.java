@@ -4,6 +4,8 @@ import android.text.TextUtils;
 
 import com.zapatatech.santabiblia.retrofit.RetrofitAuthInterceptor;
 
+import java.util.concurrent.TimeUnit;
+
 import okhttp3.OkHttpClient;
 //import okhttp3.logging.HttpLoggingInterceptor;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -36,6 +38,9 @@ public class RetrofitServiceGenerator {
     public static Retrofit retrofitWithRx = builderWithRx.build();
     //=====================================================================================
     private static OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+    private static OkHttpClient.Builder httpClientLong = new OkHttpClient.Builder()
+                                        .connectTimeout(100, TimeUnit.SECONDS)
+                                        .readTimeout(100,TimeUnit.SECONDS);
     //=====================================================================================
 
     //ADD LOGGING OF REQUESTS AND RESPONSES 2)=================================================
@@ -49,38 +54,15 @@ public class RetrofitServiceGenerator {
      * @param <S> - Class
      * @return - creates and returns a usable client from serviceClass
      */
-    public static <S> S createService(Class<S> serviceClass) {
-        //return createService(serviceClass, null, null);//for basic authentication
-        return createService(serviceClass, null);
-    }
-
-    //BASIC AUTHENTICATION
-//    public static <S> S createService(Class<S> serviceClass, String email, String password) {
-//        if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password)) {
-//            String authToken = Credentials.basic(email, password);
-//            return createService(serviceClass, authToken);
-//        }
-//        return createService(serviceClass, null);
-//    }
-
-    //OAUTH AUTHENTICATION USING clientId and clientSecret
-//    public static <S> S createService(Class<S> serviceClass, String clientId, String clientSecret) {
-//        if (!TextUtils.isEmpty(clientId)
-//                && !TextUtils.isEmpty(clientSecret)) {
-//            String authToken = Credentials.basic(clientId, clientSecret);
-//            return createService(serviceClass, authToken);
-//        }
-//        return createService(serviceClass, null, null);
-//    }
-
-    public static <S> S createService( Class<S> serviceClass, final String authToken) {
-        mAddLogging(builder);
+    public static <S> S createService( Class<S> serviceClass, final String authToken, boolean longTimeOut) {
+        OkHttpClient.Builder _httpClient = (longTimeOut) ? httpClientLong : httpClient;
+        mAddLogging(retrofit, builder, _httpClient);
         if (!TextUtils.isEmpty(authToken)) {
             RetrofitAuthInterceptor interceptor = new RetrofitAuthInterceptor(authToken);
             //creates the custom Interceptor using the authToken
-            if (!httpClient.interceptors().contains(interceptor)) {
-                httpClient.addInterceptor(interceptor);//add HTTP header field for Authorization: Bearer 12345
-                builder.client(httpClient.build());
+            if (!_httpClient.interceptors().contains(interceptor)) {
+                _httpClient.addInterceptor(interceptor);//add HTTP header field for Authorization: Bearer 12345
+                builder.client(_httpClient.build());
                 retrofit = builder.build();
             }
         }
@@ -89,14 +71,14 @@ public class RetrofitServiceGenerator {
     }
     //=====================================================================================
 
-    private static void mAddLogging(Retrofit.Builder _builder){
+    private static void mAddLogging(Retrofit _retrofit, Retrofit.Builder _builder, OkHttpClient.Builder _httpClient){
         //ADD LOGGING OF REQUESTS AND RESPONSES 1)============================================
         //Check if the logging interceptor is already present
-        if (!httpClient.interceptors().contains(logging)) {
-            httpClient.addInterceptor(logging);//if not, then add it
-            _builder.client(httpClient.build());
+        if (!_httpClient.interceptors().contains(logging)) {
+            _httpClient.addInterceptor(logging);//if not, then add it
+            _builder.client(_httpClient.build());
             //Make sure to not build the retrofit object on every createService call
-            retrofit = _builder.build();
+            _retrofit = _builder.build();
         }
     }
 
@@ -107,18 +89,15 @@ public class RetrofitServiceGenerator {
      * @param <S> - Class
      * @return - creates and returns a usable client from serviceClass
      */
-    public static <S> S createServiceRx(Class<S> serviceClass) {
-        //return createService(serviceClass, null, null);//for basic authentication
-        return createServiceRx(serviceClass, null);
-    }
-    public static <S> S createServiceRx( Class<S> serviceClass, final String authToken) {
-        //mAddLogging();
+    public static <S> S createServiceRx( Class<S> serviceClass, final String authToken, boolean longTimeOut) {
+        OkHttpClient.Builder _httpClient = (longTimeOut) ? httpClientLong : httpClient;
+        //mAddLogging(retrofitWithRx, builderWithRx, _httpClient);
         if (!TextUtils.isEmpty(authToken)) {
             RetrofitAuthInterceptor interceptor = new RetrofitAuthInterceptor(authToken);
             //creates the custom Interceptor using the authToken
-            if (!httpClient.interceptors().contains(interceptor)) {
-                httpClient.addInterceptor(interceptor);//add HTTP header field for Authorization: Bearer 12345
-                builderWithRx.client(httpClient.build());
+            if (!_httpClient.interceptors().contains(interceptor)) {
+                _httpClient.addInterceptor(interceptor);//add HTTP header field for Authorization: Bearer 12345
+                builderWithRx.client(_httpClient.build());
                 retrofitWithRx = builderWithRx.build();
             }
         }

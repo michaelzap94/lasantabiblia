@@ -2,6 +2,7 @@ package com.zapatatech.santabiblia.interfaces.retrofit;
 
 import com.google.gson.JsonObject;
 import com.zapatatech.santabiblia.models.Label;
+import com.zapatatech.santabiblia.retrofit.Pojos.POJOSyncUpHelper;
 
 import java.util.List;
 
@@ -10,6 +11,7 @@ import io.reactivex.Single;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
+import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -52,10 +54,10 @@ public interface RetrofitSyncUp {
     Call<ResponseBody> checkServerState( @Field("version") int version);
     //==================================================================================================
     @GET("syncup/process/")
-    Call<ResponseBody> syncUpWithServer();
+    Call<POJOSyncUpHelper> syncUpWithServer();
 
     @POST("syncup/process/")
-    Call<List<Label>> overrideServer();
+    Call<POJOSyncUpHelper> overrideServer(@Body POJOSyncUpHelper body);
 
     //DOWNLOADING FILE==================================================================================
     //Please note, that we're specifying ResponseBody as return type. You should not use anything else here,
@@ -63,7 +65,6 @@ public interface RetrofitSyncUp {
 
     //If you’re downloading a large file, Retrofit would try to move the entire file into memory. In order to avoid that, we’ve to add a special annotation to the request declaration:
     @GET("http://192.168.0.14:8000{path}")
-    @Streaming
     Call<ResponseBody> downloadResource(@Path(value = "path", encoded = true) String path);
 
     @GET()
