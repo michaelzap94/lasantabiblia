@@ -84,6 +84,7 @@ public class DashboardMainFragment extends Fragment {
         rvView.setAdapter(rvAdapter);//attach the RecyclerView adapter to the RecyclerView View
         /////////////////////////////////////////
         observerViewModel();
+        Log.d(TAG, "onViewCreated: ");
     }
 
     private void observerViewModel() {
@@ -100,6 +101,8 @@ public class DashboardMainFragment extends Fragment {
         if (getActivity() instanceof Dashboard) {
             ((Dashboard) getActivity()).getSupportActionBar().setTitle(R.string.dashboard);
         }
+        viewModel.getAllLabels();
+        Log.d(TAG, "onResume: ");
     }
 
     public static void onLabelClickedFromList(Context ctx, Label mLabel) {

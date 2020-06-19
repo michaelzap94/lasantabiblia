@@ -64,124 +64,6 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         this.user = null;
     }
     //-----------------------------------------------------------------------
-    public boolean createLabel(String name, String color){
-        int userId = (user == null) ? 0 : user.getUserId();
-        ContentValues cv = new ContentValues();
-        cv.put("user_id", userId);
-        cv.put("name", name);
-        cv.put("color", color);
-        return this.db.insert("labels",null, cv) > 0;
-    }
-    public boolean editLabel(String name, String color, int id){
-        ContentValues cv = new ContentValues();
-        cv.put("name", name);
-        cv.put("color", color);
-        cv.put("state", 0);
-        return this.db.update("labels", cv, "_id="+id, null) > 0;
-    }
-    public ArrayList<Label> getAllLabels(){
-        Cursor innerCursor;
-        int rowCount;
-        int i;
-        ArrayList<Label> list = new ArrayList();
-        try {
-            String query = "SELECT * FROM labels";
-            innerCursor = this.db.rawQuery(query, null);
-            if (innerCursor.moveToFirst()) {
-                rowCount = innerCursor.getCount();
-                for (i = 0; i < rowCount; i++) {
-
-                    String name = innerCursor.getString(innerCursor.getColumnIndex("name"));
-                    String color = innerCursor.getString(innerCursor.getColumnIndex("color"));
-                    int id = innerCursor.getInt(innerCursor.getColumnIndex("_id"));
-                    int permanent = innerCursor.getInt(innerCursor.getColumnIndex("permanent"));
-                    int state = innerCursor.getInt(innerCursor.getColumnIndex("state"));
-
-                    list.add(new Label(id, name, color, permanent));
-                    innerCursor.moveToNext();
-                }
-            }
-            innerCursor.close();
-        } catch (Exception e) {
-        }
-        return list;
-    }
-    public boolean deleteOneLabel(int id){
-         return this.db.delete("labels", "_id =" + id, null) > 0;
-    }
-    public boolean insertSelectedItemsBulkTransaction(String uuid, Label label, int book_number, int chapter_number, String note, List<Integer> selectedItems) {
-        boolean success = true;
-        int userId = (user == null) ? 0 : user.getUserId();
-        int label_id = label.getId();
-        String label_name = label.getName();
-        String label_color = label.getColor();
-        List<List<Integer>> versesGroups = BookHelper.getVersesSelectedResults(selectedItems);//[[1,2,3],[6,7],[9]]
-        SQLiteDatabase db = this.db;
-        db.beginTransaction();
-        String uniqueID = (uuid != null) ? uuid : UUID.randomUUID().toString();
-        try{
-            ContentValues cv = new ContentValues();
-            cv.put("user_id", userId);
-            cv.put("label_id", label_id);
-            cv.put("label_name", label_name);
-            cv.put("label_color", label_color);
-            cv.put("book_number", book_number);
-            cv.put("chapter", chapter_number);
-            if(note == null || note.equals("")){
-                cv.putNull("note");
-            } else {
-                cv.put("note", note);
-            }
-            cv.put("UUID", uniqueID);
-            for (int i = 0; i < versesGroups.size(); i++) {
-                List<Integer> currentGroup = versesGroups.get(i);
-                int verseFrom = (currentGroup.get(0)+1);
-                int verseTo = (currentGroup.get(currentGroup.size()-1)+1);
-                cv.put("verseFrom", verseFrom);
-                cv.put("verseTo", (verseTo));
-                db.insert("verses_marked", null, cv);
-            }
-            db.setTransactionSuccessful();
-        } catch (Exception e){
-            e.printStackTrace();
-            success = false;
-        } finally {
-            db.endTransaction();
-        }
-        //insert uuid in verses_learned
-        if(success && label_id == CommonMethods.LABEL_ID_MEMORIZE){
-            insertVersesLearned(uniqueID, 0);
-        }
-        return success;
-    }
-    public boolean updateSelectedItemsBulkTransaction(String uuid, Label label, int book_number, int chapter_number, String note, List<Integer> selectedItems){
-        //if user removed all verses in the Edit window, then delete and do not update.
-        boolean deletePermanently = (selectedItems.size() == 0) ? true : false;
-        boolean deleteSuccess = deleteVersesMarkedGroup(label.getId(), uuid);
-        boolean success = false;
-        if(deleteSuccess){
-            if(deletePermanently){
-                success = true;
-            } else {
-                success = insertSelectedItemsBulkTransaction(uuid, label, book_number, chapter_number, note, selectedItems);
-            }
-        }
-        return success;
-    }
-    public boolean insertVersesMarked(int label_id, String label_name, String label_color, int book_number, int chapter_number, int verseFrom, int verseTo, String note) {
-        int userId = (user == null) ? 0 : user.getUserId();
-        ContentValues cv = new ContentValues();
-        cv.put("user_id", userId);
-        cv.put("label_id", label_id);
-        cv.put("label_name", label_name);
-        cv.put("label_color", label_color);
-        cv.put("book_number", book_number);
-        cv.put("chapter", chapter_number);
-        cv.put("verseFrom", verseFrom);
-        cv.put("verseTo", (verseTo));
-        cv.put("note", (!note.equals("") ?  note : "NULL"));
-        return this.db.insert("verses_marked",null, cv) > 0;
-    }
     public ArrayList<VersesMarked> getVersesMarked(int label_id, String _uuid, int learned) {
         int labelSpecificRowsCount;
         int i;
@@ -226,10 +108,10 @@ public class ContentDBHelper extends SQLiteOpenHelper {
                     Label specificLabel = new Label(label_id, label_name, label_color, label_permanent);
                     Book specificBook = BookHelper.getInstance().getBook(book_number);
                     String innerQuery = "SELECT verse , text FROM verses WHERE " +
-                                                                        "book_number = "+book_number+" AND " +
-                                                                        "chapter = "+chapter+" AND " +
-                                                                        "verse BETWEEN "+verseFrom+" AND "+verseTo+" " +
-                                                                        "ORDER BY book_number, chapter, verse";
+                            "book_number = "+book_number+" AND " +
+                            "chapter = "+chapter+" AND " +
+                            "verse BETWEEN "+verseFrom+" AND "+verseTo+" " +
+                            "ORDER BY book_number, chapter, verse";
 //                    if(verseFrom == verseTo){
 //                        innerQuery = "SELECT verse , text FROM verses WHERE book_number = ? AND chapter = ? ORDER BY book_number, chapter, verse";
 //                    } else {
@@ -259,7 +141,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
                     labelSpecificRows.moveToNext();
                 }
             }
-            } catch (Exception e){
+        } catch (Exception e){
         }
         return list;
     }
@@ -271,22 +153,134 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         }
         return finalArray;
     }
-    public boolean deleteVersesMarkedGroup(int label_id, String uuid){
-        boolean success = false;
-        SQLiteDatabase db = this.db;
-        int rowsDeletedVersesMarked = db.delete("verses_marked", "label_id = ? AND UUID = ?", new String[]{String.valueOf(label_id), uuid});
-        if(rowsDeletedVersesMarked > 0 && label_id == CommonMethods.LABEL_ID_MEMORIZE) {
-            success = deleteVersesLearned(db, uuid);
-        } else {
-            success = true;
+    public ArrayList<VersesMarked> getVersesMarkedLearned(int learned){
+        return getVersesMarked(CommonMethods.LABEL_ID_MEMORIZE, null, learned);
+    }
+    public ArrayList<Label> getAllLabels(){
+        Cursor innerCursor;
+        int rowCount;
+        int i;
+        ArrayList<Label> list = new ArrayList();
+        try {
+            String query = "SELECT * FROM labels";
+            innerCursor = this.db.rawQuery(query, null);
+            if (innerCursor.moveToFirst()) {
+                rowCount = innerCursor.getCount();
+                for (i = 0; i < rowCount; i++) {
+
+                    String name = innerCursor.getString(innerCursor.getColumnIndex("name"));
+                    String color = innerCursor.getString(innerCursor.getColumnIndex("color"));
+                    int id = innerCursor.getInt(innerCursor.getColumnIndex("_id"));
+                    int permanent = innerCursor.getInt(innerCursor.getColumnIndex("permanent"));
+                    int state = innerCursor.getInt(innerCursor.getColumnIndex("state"));
+
+                    list.add(new Label(id, name, color, permanent));
+                    innerCursor.moveToNext();
+                }
+            }
+            innerCursor.close();
+        } catch (Exception e) {
+        }
+        return list;
+    }
+
+    public boolean createLabel(String name, String color){
+        boolean success = true;
+        db.beginTransaction();
+        try{
+            int userId = (user == null) ? 0 : user.getUserId();
+            ContentValues cv = new ContentValues();
+            cv.put("user_id", userId);
+            cv.put("name", name);
+            cv.put("color", color);
+            this.db.insert("labels",null, cv);
+            updateSyncUp(null, null, 0, null);
+            db.setTransactionSuccessful();
+        } catch (Exception e){
+            e.printStackTrace();
+            success = false;
+        } finally {
+            db.endTransaction();
         }
         return success;
     }
-    public boolean editVersesLearned(String uuid, int learned){
-        ContentValues cv = new ContentValues();
-        cv.put("learned", learned);
-        cv.put("state", 0);
-        return this.db.update("verses_learned", cv, "UUID=?", new String[]{uuid}) > 0;
+    public boolean insertSelectedItemsBulkTransaction(String uuid, Label label, int book_number, int chapter_number, String note, List<Integer> selectedItems) {
+        boolean success = true;
+        int userId = (user == null) ? 0 : user.getUserId();
+        int label_id = label.getId();
+        String label_name = label.getName();
+        String label_color = label.getColor();
+        List<List<Integer>> versesGroups = BookHelper.getVersesSelectedResults(selectedItems);//[[1,2,3],[6,7],[9]]
+        SQLiteDatabase db = this.db;
+        db.beginTransaction();
+        String uniqueID = (uuid != null) ? uuid : UUID.randomUUID().toString();
+        try{
+            ContentValues cv = new ContentValues();
+            cv.put("user_id", userId);
+            cv.put("label_id", label_id);
+            cv.put("label_name", label_name);
+            cv.put("label_color", label_color);
+            cv.put("book_number", book_number);
+            cv.put("chapter", chapter_number);
+            if(note == null || note.equals("")){
+                cv.putNull("note");
+            } else {
+                cv.put("note", note);
+            }
+            cv.put("UUID", uniqueID);
+            for (int i = 0; i < versesGroups.size(); i++) {
+                List<Integer> currentGroup = versesGroups.get(i);
+                int verseFrom = (currentGroup.get(0)+1);
+                int verseTo = (currentGroup.get(currentGroup.size()-1)+1);
+                cv.put("verseFrom", verseFrom);
+                cv.put("verseTo", (verseTo));
+                db.insert("verses_marked", null, cv);
+            }
+
+            //insert uuid in verses_learned
+            if(success && label_id == CommonMethods.LABEL_ID_MEMORIZE){
+                insertVersesLearned(uniqueID, 0);
+            }
+
+            updateSyncUp(null, null, 0, null);
+
+            db.setTransactionSuccessful();
+        } catch (Exception e){
+            e.printStackTrace();
+            success = false;
+        } finally {
+            db.endTransaction();
+        }
+
+        return success;
+    }
+    public boolean insertVersesMarked(int label_id, String label_name, String label_color, int book_number, int chapter_number, int verseFrom, int verseTo, String note) {
+        boolean success = true;
+        db.beginTransaction();
+        try{
+
+            int userId = (user == null) ? 0 : user.getUserId();
+            ContentValues cv = new ContentValues();
+            cv.put("user_id", userId);
+            cv.put("label_id", label_id);
+            cv.put("label_name", label_name);
+            cv.put("label_color", label_color);
+            cv.put("book_number", book_number);
+            cv.put("chapter", chapter_number);
+            cv.put("verseFrom", verseFrom);
+            cv.put("verseTo", (verseTo));
+            cv.put("note", (!note.equals("") ?  note : "NULL"));
+            this.db.insert("verses_marked",null, cv);
+
+            updateSyncUp(null, null, 0, null);
+            db.setTransactionSuccessful();
+        } catch (Exception e){
+            e.printStackTrace();
+            success = false;
+        } finally {
+            db.endTransaction();
+        }
+        return success;
     }
     public boolean insertVersesLearned(String uuid, int learned){
         boolean success = false;
@@ -301,16 +295,114 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         if(rowsUpdated <= 0) {
             success = db.insert("verses_learned",null, cv) > 0;
         } else {
-            success = true;
+            success = updateSyncUp(null, null, 0, null);
+        }
+        return success;
+    }
+
+    public boolean editLabel(String name, String color, int id){
+        boolean success = true;
+        db.beginTransaction();
+        try{
+
+            ContentValues cv = new ContentValues();
+            cv.put("name", name);
+            cv.put("color", color);
+            cv.put("state", 0);
+            this.db.update("labels", cv, "_id="+id, null);
+
+            updateSyncUp(null, null, 0, null);
+            db.setTransactionSuccessful();
+        } catch (Exception e){
+            e.printStackTrace();
+            success = false;
+        } finally {
+            db.endTransaction();
+        }
+        return success;
+    }
+    public boolean updateSelectedItemsBulkTransaction(String uuid, Label label, int book_number, int chapter_number, String note, List<Integer> selectedItems){
+        //if user removed all verses in the Edit window, then delete and do not update.
+        boolean deletePermanently = (selectedItems.size() == 0) ? true : false;
+        boolean deleteSuccess = deleteVersesMarkedGroup(label.getId(), uuid);
+        boolean success = false;
+        if(deleteSuccess){
+            if(deletePermanently){
+                success = true;
+            } else {
+                success = insertSelectedItemsBulkTransaction(uuid, label, book_number, chapter_number, note, selectedItems);
+            }
+        }
+        return success;
+    }
+    public boolean editVersesLearned(String uuid, int learned){
+
+        boolean success = true;
+        db.beginTransaction();
+        try{
+
+            ContentValues cv = new ContentValues();
+            cv.put("learned", learned);
+            cv.put("state", 0);
+            this.db.update("verses_learned", cv, "UUID=?", new String[]{uuid});
+
+            updateSyncUp(null, null, 0, null);
+            db.setTransactionSuccessful();
+        } catch (Exception e){
+            e.printStackTrace();
+            success = false;
+        } finally {
+            db.endTransaction();
+        }
+        return success;
+
+    }
+
+    public boolean deleteOneLabel(int id){
+        boolean success = true;
+        db.beginTransaction();
+        try{
+
+            this.db.delete("labels", "_id =" + id, null);
+
+            updateSyncUp(null, null, 0, null);
+            db.setTransactionSuccessful();
+        } catch (Exception e){
+            e.printStackTrace();
+            success = false;
+        } finally {
+            db.endTransaction();
+        }
+        return success;
+    }
+    public boolean deleteVersesMarkedGroup(int label_id, String uuid){
+        boolean success = false;
+        SQLiteDatabase db = this.db;
+        int rowsDeletedVersesMarked = db.delete("verses_marked", "label_id = ? AND UUID = ?", new String[]{String.valueOf(label_id), uuid});
+        if(rowsDeletedVersesMarked > 0 && label_id == CommonMethods.LABEL_ID_MEMORIZE) {
+            success = deleteVersesLearned(db, uuid);
+        } else {
+            success = updateSyncUp(null, null, 0, null);
         }
         return success;
     }
     public boolean deleteVersesLearned(SQLiteDatabase _db, String uuid){
         SQLiteDatabase db = (_db == null) ? this.db : _db;
-        return db.delete("verses_learned", "UUID='" + uuid + "'", null) > 0;
-    }
-    public ArrayList<VersesMarked> getVersesMarkedLearned(int learned){
-        return getVersesMarked(CommonMethods.LABEL_ID_MEMORIZE, null, learned);
+        boolean success = true;
+        db.beginTransaction();
+        try{
+
+            db.delete("verses_learned", "UUID='" + uuid + "'", null);
+
+            updateSyncUp(null, null, 0, null);
+            db.setTransactionSuccessful();
+        } catch (Exception e){
+            e.printStackTrace();
+            success = false;
+        } finally {
+            db.endTransaction();
+        }
+        return success;
     }
     //-----------------------------------------------------------------------
     public int getVersesMarkedNumber(int label_id) {
@@ -396,12 +488,18 @@ public class ContentDBHelper extends SQLiteOpenHelper {
     public void insertSyncUpIfNotExist(@NonNull String email){
         db.execSQL("INSERT OR IGNORE INTO syncup(email) VALUES('"+ email +"')");
     }
-    public boolean updateSyncUp(@NonNull String email, Integer version, Integer state, String updated){
+    public boolean updateSyncUp(String email, Integer version, Integer state, String updated){
+        String userEmail;
+        if(email != null){
+            userEmail = email;
+        } else {
+            userEmail = (user == null) ? "offline" : user.getEmail();
+        }
         ContentValues initialValues = new ContentValues();
         if(version!=null) initialValues.put(ContentDBContracts.SYNC_UPS.COL_VERSION, version);
         if(state!=null) initialValues.put(ContentDBContracts.SYNC_UPS.COL_STATE, state);
         if(updated!=null) initialValues.put(ContentDBContracts.SYNC_UPS.COL_UPDATED, updated);
-        return this.db.update("syncup", initialValues, "email=?", new String[] {email}) > 0;
+        return this.db.update("syncup", initialValues, "email=?", new String[] {userEmail}) > 0;
     }
 
     public ArrayList<POJOLabel> getAllLabelsRaw(){
@@ -573,7 +671,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
                 ContentValues cv = new ContentValues();
                 for (int i = 0; i < versesLearned.size(); i++) {
                     cv.put("user_id", versesLearned.get(i).getUserId());
-                    cv.put("_id", versesLearned.get(i).getUserId());
+                    cv.put("_id", versesLearned.get(i).get_id());
                     cv.put("UUID", versesLearned.get(i).getUUID());
                     cv.put("label_id", versesLearned.get(i).getLabel_id());
                     cv.put("learned", versesLearned.get(i).getLearned());
@@ -584,7 +682,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
             }
 
             //finally update the SyncUp version
-            updateSyncUp(user.getEmail(), data.getVersion(), 1, null);
+            updateSyncUp(null, data.getVersion(), 1, null);
 
             db.setTransactionSuccessful();
         } catch (Exception e){
