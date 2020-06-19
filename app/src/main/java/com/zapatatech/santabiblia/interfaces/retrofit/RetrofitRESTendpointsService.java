@@ -15,7 +15,7 @@ import retrofit2.http.Path;
 import retrofit2.http.Streaming;
 import retrofit2.http.Url;
 
-//These APIS await any requests at endpoint http://http://192.168.0.14/8000/auth and requires JWT authentication to get user data in response.
+//These APIS await any requests at endpoint http://zapatatech.com/auth and requires JWT authentication to get user data in response.
 public interface RetrofitRESTendpointsService {
     @GET("auth/test/labels/")
     Call<List<Label>> getAllLabels();
@@ -41,7 +41,7 @@ public interface RetrofitRESTendpointsService {
     // otherwise Retrofit will try to parse and convert it, which doesn't make sense when you're downloading a file.
 
     //If you’re downloading a large file, Retrofit would try to move the entire file into memory. In order to avoid that, we’ve to add a special annotation to the request declaration:
-    @GET("http://192.168.0.14:8000{path}")
+    @GET("http://zapatatech.com{path}")
     @Streaming
     Call<ResponseBody> downloadResource(@Path(value = "path", encoded = true) String path);
 
