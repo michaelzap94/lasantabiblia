@@ -27,11 +27,15 @@ android {
             buildConfigField "String", 'SERVER_BASE_URL', '"https://zapatatech.com"'
         }
         beta{
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             //applicationIdSuffix ".beta"
             versionNameSuffix "-beta"
             buildConfigField "String", 'SERVER_BASE_URL', '"https://zapatatech.com"'
         }
         alpha{
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             //applicationIdSuffix ".alpha"
             versionNameSuffix "-alpha"
             buildConfigField "String", 'SERVER_BASE_URL', '"https://zapatatech.com"'
