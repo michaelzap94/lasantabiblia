@@ -41,7 +41,7 @@ public interface RetrofitRESTendpointsService {
     // otherwise Retrofit will try to parse and convert it, which doesn't make sense when you're downloading a file.
 
     //If you’re downloading a large file, Retrofit would try to move the entire file into memory. In order to avoid that, we’ve to add a special annotation to the request declaration:
-    @GET("http://zapatatech.com{path}")
+    @GET("{path}")
     @Streaming
     Call<ResponseBody> downloadResource(@Path(value = "path", encoded = true) String path);
 
@@ -77,5 +77,5 @@ public interface RetrofitRESTendpointsService {
 //    @POST("DevTides/countries/master/countriesV2.json")
 //    Single<List<CountryModel>> postCountries();//implement a POST to the specified API
 
-    //we need a BASE_URL for this, specified in the CountriesService
+    //we need a SERVER_BASE_URL for this, specified in the CountriesService
 }

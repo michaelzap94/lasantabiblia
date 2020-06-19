@@ -14,7 +14,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
-        versionName "1.0.0-alpha"
+        versionName "1.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "GOOGLE_SERVER_CLIENT_ID", apikeyProperties['GOOGLE_SERVER_CLIENT_ID'])
@@ -24,7 +24,25 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField "String", 'SERVER_BASE_URL', '"https://zapatatech.com"'
         }
+        beta{
+            //applicationIdSuffix ".beta"
+            versionNameSuffix "-beta"
+            buildConfigField "String", 'SERVER_BASE_URL', '"https://zapatatech.com"'
+        }
+        alpha{
+            //applicationIdSuffix ".alpha"
+            versionNameSuffix "-alpha"
+            buildConfigField "String", 'SERVER_BASE_URL', '"http://zapatatech.com"'
+        }
+        debug{
+            debuggable true
+            //applicationIdSuffix ".debug"
+            versionNameSuffix "-debug"
+            buildConfigField "String", 'SERVER_BASE_URL', '"http://192.168.0.14:8000"'
+        }
+
     }
     compileOptions {
         sourceCompatibility = 1.8

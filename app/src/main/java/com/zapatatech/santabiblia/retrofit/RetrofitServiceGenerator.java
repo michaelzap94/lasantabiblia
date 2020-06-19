@@ -2,6 +2,7 @@ package com.zapatatech.santabiblia.retrofit;
 
 import android.text.TextUtils;
 
+import com.zapatatech.santabiblia.BuildConfig;
 import com.zapatatech.santabiblia.retrofit.RetrofitAuthInterceptor;
 
 import java.util.concurrent.TimeUnit;
@@ -21,15 +22,14 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 public class RetrofitServiceGenerator {
     private static final String TAG = "RetrofitServiceGenerato";
-    public static final String BASE_URL = "http://zapatatech.com";
 
     // Create a new REST client with the given API base url USING GSON-> requires a POJO OR ResponseBody
     private static Retrofit.Builder builder = new Retrofit.Builder()
-                    .baseUrl(BASE_URL)
+                    .baseUrl(BuildConfig.SERVER_BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create());
 
     private static Retrofit.Builder builderWithRx = new Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(BuildConfig.SERVER_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())//GsonConverterFactory will convert it to Object Type
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create());//RxJava2CallAdapterFactory converts List into a Single Observable of the List,
             // this will allow REtrofit to convert JSON from the api into a Single element which was specified to be List<CountryModel> in the CountriesApi Interface

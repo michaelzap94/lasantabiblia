@@ -81,6 +81,7 @@ public class Login extends AppCompatActivity {
         flag_gb = ContextCompat.getDrawable(getApplicationContext(),R.drawable.flag_gb);
         flag_es = ContextCompat.getDrawable(getApplicationContext(),R.drawable.flag_es);
         //GOOGLE===========================================================================
+        Log.d(TAG, "onCreate: GOOGLE_SERVER_CLIENT_ID: " + BuildConfig.GOOGLE_SERVER_CLIENT_ID);
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
