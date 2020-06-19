@@ -43,4 +43,12 @@
     <string name="downloaded">Downloaded:</string>
     <string name="search_card_maps_title">Maps</string>
     <string name="search_card_maps_desc">Search in the Bible Maps</string>
+
+<!--    GOOGLE POC-->
+    <string name="override">Override</string>
+    <string name="sync_up">Sync Up</string>
+    <string name="cancel">Cancel</string>
+    <string name="syncup_prompt_message">You have 2 options: \n\n 1) Override (keep your existing data in this device). \n\n 2) Sync Up (download the data from the Server).</string>
+    <string name="syncup_prompt_title">There is a different version of your data in the Server.</string>
+
 </resources>

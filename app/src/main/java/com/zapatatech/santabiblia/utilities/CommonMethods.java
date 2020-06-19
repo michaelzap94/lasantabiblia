@@ -40,6 +40,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.gson.JsonObject;
 import com.zapatatech.santabiblia.Bible;
+import com.zapatatech.santabiblia.BuildConfig;
 import com.zapatatech.santabiblia.Dashboard;
 import com.zapatatech.santabiblia.DatabaseHelper.BibleCreator;
 import com.zapatatech.santabiblia.DatabaseHelper.BibleDBHelper;
@@ -414,7 +415,7 @@ public class CommonMethods {
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(activity.getString(R.string.server_client_id))
+                .requestIdToken(BuildConfig.GOOGLE_SERVER_CLIENT_ID)
                 .requestEmail()
                 .build();
         // Build a GoogleSignInClient with the options specified by gso.
