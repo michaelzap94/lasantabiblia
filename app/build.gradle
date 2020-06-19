@@ -34,7 +34,7 @@ android {
         alpha{
             //applicationIdSuffix ".alpha"
             versionNameSuffix "-alpha"
-            buildConfigField "String", 'SERVER_BASE_URL', '"http://zapatatech.com"'
+            buildConfigField "String", 'SERVER_BASE_URL', '"https://zapatatech.com"'
         }
         debug{
             debuggable true
