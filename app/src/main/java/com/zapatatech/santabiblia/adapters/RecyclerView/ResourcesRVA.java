@@ -7,16 +7,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.work.WorkInfo;
 
 import com.zapatatech.santabiblia.R;
-import com.zapatatech.santabiblia.models.Resource;
+import com.zapatatech.santabiblia.retrofit.Pojos.POJOResource;
 import com.zapatatech.santabiblia.utilities.CommonMethods;
 import com.zapatatech.santabiblia.utilities.Util;
 
@@ -24,16 +22,16 @@ import java.util.List;
 
 public class ResourcesRVA extends RecyclerView.Adapter<ResourcesRVA.ResourceViewHolder> {
     private static final String TAG = "ResourcesRVA";
-    private List<Resource> resources;
+    private List<POJOResource> resources;
     private Context context;
 
     //initial data when this Adapter is instatiated
-    public ResourcesRVA(List<Resource> resources) {
+    public ResourcesRVA(List<POJOResource> resources) {
         this.resources = resources;
     }
 
     //function available so View can update the RecyclerView List once the information is available.
-    public void updateResources(List<Resource> newResources) {
+    public void updateResources(List<POJOResource> newResources) {
         resources.clear();
         resources.addAll(newResources);
         //I have new data, delete everything and add new data
@@ -41,7 +39,7 @@ public class ResourcesRVA extends RecyclerView.Adapter<ResourcesRVA.ResourceView
     }
 
     public void updateResourceState(int updateIndex, String value) {
-        Resource newResource = resources.get(updateIndex);
+        POJOResource newResource = resources.get(updateIndex);
         newResource.setTemporalState(value);
         resources.set(updateIndex, newResource);
         //I have new data, delete everything and add new data
@@ -51,7 +49,7 @@ public class ResourcesRVA extends RecyclerView.Adapter<ResourcesRVA.ResourceView
     public void updateResourceStateByName(String fileName, String value) {
         int updateIndex = findResourceIndexByName(fileName);
         if(updateIndex > -1){
-            Resource newResource = resources.get(updateIndex);
+            POJOResource newResource = resources.get(updateIndex);
             newResource.setTemporalState(value);
             resources.set(updateIndex, newResource);
             //I have new data, delete everything and add new data
@@ -62,7 +60,7 @@ public class ResourcesRVA extends RecyclerView.Adapter<ResourcesRVA.ResourceView
     public void updateResourceStateProgressByName(String fileName, int value) {
         int updateIndex = findResourceIndexByName(fileName);
         if(updateIndex > -1){
-            Resource newResource = resources.get(updateIndex);
+            POJOResource newResource = resources.get(updateIndex);
             newResource.setTemporalProgress(value);
             newResource.setTemporalState("processing");
             resources.set(updateIndex, newResource);
@@ -115,7 +113,7 @@ public class ResourcesRVA extends RecyclerView.Adapter<ResourcesRVA.ResourceView
             resourceProgress = (ProgressBar) itemView.findViewById(R.id.fileProgress);
         }
 
-        void bind(Resource resource) {
+        void bind(POJOResource resource) {
             //State-------------------------------------------------------------------------------
             if(resource.getTemporalState() == "processing"){
                 Log.d(TAG, "bind: processing " + resource.getTemporalProgress());
@@ -146,7 +144,7 @@ public class ResourcesRVA extends RecyclerView.Adapter<ResourcesRVA.ResourceView
                     resourceState.setText("Download");
                     resourceState.setOnClickListener(new View.OnClickListener() {
                         public void onClick(View v) {
-                            CommonMethods.startWorkManager((Activity) context, resource.getResource(), resource.getFilename());
+                            CommonMethods.startWorkManagerDownloadResource((Activity) context, resource.getResource(), resource.getFilename());
                             resourceState.setClickable(false);
                             //resourceState.setText("Downloading...");
                         }

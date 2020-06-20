@@ -3,13 +3,9 @@ package com.zapatatech.santabiblia.fragments.settings;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 
-import androidx.preference.CheckBoxPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
@@ -17,34 +13,21 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceScreen;
 
-import com.zapatatech.santabiblia.DatabaseHelper.BibleCreator;
-import com.zapatatech.santabiblia.Login;
-import com.zapatatech.santabiblia.MainActivity;
 import com.zapatatech.santabiblia.R;
-import com.zapatatech.santabiblia.interfaces.retrofit.RetrofitAuthService;
-import com.zapatatech.santabiblia.models.APIError;
-import com.zapatatech.santabiblia.models.AuthInfo;
 import com.zapatatech.santabiblia.utilities.CommonMethods;
-import com.zapatatech.santabiblia.utilities.RetrofitErrorUtils;
-import com.zapatatech.santabiblia.utilities.RetrofitServiceGenerator;
-import com.zapatatech.santabiblia.utilities.Util;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import io.reactivex.disposables.CompositeDisposable;
 
 import static com.zapatatech.santabiblia.utilities.CommonMethods.MAIN_BIBLE_SELECTED;
-import static com.zapatatech.santabiblia.utilities.CommonMethods.getAccessToken;
-import static com.zapatatech.santabiblia.utilities.CommonMethods.getRefreshToken;
-import static com.zapatatech.santabiblia.utilities.CommonMethods.logOutOfApp;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
     private static final String TAG = "SettingsFragment";
     private Activity mActivity;
     private PreferenceScreen screen;
+    private CompositeDisposable disposable = new CompositeDisposable();
+
 
     protected static void setListPreferenceData(Context ctx, ListPreference lp) {
         String bibleSelected = PreferenceManager.getDefaultSharedPreferences(ctx).getString(MAIN_BIBLE_SELECTED, null);
@@ -97,6 +80,17 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         backUp.setIcon(R.drawable.ic_sync);
         backUp.setOrder(0);
         thirdCategory.addPreference(backUp);
+        backUp.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                try{
+                    CommonMethods.retrofitStartSyncUp(mActivity, disposable);
+                } catch (Exception e) {
+                    Toast.makeText(mActivity, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            }
+        });
         //================================================================================================
         //add Sign out button programatically
         final PreferenceCategory lastCategory = (PreferenceCategory) findPreference("pref_section_last");

@@ -6,13 +6,11 @@ import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -36,8 +34,8 @@ import com.zapatatech.santabiblia.models.APIError;
 import com.zapatatech.santabiblia.models.Label;
 import com.zapatatech.santabiblia.models.AuthInfo;
 import com.zapatatech.santabiblia.utilities.CommonMethods;
-import com.zapatatech.santabiblia.utilities.RetrofitErrorUtils;
-import com.zapatatech.santabiblia.utilities.RetrofitServiceGenerator;
+import com.zapatatech.santabiblia.retrofit.RetrofitErrorUtils;
+import com.zapatatech.santabiblia.retrofit.RetrofitServiceGenerator;
 import com.zapatatech.santabiblia.utilities.Util;
 
 import java.io.IOException;
@@ -83,10 +81,11 @@ public class Login extends AppCompatActivity {
         flag_gb = ContextCompat.getDrawable(getApplicationContext(),R.drawable.flag_gb);
         flag_es = ContextCompat.getDrawable(getApplicationContext(),R.drawable.flag_es);
         //GOOGLE===========================================================================
+        Log.d(TAG, "onCreate: GOOGLE_SERVER_CLIENT_ID: " + BuildConfig.GOOGLE_SERVER_CLIENT_ID);
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.server_client_id))
+                .requestIdToken(BuildConfig.GOOGLE_SERVER_CLIENT_ID)
                 .requestEmail()
                 .build();
         // Build a GoogleSignInClient with the options specified by gso.
@@ -181,7 +180,7 @@ public class Login extends AppCompatActivity {
 //        RetrofitGitHubClient client =  retrofit.create(RetrofitGitHubClient.class);
 
         // Create a very simple REST adapter which points the GitHub API endpoint.
-        RetrofitRESTendpointsService client =  RetrofitServiceGenerator.createService(RetrofitRESTendpointsService.class, auth_token);
+        RetrofitRESTendpointsService client =  RetrofitServiceGenerator.createService(RetrofitRESTendpointsService.class, auth_token, false);
         // Fetch a list of the Github repositories.
         Call<List<Label>> call = client.getAllLabels();
         // Execute the call asynchronously. Get a positive or negative callback.
@@ -234,7 +233,7 @@ public class Login extends AppCompatActivity {
     }
 
     private void retrofitLogin(HashMap<String, Object> loginObject){
-        RetrofitAuthService loginService = RetrofitServiceGenerator.createService(RetrofitAuthService.class, null);
+        RetrofitAuthService loginService = RetrofitServiceGenerator.createService(RetrofitAuthService.class, null, false);
         Call<AuthInfo> call;
         final String account_type;//default
         //doing this, because account_type can be null, if so, I cannot convert a null to string

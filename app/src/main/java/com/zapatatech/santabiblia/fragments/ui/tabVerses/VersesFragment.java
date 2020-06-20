@@ -96,7 +96,7 @@ public class VersesFragment extends Fragment implements RecyclerItemClickListene
         this.book_number = getArguments().getInt("book");
         this.chapter_number = getArguments().getInt("chapter");
         this.verse_number = getArguments().getInt("verse");
-        this.currentBookName = BookHelper.getBook(book_number).getName();
+        this.currentBookName = BookHelper.getInstance().getBook(book_number).getName();
         Log.d(TAG, "onCreate: VersesFragment " + chapter_number);
         rvAdapter = new VersesRecyclerViewAdapter( mActivity, new ArrayList<>());
 

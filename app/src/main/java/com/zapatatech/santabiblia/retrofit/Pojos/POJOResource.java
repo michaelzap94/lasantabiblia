@@ -1,6 +1,6 @@
-package com.zapatatech.santabiblia.models;
+package com.zapatatech.santabiblia.retrofit.Pojos;
 
-public class Resource {
+public class POJOResource {
     private int id;
     private String url;
     private String name;
@@ -14,7 +14,7 @@ public class Resource {
     private String state;
     private int progress;
 
-    public Resource(int id, String url, String name, String resource_type, String language, String description, int version, String filename, int size, String resource) {
+    public POJOResource(int id, String url, String name, String resource_type, String language, String description, int version, String filename, int size, String resource) {
         this.id = id;
         this.url = url;
         this.name = name;

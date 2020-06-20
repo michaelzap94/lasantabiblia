@@ -37,4 +37,5 @@ public class BibleContracts {
         public static final String COL_VERSE = "verse";
         public static final String COL_TEXT = "text";
     }
+
 }

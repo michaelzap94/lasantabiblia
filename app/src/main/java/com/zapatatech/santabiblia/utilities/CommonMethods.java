@@ -8,6 +8,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.MenuItem;
@@ -35,23 +36,30 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.gson.JsonObject;
 import com.zapatatech.santabiblia.Bible;
-import com.zapatatech.santabiblia.BibleCompare;
+import com.zapatatech.santabiblia.BuildConfig;
 import com.zapatatech.santabiblia.Dashboard;
 import com.zapatatech.santabiblia.DatabaseHelper.BibleCreator;
 import com.zapatatech.santabiblia.DatabaseHelper.BibleDBHelper;
+import com.zapatatech.santabiblia.DatabaseHelper.ContentDBHelper;
 import com.zapatatech.santabiblia.Home;
-import com.zapatatech.santabiblia.Login;
 import com.zapatatech.santabiblia.MainActivity;
 import com.zapatatech.santabiblia.R;
 import com.zapatatech.santabiblia.Search;
 import com.zapatatech.santabiblia.Settings;
-import com.zapatatech.santabiblia.SignUp;
 import com.zapatatech.santabiblia.interfaces.retrofit.RetrofitAuthService;
+import com.zapatatech.santabiblia.interfaces.retrofit.RetrofitSyncUp;
 import com.zapatatech.santabiblia.models.APIError;
 import com.zapatatech.santabiblia.models.AuthInfo;
+import com.zapatatech.santabiblia.retrofit.Pojos.POJOSyncUp;
 import com.zapatatech.santabiblia.models.User;
+import com.zapatatech.santabiblia.retrofit.RetrofitErrorUtils;
+import com.zapatatech.santabiblia.retrofit.RetrofitServiceGenerator;
+import com.zapatatech.santabiblia.workmanager.DownloadResourceWM;
+import com.zapatatech.santabiblia.workmanager.SyncUpServerWM;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -61,13 +69,17 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.observers.DisposableSingleObserver;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.HttpException;
 import retrofit2.Response;
 
 import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
-import static android.content.Intent.makeMainActivity;
 
 public class CommonMethods {
     private static final String TAG = "CommonMethods";
@@ -76,6 +88,13 @@ public class CommonMethods {
     public static final int USER_ONLINE = 1;
     public static final int USER_OFFLINE = 2;
     //flags==================================================
+    public static final String DATA_SYNCUP_TAG = "DATA_SYNCUP_TAG";
+    public static final String DATA_OVERRIDE_TAG = "DATA_OVERRIDE_TAG";
+    public static final String DATA_SYNCUP_UNIQUE = "DATA_SYNCUP_UNIQUE";
+    public static final String DATA_OVERRIDE_UNIQUE = "DATA_OVERRIDE_UNIQUE";
+    public static final int DATA_OVERRIDE_FLAG = 0;
+    public static final int DATA_SYNCUP_FLAG = 1;
+
     public static final String DOWNLOAD_RESOURCE_TAG = "DOWNLOAD_RESOURCE_TAG";
     public static final String MAIN_CONTENT_DB = "content.db";
     public static final String RESOURCE_TYPE_BIBLE = "type-bible";
@@ -93,6 +112,7 @@ public class CommonMethods {
     public static final String CHAPTER_LASTSEEN = "CHAPTER_LASTSEEN";
     public static final String BOOK_LASTSEEN = "BOOK_LASTSEEN";
     public static final int LABEL_ID_MEMORIZE = 1;
+
     //DEFAULT DBS========================================================================================
     public static void checkDefaultDatabaseExistLoad(Context context){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -304,7 +324,14 @@ public class CommonMethods {
         return prefs.edit().remove(ACCOUNT_TYPE).commit();//commit will return true if success
     }
     public static void continueToApp(Activity activity){
-        if(CommonMethods.getAccessToken(activity) != null && CommonMethods.getAccessToken(activity) != null ){
+        String accessToken = CommonMethods.getAccessToken(activity);
+        if(accessToken != null && CommonMethods.getAccessToken(activity) != null ){
+            //ADD USER TO DB SINGLETON
+            ContentDBHelper.getInstance(activity).addUserToSingleton(activity);
+            //CREATE FIRST RECORD FOR SYNC UP for this user IF NOT PRESENT ALREADY
+            String email = CommonMethods.decodeJWTAndCreateUser(accessToken).getEmail();
+            ContentDBHelper.getInstance(activity).insertSyncUpIfNotExist(email);
+            //--------------------------------------------------------
             int newStatus = updateUserStatus(activity, USER_ONLINE);
             if(newStatus == USER_ONLINE){
                 Intent intent = new Intent(activity, Home.class);
@@ -323,7 +350,7 @@ public class CommonMethods {
         String refreshToken = getRefreshToken(mActivity);
         String accessToken = getAccessToken(mActivity);
         if( refreshToken != null && accessToken != null ) {
-            RetrofitAuthService logOutService = RetrofitServiceGenerator.createService(RetrofitAuthService.class, accessToken);
+            RetrofitAuthService logOutService = RetrofitServiceGenerator.createService(RetrofitAuthService.class, accessToken, false);
 
             HashMap<String, Object> logOutObject = new HashMap<>();
             logOutObject.put("refresh", refreshToken);
@@ -388,7 +415,7 @@ public class CommonMethods {
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(activity.getString(R.string.server_client_id))
+                .requestIdToken(BuildConfig.GOOGLE_SERVER_CLIENT_ID)
                 .requestEmail()
                 .build();
         // Build a GoogleSignInClient with the options specified by gso.
@@ -403,6 +430,7 @@ public class CommonMethods {
     }
     private static void deviceLogOut(Activity activity){
         if(CommonMethods.clearAccessToken(activity) && CommonMethods.clearRefreshToken(activity) && CommonMethods.clearAccountType(activity)){
+            ContentDBHelper.getInstance(activity).removeUserFromSingleton();
             int newStatus = CommonMethods.updateUserStatus(activity, CommonMethods.USER_NONE);
             if(newStatus == CommonMethods.USER_NONE){
                 Intent intent = new Intent(activity, MainActivity.class);
@@ -420,7 +448,7 @@ public class CommonMethods {
         String refreshToken = getRefreshToken(mActivity);
         String accessToken = getAccessToken(mActivity);
         if( accessToken != null && refreshToken != null ) {
-            RetrofitAuthService logOutService = RetrofitServiceGenerator.createService(RetrofitAuthService.class, accessToken);
+            RetrofitAuthService logOutService = RetrofitServiceGenerator.createService(RetrofitAuthService.class, accessToken, false);
             HashMap<String, Object> authObj = new HashMap<>();
             authObj.put("token", accessToken);
 
@@ -437,10 +465,7 @@ public class CommonMethods {
                 public void onResponse(Call<AuthInfo> call, Response<AuthInfo> response) {
                     mProgressDialog.dismiss();
                     if (response.isSuccessful()) { //200 means token is valid
-                        //UPDATE STATUS TO ONLINE
-                        CommonMethods.updateUserStatus(mActivity, CommonMethods.USER_ONLINE);
-                        //reuse credentials and go home
-                        goToHome(mActivity);
+                        continueToApp(mActivity);
                     } else {
                         //if token is invalid, try to get new credentials using the refreshtoken
                         CommonMethods.retrofitRefreshCredentials(mActivity, refreshToken);
@@ -476,7 +501,7 @@ public class CommonMethods {
     }
 
     public static void retrofitRefreshCredentials(Activity mActivity, String refreshToken) {
-        RetrofitAuthService logOutService = RetrofitServiceGenerator.createService(RetrofitAuthService.class, null);
+        RetrofitAuthService logOutService = RetrofitServiceGenerator.createService(RetrofitAuthService.class, null, false);
         HashMap<String, Object> authObj = new HashMap<>();
         authObj.put("refresh", refreshToken);
 
@@ -500,10 +525,7 @@ public class CommonMethods {
                         CommonMethods.storeBothTokens(mActivity, response.body());
                         //Reuse previous account type, as it should be the same
                         //CommonMethods.storeAccountType(mActivity, account_type);
-                        //UPDATE STATUS TO ONLINE
-                        CommonMethods.updateUserStatus(mActivity, CommonMethods.USER_ONLINE);
-                        //go home
-                        goToHome(mActivity);
+                        continueToApp(mActivity);
 
                     } else { //No NEW access or refresh token -> LOG USER OUT
                         String error = "Sorry, something went wrong";
@@ -559,22 +581,21 @@ public class CommonMethods {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);//CLEAR ALL ACTIVITIES
         mActivity.startActivity(intent);
     }
-
     //==================================================================================================
     public static User decodeJWTAndCreateUser(String jwt_token){
         JWT jwt = new JWT(jwt_token);
-        return new User(jwt.getClaim("user_id").asString(),
+        return new User(jwt.getClaim("user_id").asInt(),
                 jwt.getClaim("email").asString(),
                 jwt.getClaim("fullname").asString(),
                 jwt.getClaim("account_type").asString(),
                 jwt.getClaim("social_id").asString());
     }
-    public static User decodeJWTAndCreateUser(Activity mActivity){
+    public static User decodeJWTAndCreateUser(Context mActivity){
         String jwt_token = CommonMethods.getAccessToken(mActivity);
         if(jwt_token != null){
             JWT jwt = new JWT(jwt_token);
             Log.d(TAG, "decodeJWTAndCreateUser: " + jwt.getClaim("fullname").asString());
-            return new User(jwt.getClaim("user_id").asString(),
+            return new User(jwt.getClaim("user_id").asInt(),
                     jwt.getClaim("email").asString(),
                     jwt.getClaim("fullname").asString(),
                     jwt.getClaim("account_type").asString(),
@@ -587,9 +608,145 @@ public class CommonMethods {
         JWT jwt = new JWT(jwt_token);
         return jwt.isExpired(10); // 10 seconds leeway
     }
+    //==================================================================================================
+    public static void retrofitStartSyncUp(Activity mActivity, CompositeDisposable disposable) throws Exception {
+
+        String refreshToken = getRefreshToken(mActivity);
+        String accessToken = getAccessToken(mActivity);
+        if( refreshToken != null && accessToken != null ) {
+            Log.d(TAG, "retrofitStartSyncUp: accessToken " + accessToken);
+
+            RetrofitSyncUp checkServerStateService = RetrofitServiceGenerator.createServiceRx(RetrofitSyncUp.class, accessToken, false);
+            //GET SYNC UP RECORD-------------------------------------------------------------------------
+            String email = CommonMethods.decodeJWTAndCreateUser(accessToken).getEmail();
+            POJOSyncUp syncUp = ContentDBHelper.getInstance(mActivity).getSyncUp(email);
+            if(syncUp == null){
+                throw new Exception("No sync up record found");
+            }
+            //---------------------------------------------------------------------------------------------------
+            int clientVersion = syncUp.getVersion();
+            Log.d(TAG, "retrofitStartSyncUp: " + clientVersion);
+            Single<JsonObject> singleCall = checkServerStateService.checkServerStateJSONRx(clientVersion);
+            disposable.add(singleCall
+                .subscribeOn(Schedulers.newThread())//enables communication on new Thread background
+                .observeOn(AndroidSchedulers.mainThread())//handle response on UI Thread
+                .subscribeWith(new DisposableSingleObserver<JsonObject>() {//new DisposableSingleObserve so we can call it inside disposable.add()
+                    @Override
+                    public void onSuccess(JsonObject json) {
+                        Log.d(TAG, "onResponse: " + json);//JSON
+                        Log.d(TAG, "onSuccess: version " + json.get("result").getAsBoolean());
+                        boolean sameVersion = json.get("result").getAsBoolean();
+                        if(sameVersion){
+                            if(syncUp.getState() == 0) {
+                                //NEEDS TO SYNC: OVERRIDE(upload)
+                                Toast.makeText(mActivity, "Sync in process...", Toast.LENGTH_SHORT).show();
+                                CommonMethods.startWorkManagerSyncUpData(mActivity, syncUp, DATA_OVERRIDE_FLAG);
+                            } else {
+                                //UP TO DATE: update sync data
+                                Toast.makeText(mActivity, "Your data is Up To Date", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            //PROMPT USER FOR: OVERRIDE(override) or SYNC UP(download)
+                            CommonMethods.askUserToOverrideOrSync(mActivity, syncUp);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+                        t.printStackTrace();
+                        Log.d("onFailure Error", t.getMessage());
+                    }
+                }));
+//            call.enqueue(new Callback<JsonObject >() {
+//                @Override
+//                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+//                    if (response.isSuccessful()) {
+//                        // user object available
+//                        try {
+//                            //response.body -> can only be consumed ONCE
+////                            String jsonString = response.body().string();
+////                            JSONArray jsonArray = new JSONArray(jsonString);
+//                            //JSONObject jsonObject = new JSONObject(response.body().string());
+//                            //JSONObject jsonObject = jsonArray.getJSONObject(0);
+//                            //Log.d(TAG, "onResponse: name " + jsonObject.getString("name"));//JSON
+//                            Log.d(TAG, "onResponse: " + response.body());//JSON
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                        }
+//                    } else {
+//                        // parse the response body …
+//                        APIError error = RetrofitErrorUtils.parseError(response);
+//                        // … and use it to show error information
+//                        Log.d(TAG, "onResponse: checkServerStateService failure: " + error);
+//                    }
+//                }
+//
+//                @Override
+//                public void onFailure(Call<JsonObject> call, Throwable t) {
+//                    // something went completely south (like no internet connection)
+//                    Log.d("onFailure logout Error", t.getMessage());
+//                }
+//            });
+
+
+        } else {
+            //Remove Both tokens if any and change status to USER_NONE
+            CommonMethods.logOutOfApp(mActivity);
+        }
+    }
+
+    public static void askUserToOverrideOrSync(Activity mActivity, POJOSyncUp syncUp){
+        Resources resources = mActivity.getResources();
+        new MaterialAlertDialogBuilder(mActivity)
+                .setTitle(resources.getString(R.string.syncup_prompt_title))
+                .setMessage(resources.getString(R.string.syncup_prompt_message))
+                .setNeutralButton(resources.getString(R.string.cancel), (dialog, which) -> {
+                    dialog.dismiss();
+                })
+                .setNegativeButton(resources.getString(R.string.override), (dialog, which) -> {
+                    CommonMethods.startWorkManagerSyncUpData(mActivity, syncUp, DATA_OVERRIDE_FLAG);
+                    Toast.makeText(mActivity, "Sync in process...", Toast.LENGTH_SHORT).show();
+                })
+                .setPositiveButton(resources.getString(R.string.sync_up), (dialog, which) -> {
+                    CommonMethods.startWorkManagerSyncUpData(mActivity, syncUp, DATA_SYNCUP_FLAG);
+                    Toast.makeText(mActivity, "Sync in process...", Toast.LENGTH_SHORT).show();
+                })
+                .show();
+    }
 
     //==================================================================================================
-    public static void startWorkManager(Activity mActivity, String resourceUrl, String fileName){
+    public static void startWorkManagerSyncUpData(Activity mActivity, POJOSyncUp syncUp, int syncUpOrOverride){
+        if(syncUp != null){
+            //CONSTRAINTS
+            Constraints constraints = new Constraints.Builder()
+                    .setRequiresBatteryNotLow(true)
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build();
+
+            WorkManager mWorkManager = WorkManager.getInstance(mActivity);
+
+            OneTimeWorkRequest syncupWorkRequest = new OneTimeWorkRequest.Builder(SyncUpServerWM.class)
+                    .setConstraints(constraints)
+                    .addTag(DATA_SYNCUP_TAG)
+                    .setBackoffCriteria(
+                            BackoffPolicy.EXPONENTIAL,
+                            OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                            TimeUnit.MILLISECONDS)
+                    .setInputData(
+                            new Data.Builder()
+                                    .putInt("CLIENT_VERSION", syncUp.getVersion())
+                                    .putInt("CLIENT_STATE", syncUp.getState())
+                                    .putInt("ACTION_FLAG", syncUpOrOverride)
+                                    .build()
+                    )
+                    .build();
+
+            mWorkManager.enqueueUniqueWork(DATA_SYNCUP_UNIQUE, ExistingWorkPolicy.KEEP, syncupWorkRequest);
+        }
+    }
+
+    //==================================================================================================
+    public static void startWorkManagerDownloadResource(Activity mActivity, String resourceUrl, String fileName){
         //CONSTRAINTS
         Constraints constraints = new Constraints.Builder()
                 .setRequiresStorageNotLow(true)
@@ -665,9 +822,9 @@ public class CommonMethods {
                         return;
                     }
                     WorkInfo info = listOfWorkInfo.get(0);
-                    Log.d(TAG, "startWorkManager: " + info.getState());
+                    Log.d(TAG, "startWorkManagerDownloadResource: " + info.getState());
                     if (info != null && info.getState() == WorkInfo.State.RUNNING) {
-                        Log.d(TAG, "startWorkManager: STILL RUNNING");
+                        Log.d(TAG, "startWorkManagerDownloadResource: STILL RUNNING");
 
                     } else if (info != null && info.getState().isFinished()) {
 
@@ -697,9 +854,9 @@ public class CommonMethods {
                     public void onChanged(@Nullable List<WorkInfo> workInfoList) {
                         if (workInfoList.size() > 0) {
                             for (WorkInfo workInfo: workInfoList) {
-                                Log.d(TAG, "startWorkManager: " + workInfo.getState());
+                                Log.d(TAG, "startWorkManagerDownloadResource: " + workInfo.getState());
                                 if (workInfo != null && workInfo.getState() == WorkInfo.State.RUNNING) {
-                                    Log.d(TAG, "startWorkManager: STILL RUNNING");
+                                    Log.d(TAG, "startWorkManagerDownloadResource: STILL RUNNING");
                                     String fileNameProcessing = workInfo.getProgress().getString("fileNameProcessing");
                                     int progress = workInfo.getProgress().getInt("progress", -1);
                                     if(fileNameProcessing!=null){

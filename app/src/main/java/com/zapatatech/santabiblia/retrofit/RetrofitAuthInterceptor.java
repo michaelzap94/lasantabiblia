@@ -1,4 +1,4 @@
-package com.zapatatech.santabiblia.utilities;
+package com.zapatatech.santabiblia.retrofit;
 
 import android.util.Log;
 

@@ -109,7 +109,7 @@ public class Bible extends BaseActivityTopDrawer{
             this.chapter_number = extras.getInt("chapter");
             this.verse_number = extras.getInt("verse");
             Log.d(TAG, "onCreate: AFTER " + this.book_number + " " + this.chapter_number);
-            Book libro = BookHelper.getBook(this.book_number);
+            Book libro = BookHelper.getInstance().getBook(this.book_number);
             if (libro != null) {
                 this.bookName = libro.getName();
                 this.totalChapters = libro.getNumCap();
@@ -172,7 +172,7 @@ public class Bible extends BaseActivityTopDrawer{
 //                this.chapter_number = extras.getInt("chapter");
 //                this.verse_number = extras.getInt("verse");
 //                Log.d(TAG, "onResume: AFTER " + this.book_number + " " + this.chapter_number);
-//                Book libro = BookHelper.getBook(this.book_number);
+//                Book libro = BookHelper.getInstance().getBook(this.book_number);
 //                if (libro != null) {
 //                    this.bookName = libro.getName();
 //                    this.totalChapters = libro.getNumCap();
@@ -231,7 +231,7 @@ public class Bible extends BaseActivityTopDrawer{
                 this.chapter_number = extras.getInt("chapter");
                 this.verse_number = extras.getInt("verse");
                 Log.d(TAG, "onNewIntent: AFTER " + this.book_number + " " + this.chapter_number);
-                Book libro = BookHelper.getBook(this.book_number);
+                Book libro = BookHelper.getInstance().getBook(this.book_number);
                 if (libro != null) {
                     this.bookName = libro.getName();
                     this.totalChapters = libro.getNumCap();

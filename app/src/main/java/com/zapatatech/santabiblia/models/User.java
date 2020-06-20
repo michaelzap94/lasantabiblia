@@ -1,13 +1,13 @@
 package com.zapatatech.santabiblia.models;
 
 public class User {
-    private String user_id;
+    private int user_id;
     private String email;
     private String fullname;
     private String account_type;
     private String social_id;
 
-    public User(String user_id, String email, String fullname, String account_type, String social_id) {
+    public User(int user_id, String email, String fullname, String account_type, String social_id) {
         this.user_id = user_id;
         this.email = email;
         this.fullname = fullname;
@@ -15,7 +15,7 @@ public class User {
         this.social_id = social_id;
     }
 
-    public String getUserId() {
+    public int getUserId() {
         return user_id;
     }
 

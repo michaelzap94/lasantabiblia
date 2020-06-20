@@ -36,7 +36,7 @@ public class VersesMarkedInOneVerse extends DialogFragment {
 
     public VersesMarkedInOneVerse(Verse verse){
         this.listOfLabels = verse.getListOfLabels();
-        this.title = BookHelper.getBook(verse.getBookNumber()).getName() + " " + verse.getChapterNumber();
+        this.title = BookHelper.getInstance().getBook(verse.getBookNumber()).getName() + " " + verse.getChapterNumber();
     }
 
     @Override

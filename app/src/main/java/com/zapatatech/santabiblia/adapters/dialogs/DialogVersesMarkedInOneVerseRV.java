@@ -118,7 +118,7 @@ public class DialogVersesMarkedInOneVerseRV extends RecyclerView.Adapter<DialogV
         @Override
         public void onClick(View v) {
             // here you can get your item by calling getAdapterPosition();int id, int book_number, String name, int numcap
-            //Book book = BookHelper.getBook(230);
+            //Book book = BookHelper.getInstance().getBook(230);
             VersesMarked verseMarked = listOfVersesMarked.get(getAdapterPosition());
             //VersesMarked test = new VersesMarked("uuid", book, label, 4, 2, "ANY TEXT", "ANY NOTE");
             goToEditVersesMarked(verseMarked);

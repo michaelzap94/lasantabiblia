@@ -1,4 +1,9 @@
 apply plugin: 'com.android.application'
+//------------------------------------------------------------------
+def apikeyPropertiesFile = rootProject.file("apikey.properties")
+def apikeyProperties = new Properties()
+apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
+//------------------------------------------------------------------
 
 android {
     compileSdkVersion 29
@@ -8,17 +13,40 @@ android {
         applicationId "com.zapatatech.santabiblia"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
-
+        versionCode 2
+        versionName "1.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "GOOGLE_SERVER_CLIENT_ID", apikeyProperties['GOOGLE_SERVER_CLIENT_ID'])
     }
 
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField "String", 'SERVER_BASE_URL', '"https://zapatatech.com"'
         }
+        beta{
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            //applicationIdSuffix ".beta"
+            versionNameSuffix "-beta"
+            buildConfigField "String", 'SERVER_BASE_URL', '"https://zapatatech.com"'
+        }
+        alpha{
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            //applicationIdSuffix ".alpha"
+            versionNameSuffix "-alpha"
+            buildConfigField "String", 'SERVER_BASE_URL', '"https://zapatatech.com"'
+        }
+        debug{
+            debuggable true
+            //applicationIdSuffix ".debug"
+            versionNameSuffix "-debug"
+            buildConfigField "String", 'SERVER_BASE_URL', '"http://192.168.0.14:8000"'
+        }
+
     }
     compileOptions {
         sourceCompatibility = 1.8

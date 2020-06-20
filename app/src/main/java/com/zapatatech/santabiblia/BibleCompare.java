@@ -91,7 +91,7 @@ public class BibleCompare extends AppCompatActivity {
             this.selectedVerses = extras.getIntegerArrayList("selectedVerses");
             minSelectedVerse = Collections.min(selectedVerses);
             maxSelectedVerse = Collections.max(selectedVerses);
-            Book book = BookHelper.getBook(this.book_number);
+            Book book = BookHelper.getInstance().getBook(this.book_number);
             if (book != null) {
                 this.bookName = book.getName();
                 this.totalChapters = book.getNumCap();

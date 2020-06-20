@@ -9,7 +9,7 @@ public class SearchResult {
     private String title;
     private Spanned contentSpanned;
     private int book_number;
-        private int chapter_number;
+    private int chapter_number;
     private int verse;
     private boolean isClickable;
 
@@ -24,7 +24,7 @@ public class SearchResult {
         this.book_number = book_number;
         this.chapter_number = chapter_number;
         this.verse = verse;
-        this.title = BookHelper.getBook(book_number).getName() + " " + chapter_number + ":" + verse;
+        this.title = BookHelper.getInstance().getBook(book_number).getName() + " " + chapter_number + ":" + verse;
         this.contentSpanned = text;
         this.isClickable = true;
     }

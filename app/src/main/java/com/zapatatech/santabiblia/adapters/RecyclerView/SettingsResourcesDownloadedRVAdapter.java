@@ -1,6 +1,5 @@
 package com.zapatatech.santabiblia.adapters.RecyclerView;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -10,12 +9,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.work.WorkInfo;
 
 import com.zapatatech.santabiblia.R;
-import com.zapatatech.santabiblia.models.Resource;
-import com.zapatatech.santabiblia.utilities.CommonMethods;
-import com.zapatatech.santabiblia.utilities.Util;
 
 import java.util.ArrayList;
 
