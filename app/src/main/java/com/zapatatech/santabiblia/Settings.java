@@ -7,8 +7,10 @@ import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceScreen;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -25,13 +27,14 @@ import android.view.ViewStub;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.zapatatech.santabiblia.fragments.settings.InnerPreferencesFragment;
 import com.zapatatech.santabiblia.fragments.settings.SettingsFragment;
 import com.zapatatech.santabiblia.utilities.CommonMethods;
 
 import java.util.Locale;
 import java.util.Set;
 
-public class Settings extends AppCompatActivity implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
+public class Settings extends AppCompatActivity implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback, PreferenceFragmentCompat.OnPreferenceStartScreenCallback {
     private static final String TAG = "Settings";
     private BottomNavigationView bottomNavigationView;
     private static final String CAN_GO_BACK = "CAN_GO_BACK";
@@ -39,6 +42,7 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
     private Toolbar mToolbar;
     private AppBarLayout mAppBarLayout;
     private CollapsingToolbarLayout collapsingToolbarLayout;
+    private SettingsFragment mFragment;
     //GETTERS=========================
     public AppBarLayout getmAppBarLayout(){
         return mAppBarLayout;
@@ -54,9 +58,34 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+        Log.d(TAG, "onCreate: ");
+        initStateSettings();
+        
+        if (savedInstanceState == null) {
+            updateCanGoBack(canGoBack, Settings.this, null);
+            // The Activity is NOT being re-created so we can instantiate a new Fragment
+            // and add it to the Activity
+            mFragment = new SettingsFragment();
+            //Populate one Fragment to cover the WHOLE settings screen
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.activity_settings_fragment_item, mFragment, "settings_fragment")
+                    .commit();
+        } else {
+            // The Activity IS being re-created so we don't need to instantiate the Fragment or add it,
+            // but if we need a reference to it, we can use the tag we passed to .replace
+            mFragment = (SettingsFragment) getSupportFragmentManager().findFragmentByTag("settings_fragment");
+        }
+
+        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+        CommonMethods.bottomBarActionHandler(bottomNavigationView, R.id.bnav_settings, Settings.this);
+    }
+    
+    public void initStateSettings(){
         //-----------------------------------------------------------------------------------------
         ViewStub stub = (ViewStub) findViewById(R.id.layout_stub);
         if(CommonMethods.checkUserStatus(this) == CommonMethods.USER_ONLINE) {
+            Log.d(TAG, "onCreate: CommonMethods.USER_ONLINE");
             stub.setLayoutResource(R.layout.settings_collapsing_toolbar);
             View inflatedView = stub.inflate();
             //parent component
@@ -65,6 +94,8 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
             collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
             mToolbar = (Toolbar) inflatedView.findViewById(R.id.toolbar);
         } else {
+            Log.d(TAG, "onCreate: ELSE CommonMethods.USER_ONLINE");
+
             stub.setLayoutResource(R.layout.settings_toolbar);
             View inflatedView = stub.inflate();
             //parent component
@@ -74,21 +105,11 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
         }
         //-----------------------------------------------------------------------------------------
         setSupportActionBar(mToolbar);
-        setTitle(R.string.settings);
-
+        //setTitle(R.string.settings);
+        Log.d(TAG, "onCreate: AFTER");
         //set account icon instead of three dots
         Drawable drawable = ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_account_circle);
         mToolbar.setOverflowIcon(drawable);
-
-        updateCanGoBack(canGoBack, Settings.this, null);
-        //Populate one Fragment to cover the WHOLE settings screen
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.activity_settings_fragment_item, new SettingsFragment())
-                .commit();
-
-        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
-        CommonMethods.bottomBarActionHandler(bottomNavigationView, R.id.bnav_settings, Settings.this);
     }
 
 //    private void setExpandEnabled(boolean enabled) {
@@ -109,6 +130,7 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
 
     @Override
     protected void onResume() {
+        Log.d(TAG, "onResume: ");
         super.onResume();
         bottomNavigationView.setSelectedItemId(R.id.bnav_settings);
     }
@@ -121,6 +143,7 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
 
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        Log.d(TAG, "onRestoreInstanceState: ");
         super.onRestoreInstanceState(savedInstanceState);
         if (savedInstanceState != null) {
             canGoBack = savedInstanceState.getBoolean(CAN_GO_BACK);
@@ -131,14 +154,43 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
 
     @Override
     public boolean onPreferenceStartFragment(PreferenceFragmentCompat caller, Preference pref) {
+        Log.d(TAG, "onPreferenceStartFragment: " + pref.toString());
         //WHEN USER TAPS ON A SECTION IN SETTINGS AND ALLOWS YOU TO CUSTOMIZE transitions/animations
-        if(CommonMethods.checkUserStatus(this) == CommonMethods.USER_ONLINE) {
-            collapsingToolbarLayout.setTitle(pref.toString());
-        } else {
-            mToolbar.setTitle(pref.toString());
-        }
+//        if(CommonMethods.checkUserStatus(this) == CommonMethods.USER_ONLINE) {
+//            collapsingToolbarLayout.setTitle(pref.toString());
+//        } else {
+//            mToolbar.setTitle(pref.toString());
+//        }
+//        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+//        InnerPreferencesFragment fragment = new InnerPreferencesFragment();
+//        Bundle args = new Bundle();
+//        args.putString(PreferenceFragmentCompat.ARG_PREFERENCE_ROOT, pref.getKey());
+//        fragment.setArguments(args);
+//        ft.replace(R.id.activity_settings_fragment_item, fragment, pref.getKey());
+//        ft.addToBackStack(pref.getKey());
+//        ft.commit();
         return false;
     }
+    @Override
+    public boolean onPreferenceStartScreen(PreferenceFragmentCompat preferenceFragmentCompat,
+                                           PreferenceScreen preferenceScreen) {
+        Log.d(TAG, "onPreferenceStartScreen: " + preferenceScreen.toString());
+        return false;
+    }
+//    @Override
+//    public boolean onPreferenceStartScreen(PreferenceFragmentCompat preferenceFragmentCompat,
+//                                           PreferenceScreen preferenceScreen) {
+//
+////        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+////        MyPreferenceFragment fragment = new MyPreferenceFragment();
+////        Bundle args = new Bundle();
+////        args.putString(PreferenceFragmentCompat.ARG_PREFERENCE_ROOT, preferenceScreen.getKey());
+////        fragment.setArguments(args);
+////        ft.replace(R.id.fragment_container, fragment, preferenceScreen.getKey());
+////        ft.addToBackStack(preferenceScreen.getKey());
+////        ft.commit();
+//        return true;
+//    }
 
     public static void updateCanGoBack(boolean canGoBack, Settings activity, String title){
         //ActionBar arrow show only if INNER settings

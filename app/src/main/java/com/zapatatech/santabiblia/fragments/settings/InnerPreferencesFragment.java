@@ -1,10 +1,16 @@
 package com.zapatatech.santabiblia.fragments.settings;
 
 
+import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
@@ -18,7 +24,8 @@ import com.zapatatech.santabiblia.utilities.CommonMethods;
 import static com.zapatatech.santabiblia.utilities.CommonMethods.DEFAULT_BIBLE_EXIST;
 
 public class InnerPreferencesFragment extends PreferenceFragmentCompat {
-
+    private static final String TAG = "InnerPreferencesFragmen";
+    boolean canGoBack;
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         if(CommonMethods.checkUserStatus(getActivity()) == CommonMethods.USER_ONLINE){
@@ -35,14 +42,43 @@ public class InnerPreferencesFragment extends PreferenceFragmentCompat {
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        Log.d(TAG, "onActivityCreated: ");
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView: ");
+        Settings.updateCanGoBack(canGoBack, (Settings)getActivity(), "Help");
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        Log.d(TAG, "onAttach: " + context);
+        super.onAttach(context);
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate: " + getActivity());
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-        this.setRetainInstance(true);//screen rotation does not kill app
+        if (savedInstanceState != null) {
+            // Restore some state before we've even inflated our own layout
+            // This could be generic things like an ID that our Fragment represents
+            canGoBack = savedInstanceState.getBoolean("canGoBack_inner", false);
+            //getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
+        } else {
+            canGoBack = getActivity().getSupportFragmentManager().getBackStackEntryCount()>0;
+            setHasOptionsMenu(true);
+        }
+        //this.setRetainInstance(true);//screen rotation does not kill app
     }
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+        Log.d(TAG, "onCreatePreferences: " + getActivity());
         setPreferencesFromResource(R.xml.settings_preferences,rootKey);
 
         final SwitchPreferenceCompat switchPreferenceCompat = (SwitchPreferenceCompat) getPreferenceManager().findPreference("enable_sync");
@@ -60,7 +96,17 @@ public class InnerPreferencesFragment extends PreferenceFragmentCompat {
         boolean exist = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(DEFAULT_BIBLE_EXIST, false);
         bibleExistPrefs.setSummary(String.valueOf(exist));
 
-        boolean canGoBack = getActivity().getSupportFragmentManager().getBackStackEntryCount()>0;
-        Settings.updateCanGoBack(canGoBack, (Settings)getActivity(), null);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("canGoBack_inner", canGoBack);
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        Log.d(TAG, "onViewStateRestored: ");
+        super.onViewStateRestored(savedInstanceState);
     }
 }

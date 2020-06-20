@@ -31,7 +31,7 @@ public class NotificationsFragment extends PreferenceFragmentCompat {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        this.setRetainInstance(true);//screen rotation does not kill app
+        //this.setRetainInstance(true);//screen rotation does not kill app
     }
 
     @Override

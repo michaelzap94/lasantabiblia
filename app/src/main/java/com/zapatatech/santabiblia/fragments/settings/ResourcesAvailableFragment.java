@@ -76,7 +76,7 @@ public class ResourcesAvailableFragment extends Fragment {
 
 
         //============================================================================================
-        setHasOptionsMenu(true);
+        //setHasOptionsMenu(true);
         boolean canGoBack = getActivity().getSupportFragmentManager().getBackStackEntryCount()>0;
         Settings.updateCanGoBack(canGoBack, (Settings)getActivity(), "Available to Download");
         //============================================================================================
