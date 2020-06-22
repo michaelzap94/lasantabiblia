@@ -8,7 +8,7 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/dash_new_button"
-        app:icon="@drawable/ic_add_circle_outline"
+        app:icon="@drawable/ic_new_folder"
         app:iconGravity="textStart"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
         app:strokeColor="?attr/colorOnSurface"
