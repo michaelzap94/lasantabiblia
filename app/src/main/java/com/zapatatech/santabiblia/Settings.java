@@ -23,6 +23,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewStub;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
@@ -42,6 +44,8 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
     private Toolbar mToolbar;
     private AppBarLayout mAppBarLayout;
     private CollapsingToolbarLayout collapsingToolbarLayout;
+    private TextView userNameTv;
+    private ImageView userPic;
     private SettingsFragment mFragment;
     //GETTERS=========================
     public AppBarLayout getmAppBarLayout(){
@@ -93,6 +97,12 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
             //children
             collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
             mToolbar = (Toolbar) inflatedView.findViewById(R.id.toolbar);
+            //------------------------------------------------------------------
+            userNameTv = inflatedView.findViewById(R.id.settings_subtitle_online);
+            String userName = CommonMethods.decodeJWTAndCreateUser(this).getName();
+            userNameTv.setText(userName);
+            //String userPic = CommonMethods.decodeJWTAndCreateUser(this).getPic();
+
         } else {
             Log.d(TAG, "onCreate: ELSE CommonMethods.USER_ONLINE");
 
@@ -105,7 +115,7 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
         }
         //-----------------------------------------------------------------------------------------
         setSupportActionBar(mToolbar);
-        //setTitle(R.string.settings);
+        setTitle(R.string.settings);
         Log.d(TAG, "onCreate: AFTER");
         //set account icon instead of three dots
         Drawable drawable = ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_account_circle);
@@ -177,37 +187,23 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
         Log.d(TAG, "onPreferenceStartScreen: " + preferenceScreen.toString());
         return false;
     }
-//    @Override
-//    public boolean onPreferenceStartScreen(PreferenceFragmentCompat preferenceFragmentCompat,
-//                                           PreferenceScreen preferenceScreen) {
-//
-////        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-////        MyPreferenceFragment fragment = new MyPreferenceFragment();
-////        Bundle args = new Bundle();
-////        args.putString(PreferenceFragmentCompat.ARG_PREFERENCE_ROOT, preferenceScreen.getKey());
-////        fragment.setArguments(args);
-////        ft.replace(R.id.fragment_container, fragment, preferenceScreen.getKey());
-////        ft.addToBackStack(preferenceScreen.getKey());
-////        ft.commit();
-//        return true;
-//    }
 
     public static void updateCanGoBack(boolean canGoBack, Settings activity, String title){
+        Log.d(TAG, "updateCanGoBack: " + canGoBack);
+        Log.d(TAG, "updateCanGoBack: title: " + title);
         //ActionBar arrow show only if INNER settings
         ActionBar actionBar = activity.getSupportActionBar();
+        Log.d(TAG, "updateCanGoBack: " + activity);
+        Log.d(TAG, "updateCanGoBack: " + actionBar);
 
         if(actionBar != null && canGoBack == false){
-            String mtitle;
-            if(CommonMethods.checkUserStatus(activity) == CommonMethods.USER_ONLINE) {
-                mtitle = CommonMethods.decodeJWTAndCreateUser(activity).getName();
-            } else {
-                mtitle = activity.getString(R.string.settings);
-            }
+            Log.d(TAG, "updateCanGoBack: first");
+            String mtitle = activity.getString(R.string.settings);;
             actionBar.setDisplayHomeAsUpEnabled(false);
             if(CommonMethods.checkUserStatus(activity) == CommonMethods.USER_ONLINE) {
                 activity.getmCollapsingToolbarLayout().setTitle(mtitle);
             } else {
-                activity.getmToolbar().setTitle(mtitle);
+                activity.setTitle(mtitle);
             }
         } else {
             //TODO: replace collapsing toolbar with normal toolbar
@@ -219,7 +215,8 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
                 }
             } else {
                 if(title != null){
-                    activity.getmToolbar().setTitle(title);
+                    Log.d(TAG, "updateCanGoBack: " + activity.getmToolbar());
+                    activity.setTitle(title);
                 }
             }
 //            CollapsingToolbarLayout collapsingToolbar = activity.getmCollapsingToolbarLayout();

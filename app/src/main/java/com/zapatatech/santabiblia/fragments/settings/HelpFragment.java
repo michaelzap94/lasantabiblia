@@ -1,9 +1,13 @@
 package com.zapatatech.santabiblia.fragments.settings;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -12,6 +16,10 @@ import com.zapatatech.santabiblia.Settings;
 import com.zapatatech.santabiblia.utilities.CommonMethods;
 
 public class HelpFragment extends PreferenceFragmentCompat {
+    private static final String TAG = "HelpFragment";
+    private static final String CAN_GO_BACK = "CAN_GO_BACK";
+    private static final String TITLE = "Help";
+    boolean canGoBack;
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
@@ -31,15 +39,28 @@ public class HelpFragment extends PreferenceFragmentCompat {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            canGoBack = savedInstanceState.getBoolean(CAN_GO_BACK, false);
+        } else {
+            canGoBack = getActivity().getSupportFragmentManager().getBackStackEntryCount()>0;
+        }
         setHasOptionsMenu(true);
-        //this.setRetainInstance(true);//screen rotation does not kill app
+    }
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Settings.updateCanGoBack(canGoBack, (Settings)getActivity(), TITLE);
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        setPreferencesFromResource(R.xml.settings_preferences, rootKey);
+        setPreferencesFromResource(R.xml.settings_fonts,rootKey);
+    }
 
-        boolean canGoBack = getActivity().getSupportFragmentManager().getBackStackEntryCount() > 0;
-        Settings.updateCanGoBack(canGoBack, (Settings) getActivity(), null);
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(CAN_GO_BACK, canGoBack);
     }
 }

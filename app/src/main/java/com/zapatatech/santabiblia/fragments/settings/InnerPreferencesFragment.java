@@ -25,6 +25,8 @@ import static com.zapatatech.santabiblia.utilities.CommonMethods.DEFAULT_BIBLE_E
 
 public class InnerPreferencesFragment extends PreferenceFragmentCompat {
     private static final String TAG = "InnerPreferencesFragmen";
+    private static final String CAN_GO_BACK = "CAN_GO_BACK";
+    private static final String TITLE = "Help";
     boolean canGoBack;
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
@@ -42,43 +44,26 @@ public class InnerPreferencesFragment extends PreferenceFragmentCompat {
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        Log.d(TAG, "onActivityCreated: ");
-        super.onActivityCreated(savedInstanceState);
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            canGoBack = savedInstanceState.getBoolean(CAN_GO_BACK, false);
+        } else {
+            canGoBack = getActivity().getSupportFragmentManager().getBackStackEntryCount()>0;
+        }
+        setHasOptionsMenu(true);
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView: ");
-        Settings.updateCanGoBack(canGoBack, (Settings)getActivity(), "Help");
+        Settings.updateCanGoBack(canGoBack, (Settings)getActivity(), TITLE);
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
-    @Override
-    public void onAttach(@NonNull Context context) {
-        Log.d(TAG, "onAttach: " + context);
-        super.onAttach(context);
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate: " + getActivity());
-        super.onCreate(savedInstanceState);
-        if (savedInstanceState != null) {
-            // Restore some state before we've even inflated our own layout
-            // This could be generic things like an ID that our Fragment represents
-            canGoBack = savedInstanceState.getBoolean("canGoBack_inner", false);
-            //getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
-        } else {
-            canGoBack = getActivity().getSupportFragmentManager().getBackStackEntryCount()>0;
-            setHasOptionsMenu(true);
-        }
-        //this.setRetainInstance(true);//screen rotation does not kill app
-    }
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        Log.d(TAG, "onCreatePreferences: " + getActivity());
         setPreferencesFromResource(R.xml.settings_preferences,rootKey);
 
         final SwitchPreferenceCompat switchPreferenceCompat = (SwitchPreferenceCompat) getPreferenceManager().findPreference("enable_sync");
@@ -101,12 +86,7 @@ public class InnerPreferencesFragment extends PreferenceFragmentCompat {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean("canGoBack_inner", canGoBack);
+        outState.putBoolean(CAN_GO_BACK, canGoBack);
     }
 
-    @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        Log.d(TAG, "onViewStateRestored: ");
-        super.onViewStateRestored(savedInstanceState);
-    }
 }
