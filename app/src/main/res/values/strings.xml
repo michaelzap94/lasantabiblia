@@ -44,7 +44,7 @@
     <string name="search_card_maps_title">Maps</string>
     <string name="search_card_maps_desc">Search in the Bible Maps</string>
 
-<!--    GOOGLE POC-->
+    <!--    GOOGLE POC-->
     <string name="override">Override</string>
     <string name="sync_up">Sync Up</string>
     <string name="cancel">Cancel</string>
