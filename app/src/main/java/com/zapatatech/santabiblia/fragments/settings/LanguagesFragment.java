@@ -26,7 +26,7 @@ import java.util.ArrayList;
 public class LanguagesFragment extends Fragment {
 
     private static final String CAN_GO_BACK = "CAN_GO_BACK";
-    private static final String TITLE = "Resources Downloaded";
+    private static final String TITLE = "Languages";
     boolean canGoBack;
 
     // TODO: Rename parameter arguments, choose names that match
