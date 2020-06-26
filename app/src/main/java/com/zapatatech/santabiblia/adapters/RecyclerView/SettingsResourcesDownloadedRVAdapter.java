@@ -82,6 +82,7 @@ public class SettingsResourcesDownloadedRVAdapter extends RecyclerView.Adapter<S
 
     public void removeAt(int position) {
         list.remove(position);
+        listDisplayName.remove(position);
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, list.size());
     }

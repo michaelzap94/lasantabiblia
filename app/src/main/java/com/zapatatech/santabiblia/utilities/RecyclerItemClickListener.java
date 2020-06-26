@@ -40,6 +40,17 @@ public class RecyclerItemClickListener extends RecyclerView.SimpleOnItemTouchLis
 //                }
 
                 if(childView != null  && rcListener != null){
+                    TextView textViewTitle = (TextView) ((ViewGroup)childView).getChildAt(0);//this will be the verse textview
+
+//                    Log.d(TAG, "rlc onSingleTapUp: getMovementMethod " + textViewTitle.getMovementMethod());
+//                    Log.d(TAG, "rlc onSingleTapUp: textView.getSelectionStart() " + textViewTitle.getSelectionStart());
+//                    Log.d(TAG, "rlc onSingleTapUp: textView.getSelectionEnd()  " + textViewTitle.getSelectionEnd());
+
+                    if (textViewTitle.getSelectionStart() != -1 && textViewTitle.getSelectionEnd() != -1) {
+                        // do your code here this will only call if its a hyperlink
+                        return super.onSingleTapUp(e);
+                    }
+
                     TextView textView = (TextView) ((ViewGroup)childView).getChildAt(1);//this will be the verse textview
 
 //                Log.d(TAG, "rlc onSingleTapUp: getMovementMethod " + textView.getMovementMethod());
@@ -100,17 +111,39 @@ public class RecyclerItemClickListener extends RecyclerView.SimpleOnItemTouchLis
 
     @Override
     public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-        Log.d(TAG, "rlc onInterceptTouchEvent: starts");
+        //Log.d(TAG, "rlc onInterceptTouchEvent: starts");
         //handle click events;//if you return true it means we have handled the click. so the default detector will not work;
         if(rvGestureDetector != null){
             //anything the gestureDetector handles do it here;
             boolean result = rvGestureDetector.onTouchEvent(e);
-            Log.d(TAG, "rlc onInterceptTouchEvent rvGestureDetector: " + result);
+            //Log.d(TAG, "rlc onInterceptTouchEvent rvGestureDetector: " + result);
             return result;
         } else {
-            Log.d(TAG, "rlc onInterceptTouchEvent NO rvGestureDetector: ");
+            //Log.d(TAG, "rlc onInterceptTouchEvent NO rvGestureDetector: ");
             return false;// therefore this will run: super.onInterceptTouchEvent(rv, e);
         }
         //return true;//super.onInterceptTouchEvent(rv, e);
+    }
+
+    private boolean isLinkClicked(View childView, RecyclerView recyclerView){
+        TextView textViewTitle = (TextView) ((ViewGroup)childView).getChildAt(0);//this will be the verse textview
+        TextView textViewVerse = (TextView) ((ViewGroup)childView).getChildAt(1);//this will be the verse textview
+
+        if(textViewTitle.getSelectionStart() != -1 && textViewTitle.getSelectionEnd() != -1){
+            return true;
+        }
+
+        if (textViewVerse.getSelectionStart() == -1 && textViewVerse.getSelectionEnd() == -1) {
+            // do your code here this will only call if its not a hyperlink
+            Log.d(TAG, "rlc DO CODE HERE. ");
+            if(childView != null && rcListener != null){
+                Log.d(TAG, "rlc onSingleTapUp: calling listener.onItemClick");
+                int positionOfTapRow = recyclerView.getChildAdapterPosition(childView);
+                rcListener.onItemClick(childView, positionOfTapRow);
+            }
+            return false;
+        } else {
+            return true;
+        }
     }
 }

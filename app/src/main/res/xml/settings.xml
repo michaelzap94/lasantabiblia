@@ -31,7 +31,7 @@
             app:key="pref_language"
             app:title="Language"
             app:icon="@drawable/ic_language"
-            app:fragment="com.zapatatech.santabiblia.fragments.settings.FontsFragment"
+            app:fragment="com.zapatatech.santabiblia.fragments.settings.LanguagesFragment"
             app:summary="English"
             />
         <Preference

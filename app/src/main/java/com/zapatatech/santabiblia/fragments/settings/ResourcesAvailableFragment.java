@@ -26,10 +26,12 @@ import java.util.List;
 
 public class ResourcesAvailableFragment extends Fragment {
 
-//        private Toolbar toolbar;
-        private TabLayout tabLayout;
-        private ViewPager viewPager;
-        private ViewPagerAdapter viewPagerAdapter;
+    private static final String CAN_GO_BACK = "CAN_GO_BACK";
+    private static final String TITLE = "Resources Available";
+    boolean canGoBack;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
+    private ViewPagerAdapter viewPagerAdapter;
 
 //        @Override
 //        public void onCreate(Bundle savedInstanceState) {
@@ -63,6 +65,11 @@ public class ResourcesAvailableFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            canGoBack = savedInstanceState.getBoolean(CAN_GO_BACK, false);
+        } else {
+            canGoBack = getActivity().getSupportFragmentManager().getBackStackEntryCount()>0;
+        }
         setHasOptionsMenu(true);
     }
 
@@ -76,9 +83,7 @@ public class ResourcesAvailableFragment extends Fragment {
 
 
         //============================================================================================
-        setHasOptionsMenu(true);
-        boolean canGoBack = getActivity().getSupportFragmentManager().getBackStackEntryCount()>0;
-        Settings.updateCanGoBack(canGoBack, (Settings)getActivity(), "Available to Download");
+        Settings.updateCanGoBack(canGoBack, (Settings)getActivity(), TITLE);
         //============================================================================================
         return view;
     }
@@ -89,40 +94,46 @@ public class ResourcesAvailableFragment extends Fragment {
         tabLayout.setupWithViewPager(viewPager);
     }
 
-        private void setupViewPager(ViewPager viewPager) {
-            viewPagerAdapter = new ViewPagerAdapter(getChildFragmentManager());
-            viewPagerAdapter.addFragment(new ResourcesAvailableBiblesFragment(), "BIBLES");
-            viewPagerAdapter.addFragment(new ResourcesAvailableExtrasFragment(), "EXTRAS");
-            viewPager.setAdapter(viewPagerAdapter);
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(CAN_GO_BACK, canGoBack);
+    }
+
+    private void setupViewPager(ViewPager viewPager) {
+        viewPagerAdapter = new ViewPagerAdapter(getChildFragmentManager());
+        viewPagerAdapter.addFragment(new ResourcesAvailableBiblesFragment(), "BIBLES");
+        viewPagerAdapter.addFragment(new ResourcesAvailableExtrasFragment(), "EXTRAS");
+        viewPager.setAdapter(viewPagerAdapter);
+    }
+
+    class ViewPagerAdapter extends FragmentPagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
+
+        public ViewPagerAdapter(FragmentManager manager) {
+            super(manager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         }
 
-        class ViewPagerAdapter extends FragmentPagerAdapter {
-            private final List<Fragment> mFragmentList = new ArrayList<>();
-            private final List<String> mFragmentTitleList = new ArrayList<>();
+        @Override
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
+        }
 
-            public ViewPagerAdapter(FragmentManager manager) {
-                super(manager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
-            }
+        @Override
+        public int getCount() {
+            return mFragmentList.size();
+        }
 
-            @Override
-            public Fragment getItem(int position) {
-                return mFragmentList.get(position);
-            }
+        public void addFragment(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
+        }
 
-            @Override
-            public int getCount() {
-                return mFragmentList.size();
-            }
-
-            public void addFragment(Fragment fragment, String title) {
-                mFragmentList.add(fragment);
-                mFragmentTitleList.add(title);
-            }
-
-            @Override
-            public CharSequence getPageTitle(int position) {
-                return mFragmentTitleList.get(position);
-            }
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitleList.get(position);
         }
     }
+}
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.button.MaterialButton
     android:id="@+id/dash_label_button"
-    app:icon="@drawable/circle_color"
+    app:icon="@drawable/ic_folder"
     app:iconTint="?attr/colorOnSurface"
     app:iconGravity="start"
     style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"

@@ -36,7 +36,7 @@
             android:layout_margin="8dp"
             app:errorEnabled="true"
             app:counterEnabled="true"
-            app:counterMaxLength="200"
+            app:counterMaxLength="700"
             app:helperTextEnabled="true"
             app:helperText="Letters left"
             android:hint="Note"

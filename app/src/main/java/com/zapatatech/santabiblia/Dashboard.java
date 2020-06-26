@@ -17,6 +17,7 @@ import android.view.inputmethod.InputMethodManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.zapatatech.santabiblia.fragments.dashboard.DashboardMainFragment;
+import com.zapatatech.santabiblia.fragments.settings.SettingsFragment;
 import com.zapatatech.santabiblia.models.Label;
 import com.zapatatech.santabiblia.utilities.CommonMethods;
 
@@ -26,6 +27,7 @@ public class Dashboard extends AppCompatActivity {
     private static final String CAN_GO_BACK_DASH = "CAN_GO_BACK_DASH_DASH";
     private boolean canGoBack;
     private Toolbar mToolbar;
+    private DashboardMainFragment mFragment;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,15 +36,21 @@ public class Dashboard extends AppCompatActivity {
         setSupportActionBar(mToolbar);
         setTitle(R.string.dashboard);
 
-        updateCanGoBack(canGoBack, Dashboard.this);
-
-
-        DashboardMainFragment dashboardMainFragment = new DashboardMainFragment();
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.dashboard_fragment, dashboardMainFragment);
-        fragmentTransaction.commit();
-
+        if (savedInstanceState == null) {
+            updateCanGoBack(canGoBack, Dashboard.this);
+            // The Activity is NOT being re-created so we can instantiate a new Fragment
+            // and add it to the Activity
+            mFragment = new DashboardMainFragment();
+            //Populate one Fragment to cover the WHOLE settings screen
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.dashboard_fragment, mFragment, "dashboard_fragment")
+                    .commit();
+        } else {
+            // The Activity IS being re-created so we don't need to instantiate the Fragment or add it,
+            // but if we need a reference to it, we can use the tag we passed to .replace
+            mFragment = (DashboardMainFragment) getSupportFragmentManager().findFragmentByTag("dashboard_fragment");
+        }
 
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
         CommonMethods.bottomBarActionHandler(bottomNavigationView, R.id.bnav_dashboard, Dashboard.this);

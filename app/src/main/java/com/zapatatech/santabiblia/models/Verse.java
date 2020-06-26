@@ -27,16 +27,18 @@ public class Verse implements Parcelable {
     protected int verse;
     protected String text;
     protected String textTitle;
+    protected String[] textTitleRefs;
     protected Spanned textSpanned;
     protected SpannableString ssTextVerse;
     protected ArrayList<Label> listOfLabels;
 
-    public Verse(int book_number, int chapter_number, int verse, Spanned text, SpannableString ssTextVerse, String textTitle, ArrayList<Label> listOfLabels) {
+    public Verse(int book_number, int chapter_number, int verse, Spanned text, SpannableString ssTextVerse, String textTitle, String[] textTitleRefs, ArrayList<Label> listOfLabels) {
         this.book_number = book_number;
         this.chapter_number = chapter_number;
         this.verse = verse;
         //this.text = text;
         this.textSpanned = text;
+        this.textTitleRefs = textTitleRefs;
         this.textTitle = textTitle;
         this.listOfLabels = listOfLabels;
         this.ssTextVerse = ssTextVerse;
@@ -119,6 +121,15 @@ public class Verse implements Parcelable {
     public void setTextTitle(String textTitle){
         this.textTitle = textTitle;
     }
+
+    public String[] getTextTitleRefs() {
+        return textTitleRefs;
+    }
+
+    public void setTextTitleRefs(String[] textTitleRefs) {
+        this.textTitleRefs = textTitleRefs;
+    }
+
 //
 //    public SpannableString getEscrituraSpanneada(Context ctx, boolean underline, boolean higtlight) {
 //        SpannableString sb = getEscrituraSpanneada();

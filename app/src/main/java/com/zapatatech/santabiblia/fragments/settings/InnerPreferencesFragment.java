@@ -1,10 +1,16 @@
 package com.zapatatech.santabiblia.fragments.settings;
 
 
+import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
@@ -18,7 +24,10 @@ import com.zapatatech.santabiblia.utilities.CommonMethods;
 import static com.zapatatech.santabiblia.utilities.CommonMethods.DEFAULT_BIBLE_EXIST;
 
 public class InnerPreferencesFragment extends PreferenceFragmentCompat {
-
+    private static final String TAG = "InnerPreferencesFragmen";
+    private static final String CAN_GO_BACK = "CAN_GO_BACK";
+    private static final String TITLE = "Help";
+    boolean canGoBack;
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         if(CommonMethods.checkUserStatus(getActivity()) == CommonMethods.USER_ONLINE){
@@ -37,9 +46,21 @@ public class InnerPreferencesFragment extends PreferenceFragmentCompat {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            canGoBack = savedInstanceState.getBoolean(CAN_GO_BACK, false);
+        } else {
+            canGoBack = getActivity().getSupportFragmentManager().getBackStackEntryCount()>0;
+        }
         setHasOptionsMenu(true);
-        this.setRetainInstance(true);//screen rotation does not kill app
     }
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView: ");
+        Settings.updateCanGoBack(canGoBack, (Settings)getActivity(), TITLE);
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -60,7 +81,12 @@ public class InnerPreferencesFragment extends PreferenceFragmentCompat {
         boolean exist = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(DEFAULT_BIBLE_EXIST, false);
         bibleExistPrefs.setSummary(String.valueOf(exist));
 
-        boolean canGoBack = getActivity().getSupportFragmentManager().getBackStackEntryCount()>0;
-        Settings.updateCanGoBack(canGoBack, (Settings)getActivity(), null);
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(CAN_GO_BACK, canGoBack);
+    }
+
 }

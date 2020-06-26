@@ -64,7 +64,10 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         this.user = null;
     }
     //-----------------------------------------------------------------------
+
     public ArrayList<VersesMarked> getVersesMarked(int label_id, String _uuid, int learned) {
+        int userId = (user == null) ? 0 : user.getUserId();
+
         int labelSpecificRowsCount;
         int i;
         HashMap<String,Integer> history = new HashMap<>();
@@ -73,9 +76,9 @@ public class ContentDBHelper extends SQLiteOpenHelper {
             String query;
             if(learned > -1){
                 query ="SELECT verses_marked.UUID, verses_marked.label_name,verses_marked.label_color,verses_marked.label_permanent,verses_marked.book_number,verses_marked.chapter,verses_marked.verseFrom,verses_marked.verseTo,verses_marked.note " +
-                        " FROM verses_marked LEFT JOIN verses_learned ON verses_marked.UUID = verses_learned.UUID WHERE verses_marked.label_id = " + CommonMethods.LABEL_ID_MEMORIZE + " AND verses_learned.learned=" + learned + " ORDER BY verses_learned.priority, verses_marked.date_updated";
+                        " FROM verses_marked LEFT JOIN verses_learned ON verses_marked.UUID = verses_learned.UUID WHERE verses_marked.user_id = " + userId + " AND verses_marked.label_id = " + CommonMethods.LABEL_ID_MEMORIZE + " AND verses_learned.learned=" + learned + " ORDER BY verses_learned.priority, verses_marked.date_updated";
             } else {
-                query = (_uuid == null) ? "SELECT * FROM verses_marked WHERE label_id=" + label_id : "SELECT * FROM verses_marked WHERE label_id=" + label_id + " AND UUID ='" + _uuid + "'";
+                query = (_uuid == null) ? "SELECT * FROM verses_marked WHERE user_id = " +userId+ " AND label_id=" + label_id : "SELECT * FROM verses_marked WHERE user_id = " +userId+ " AND label_id=" + label_id + " AND UUID ='" + _uuid + "'";
             }
             Cursor labelSpecificRows = this.db.rawQuery(query, null);
             if (labelSpecificRows.moveToFirst()) {
@@ -157,13 +160,14 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         return getVersesMarked(CommonMethods.LABEL_ID_MEMORIZE, null, learned);
     }
     public ArrayList<Label> getAllLabels(){
+        int userId = (user == null) ? 0 : user.getUserId();
         Cursor innerCursor;
         int rowCount;
         int i;
         ArrayList<Label> list = new ArrayList();
         try {
-            String query = "SELECT * FROM labels";
-            innerCursor = this.db.rawQuery(query, null);
+            String query = "SELECT * FROM labels WHERE user_id = ?";
+            innerCursor = this.db.rawQuery(query, new String[]{String.valueOf(userId)});
             if (innerCursor.moveToFirst()) {
                 rowCount = innerCursor.getCount();
                 for (i = 0; i < rowCount; i++) {
@@ -301,6 +305,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
     }
 
     public boolean editLabel(String name, String color, int id){
+        int userId = (user == null) ? 0 : user.getUserId();
         boolean success = true;
         db.beginTransaction();
         try{
@@ -309,7 +314,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
             cv.put("name", name);
             cv.put("color", color);
             cv.put("state", 0);
-            this.db.update("labels", cv, "_id="+id, null);
+            this.db.update("labels", cv, "_id = ? AND user_id = ?", new String[]{String.valueOf(id), String.valueOf(userId)});
 
             updateSyncUp(null, null, 0, null);
             db.setTransactionSuccessful();
@@ -336,12 +341,13 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         return success;
     }
     public boolean editVersesLearned(String uuid, int learned){
-
+        int userId = (user == null) ? 0 : user.getUserId();
         boolean success = true;
         db.beginTransaction();
         try{
 
             ContentValues cv = new ContentValues();
+            cv.put("user_id", userId);
             cv.put("learned", learned);
             cv.put("state", 0);
             this.db.update("verses_learned", cv, "UUID=?", new String[]{uuid});
@@ -359,11 +365,12 @@ public class ContentDBHelper extends SQLiteOpenHelper {
     }
 
     public boolean deleteOneLabel(int id){
+        int userId = (user == null) ? 0 : user.getUserId();
         boolean success = true;
         db.beginTransaction();
         try{
 
-            this.db.delete("labels", "_id =" + id, null);
+            this.db.delete("labels", "_id = ? AND user_id = ?", new String[]{String.valueOf(id), String.valueOf(userId)});
 
             updateSyncUp(null, null, 0, null);
             db.setTransactionSuccessful();
@@ -376,9 +383,10 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         return success;
     }
     public boolean deleteVersesMarkedGroup(int label_id, String uuid){
+        int userId = (user == null) ? 0 : user.getUserId();
         boolean success = false;
         SQLiteDatabase db = this.db;
-        int rowsDeletedVersesMarked = db.delete("verses_marked", "label_id = ? AND UUID = ?", new String[]{String.valueOf(label_id), uuid});
+        int rowsDeletedVersesMarked = db.delete("verses_marked", "label_id = ? AND UUID = ? AND user_id = ?", new String[]{String.valueOf(label_id), uuid, String.valueOf(userId)});
         if(rowsDeletedVersesMarked > 0 && label_id == CommonMethods.LABEL_ID_MEMORIZE) {
             success = deleteVersesLearned(db, uuid);
         } else {
@@ -387,12 +395,13 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         return success;
     }
     public boolean deleteVersesLearned(SQLiteDatabase _db, String uuid){
+        int userId = (user == null) ? 0 : user.getUserId();
         SQLiteDatabase db = (_db == null) ? this.db : _db;
         boolean success = true;
         db.beginTransaction();
         try{
 
-            db.delete("verses_learned", "UUID='" + uuid + "'", null);
+            db.delete("verses_learned", "UUID= ? AND user_id = ?", new String[]{uuid, String.valueOf(userId)});
 
             updateSyncUp(null, null, 0, null);
             db.setTransactionSuccessful();
@@ -403,6 +412,12 @@ public class ContentDBHelper extends SQLiteOpenHelper {
             db.endTransaction();
         }
         return success;
+    }
+    //-----------------------------------------------------------------------
+    public Cursor getVersesMarkedCursor(int book_number, int chapter){
+        int userId = (user == null) ? 0 : user.getUserId();
+        String query = "SELECT * FROM verses_marked WHERE book_number = ? AND chapter = ? AND user_id = ? ORDER BY book_number, chapter, verseFrom";
+        return this.db.rawQuery(query, new String[] {String.valueOf(book_number), String.valueOf(chapter), String.valueOf(userId)});
     }
     //-----------------------------------------------------------------------
     public int getVersesMarkedNumber(int label_id) {
@@ -489,17 +504,22 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         db.execSQL("INSERT OR IGNORE INTO syncup(email) VALUES('"+ email +"')");
     }
     public boolean updateSyncUp(String email, Integer version, Integer state, String updated){
-        String userEmail;
-        if(email != null){
-            userEmail = email;
-        } else {
-            userEmail = (user == null) ? "offline" : user.getEmail();
+        try {
+            String userEmail;
+            if(email != null){
+                userEmail = email;
+            } else {
+                userEmail = (user == null) ? "offline" : user.getEmail();
+            }
+            ContentValues initialValues = new ContentValues();
+            if(version!=null) initialValues.put(ContentDBContracts.SYNC_UPS.COL_VERSION, version);
+            if(state!=null) initialValues.put(ContentDBContracts.SYNC_UPS.COL_STATE, state);
+            if(updated!=null) initialValues.put(ContentDBContracts.SYNC_UPS.COL_UPDATED, updated);
+            this.db.update("syncup", initialValues, "email=?", new String[] {userEmail});
+            return true;
+        } catch (Exception e) {
+            return false;
         }
-        ContentValues initialValues = new ContentValues();
-        if(version!=null) initialValues.put(ContentDBContracts.SYNC_UPS.COL_VERSION, version);
-        if(state!=null) initialValues.put(ContentDBContracts.SYNC_UPS.COL_STATE, state);
-        if(updated!=null) initialValues.put(ContentDBContracts.SYNC_UPS.COL_UPDATED, updated);
-        return this.db.update("syncup", initialValues, "email=?", new String[] {userEmail}) > 0;
     }
 
     public ArrayList<POJOLabel> getAllLabelsRaw(){

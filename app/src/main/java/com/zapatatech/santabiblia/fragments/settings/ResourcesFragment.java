@@ -31,6 +31,9 @@ public class ResourcesFragment extends Fragment {
     private static final String TAG = "ResourcesFragment";
     private static final String MAIN_CONTENT_DB = "content.db";
     private static final String TEMP_FILE_EXT = "-temp";
+    private static final String CAN_GO_BACK = "CAN_GO_BACK";
+    private static final String TITLE = "Resources Downloaded";
+    boolean canGoBack;
     private MaterialButton seeAvailable;
     private RecyclerView rvView;
     private SettingsResourcesDownloadedRVAdapter adapter;
@@ -58,16 +61,14 @@ public class ResourcesFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            canGoBack = savedInstanceState.getBoolean(CAN_GO_BACK, false);
+        } else {
+            canGoBack = getActivity().getSupportFragmentManager().getBackStackEntryCount()>0;
+        }
         setHasOptionsMenu(true);
         list = new ArrayList<>();
         listDisplayName = new ArrayList<>();
-//        String[] resourcesAvailable = BibleCreator.getInstance(this.getContext()).listOfAssetsSpecific("bibles", "es");;
-//        list = new ArrayList<String>(Arrays.asList(resourcesAvailable));
-
-        //list = BibleCreator.getInstance(this.getContext()).listOfAllDBAssets();
-
-//        list = new ArrayList<String>(Arrays.asList(getActivity().databaseList()));
-
         adapter = new SettingsResourcesDownloadedRVAdapter(getActivity(), list, listDisplayName);
     }
 
@@ -86,9 +87,7 @@ public class ResourcesFragment extends Fragment {
         rvView.setLayoutManager(new LinearLayoutManager(this.getContext()));
 
         //============================================================================================
-        setHasOptionsMenu(true);
-        boolean canGoBack = getActivity().getSupportFragmentManager().getBackStackEntryCount()>0;
-        Settings.updateCanGoBack(canGoBack, (Settings)getActivity(), null);
+        Settings.updateCanGoBack(canGoBack, (Settings)getActivity(), TITLE);
         //============================================================================================
         return view;
     }
@@ -132,5 +131,9 @@ public class ResourcesFragment extends Fragment {
         adapter.refreshData(newList, newListDisplayName);
     }
 
-
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(CAN_GO_BACK, canGoBack);
+    }
 }

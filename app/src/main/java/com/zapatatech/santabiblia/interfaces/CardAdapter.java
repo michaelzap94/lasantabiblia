@@ -4,7 +4,7 @@ import androidx.cardview.widget.CardView;
 
 public interface CardAdapter {
 
-    int MAX_ELEVATION_FACTOR = 5;
+    int MAX_ELEVATION_FACTOR = 4;
 
     float getBaseElevation();
 

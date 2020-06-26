@@ -4,8 +4,10 @@ package com.zapatatech.santabiblia.fragments.settings;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
@@ -50,6 +52,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+        Log.d(TAG, "onCreatePreferences: " + getActivity());
         setPreferencesFromResource(R.xml.settings, rootKey);
         mActivity = getActivity();
         screen = this.getPreferenceScreen(); // "null". See onViewCreated.
@@ -115,4 +118,21 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 //        screen.addPreference(category);
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        Log.d(TAG, "onActivityCreated: ");
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate: " + getActivity());
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onResume() {
+        Log.d(TAG, "onResume: ");
+        super.onResume();
+    }
 }
