@@ -229,12 +229,17 @@ public class BibleDBHelper {
                     int verse = innerCursor.getInt(verseCol);
                     String text = innerCursor.getString(textCol).trim();
                     String textTitle = null;
+                    String[] textTitleReferences = null;
                     //int titleAtVerse;
                     int orderIfSeveralTitles;
                     if(!innerCursor.isNull(textTitleCol)){
                         textTitle = innerCursor.getString(textTitleCol);
                         //titleAtVerse = innerCursor.getInt(titleAtVerseCol);
                         //orderIfSeveralTitles = innerCursor.getInt(orderIfSeveralTitlesCol);
+                        if(textTitle.contains("<x>")){
+                            textTitleReferences = textTitle.replace("(", "").replace(")", "").split(";");
+                            textTitle = null;
+                        }
                     }
 
                     String textToBeParsed;
@@ -271,12 +276,15 @@ public class BibleDBHelper {
 
                     //If a Verse is in the array already and we see the same verse again, it's because there are 2+ titles
                     if(!history.containsKey(verse)){
-                        list.add(new Verse(book_number, chapter_number, verse, textSpanned, ssTextVerse, textTitle, listOfLabels));
+                        list.add(new Verse(book_number, chapter_number, verse, textSpanned, ssTextVerse, textTitle, textTitleReferences, listOfLabels));
                         history.put(verse, true);
                     } else {
                         Verse existingVerse = list.get(verse - 1);
-                        String newTextTitle = existingVerse.getTextTitle() + "\n" + textTitle;
-                        existingVerse.setTextTitle(newTextTitle);
+                        if(textTitle != null) {
+                            String newTextTitle = existingVerse.getTextTitle() + "\n" + textTitle;
+                            existingVerse.setTextTitle(newTextTitle);
+                        }
+                        existingVerse.setTextTitleRefs(textTitleReferences);
                     }
 
                     innerCursor.moveToNext();
@@ -378,11 +386,14 @@ public class BibleDBHelper {
     }
 
     public HashMap<String, ArrayList<Verse>> getVersesFromCommentaries(String textWithHTML) {
+        boolean containsXForTitle = textWithHTML.contains("<x>");
+
+        Pattern pattern = (containsXForTitle) ? Pattern.compile("<x>(\\d+) (\\d+):(\\d+)-?(\\d+)?") : Pattern.compile("B:(\\d+) (\\d+):(\\d+)-?(\\d+)?");
+
         boolean containsHyphon = textWithHTML.contains(">—<");
         HashMap<String, ArrayList<Verse>> versesDictionary = new HashMap<>();
 
         String line = textWithHTML;
-        Pattern pattern = Pattern.compile("B:(\\d+) (\\d+):(\\d+)-?(\\d+)?");
         Matcher matcher = pattern.matcher(line);
         int groups = 0;
         while (matcher.find()){

@@ -8,6 +8,7 @@ import android.text.Html;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
@@ -28,7 +29,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.zapatatech.santabiblia.DatabaseHelper.BibleDBHelper;
 import com.zapatatech.santabiblia.R;
 import com.zapatatech.santabiblia.fragments.dialogs.VersesInsideDialog;
+import com.zapatatech.santabiblia.fragments.settings.InnerPreferencesFragment;
 import com.zapatatech.santabiblia.models.Verse;
+import com.zapatatech.santabiblia.utilities.BookHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -86,11 +89,13 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
 
     class VersesViewHolder extends RecyclerView.ViewHolder {
         TextView txtView_title;
+        //TextView txtView_title_refs;
         TextView txtView_verse;
 
         public VersesViewHolder(@NonNull View itemView) {
             super(itemView);
             txtView_title = itemView.findViewById(R.id.txtView_title);
+            //txtView_title_refs = itemView.findViewById(R.id.txtView_title_refs);
             txtView_verse = itemView.findViewById(R.id.txtView_verse);
         }
 
@@ -121,7 +126,7 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
                                     int start = s.getSpanStart(this);
                                     int end = s.getSpanEnd(this);
                                     Log.d(TAG, "ClickableSpan onClick " +verse.getBookNumber() + " " + s.subSequence(start, end));
-                                    openDialogReferencesMaterial(verse.getBookNumber(), s.subSequence(start, end).toString());
+                                    openDialogReferencesMaterial(verse.getBookNumber(), s.subSequence(start, end).toString(), null);
                                 }
                             }
                         }
@@ -156,9 +161,52 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
             }
             //Log.d(TAG, "position: verse.getTextTitle()" + getAdapterPosition() + " null: " +  ((boolean) (null == verse.getTextTitle())));
             //Bind data to layout elements
-            if(verse.getTextTitle() != null){
-                txtView_title.setText(verse.getTextTitle());
+//            if(verse.getTextTitle() != null){
+//                txtView_title.setText(verse.getTextTitle());
+//                txtView_title.setVisibility(View.VISIBLE);
+//            }
+//
+//            if(verse.getTextTitleRefs() != null) {
+//                txtView_title_refs.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        openDialogReferencesMaterial(verse.getBookNumber(), null, verse.getTextTitleRefs());
+//                    }
+//                });
+//                txtView_title_refs.setVisibility(View.VISIBLE);
+//            }
+
+            String textTitle = verse.getTextTitle();
+            if(textTitle != null){
                 txtView_title.setVisibility(View.VISIBLE);
+                String[] textTitleRefs = verse.getTextTitleRefs();
+                if(textTitleRefs != null){
+                    String refs = "[Ref]";
+                    int startRef = refs.indexOf("[");
+                    int endRef = refs.indexOf("]");
+
+                    SpannableString ssTextTitleOriginal = new SpannableString(textTitle);
+                    SpannableString ssTextTitle = new SpannableString(refs);
+
+                    ClickableSpan clickableSpan = new ClickableSpan() {
+                        @Override
+                        public void onClick(View textView) {
+                            openDialogReferencesMaterial(verse.getBookNumber(), null, textTitleRefs);
+                        }
+                        @Override
+                        public void updateDrawState(TextPaint ds) {
+                            super.updateDrawState(ds);
+                            ds.setUnderlineText(false);
+                            ds.setColor(Color.BLUE);
+                        }
+                    };
+                    ssTextTitle.setSpan(clickableSpan, startRef, endRef + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    txtView_title.setMovementMethod(LinkMovementMethod.getInstance());
+                    txtView_title.setHighlightColor(Color.TRANSPARENT);
+                    txtView_title.setText(TextUtils.concat(ssTextTitle," ",ssTextTitleOriginal), TextView.BufferType.SPANNABLE);
+                } else {
+                    txtView_title.setText(textTitle);
+                }
             }
         }
     }
@@ -167,15 +215,30 @@ public class VersesRecyclerViewAdapter extends RecyclerView.Adapter<VersesRecycl
         vid.setStyle(DialogFragment.STYLE_NORMAL, R.style.CustomDialog);
         vid.show(((AppCompatActivity) ctx).getSupportFragmentManager(),"anything");
     }
-    public void openDialogReferencesMaterial(int bookNumber, String elementClicked){
+    public void openDialogReferencesMaterial(int bookNumber, String elementClicked, String[] textTitleRefs){
         Context context = new ContextThemeWrapper(ctx, R.style.AppTheme2);
-
-        String[] arrReturned = BibleDBHelper.getInstance(ctx).getReferences(bookNumber, elementClicked);
-        String[] arrToShow = new String[arrReturned.length];
-        for (int i = 0; i < arrReturned.length ; i++) {
-            arrToShow[i] = Html.fromHtml(arrReturned[i]).toString();
+        final String[] arrReturned;
+        final String[] arrToShow;
+        if(textTitleRefs!=null) {
+            arrReturned = textTitleRefs;
+            arrToShow = new String[arrReturned.length];
+            for (int i = 0; i < arrReturned.length ; i++) {
+                try{
+                    String[] parsed = Html.fromHtml(arrReturned[i]).toString().split(" ");
+                    int book_number = Integer.parseInt(parsed[0]);
+                    String bookName = BookHelper.getBook(book_number).getName();
+                    arrToShow[i] = bookName + " " + parsed[1];
+                } catch (Exception e) {
+                    continue;
+                }
+            }
+        } else {
+            arrReturned = BibleDBHelper.getInstance(ctx).getReferences(bookNumber, elementClicked);
+            arrToShow = new String[arrReturned.length];
+            for (int i = 0; i < arrReturned.length ; i++) {
+                arrToShow[i] = Html.fromHtml(arrReturned[i]).toString();
+            }
         }
-
         new MaterialAlertDialogBuilder(context)
                 .setTitle("Referencias:")
                 .setItems(arrToShow,  new DialogInterface.OnClickListener() {
