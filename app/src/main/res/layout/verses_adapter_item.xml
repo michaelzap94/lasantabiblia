@@ -16,6 +16,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:layout_gravity="center"
+        android:gravity="center"
         android:textStyle="bold"
         android:textColor="@color/design_default_color_on_secondary"
         android:textSize="19sp"
