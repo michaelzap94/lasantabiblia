@@ -111,15 +111,15 @@ public class RecyclerItemClickListener extends RecyclerView.SimpleOnItemTouchLis
 
     @Override
     public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-        Log.d(TAG, "rlc onInterceptTouchEvent: starts");
+        //Log.d(TAG, "rlc onInterceptTouchEvent: starts");
         //handle click events;//if you return true it means we have handled the click. so the default detector will not work;
         if(rvGestureDetector != null){
             //anything the gestureDetector handles do it here;
             boolean result = rvGestureDetector.onTouchEvent(e);
-            Log.d(TAG, "rlc onInterceptTouchEvent rvGestureDetector: " + result);
+            //Log.d(TAG, "rlc onInterceptTouchEvent rvGestureDetector: " + result);
             return result;
         } else {
-            Log.d(TAG, "rlc onInterceptTouchEvent NO rvGestureDetector: ");
+            //Log.d(TAG, "rlc onInterceptTouchEvent NO rvGestureDetector: ");
             return false;// therefore this will run: super.onInterceptTouchEvent(rv, e);
         }
         //return true;//super.onInterceptTouchEvent(rv, e);

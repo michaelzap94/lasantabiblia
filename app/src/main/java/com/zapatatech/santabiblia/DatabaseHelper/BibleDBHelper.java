@@ -104,8 +104,7 @@ public class BibleDBHelper {
 //        ArrayList<VersesMarked> versesMarkedList = new ArrayList<>();
         TreeMap<Integer, ArrayList<Label>> versesMarkedListOfLabels = new TreeMap<>();
         try {            //String query = "SELECT * FROM verses_marked " + "JOIN categories ON teams.cat = catagories.Id WHERE fav=0)";
-            String query = "SELECT * FROM verses_marked WHERE book_number = ? AND chapter = ? ORDER BY book_number, chapter, verseFrom";
-            Cursor labelSpecificRows = ContentDBHelper.getInstance(myContext).getReadableDatabase().rawQuery(query, new String[] {String.valueOf(book_number), String.valueOf(chapter)});
+            Cursor labelSpecificRows = ContentDBHelper.getInstance(myContext).getVersesMarkedCursor(book_number, chapter);
             if (labelSpecificRows.moveToFirst()) {
                 labelSpecificRowsCount = labelSpecificRows.getCount();
                 for (i = 0; i < labelSpecificRowsCount; i++) {
