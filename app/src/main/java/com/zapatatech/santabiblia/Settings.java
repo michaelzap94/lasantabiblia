@@ -118,7 +118,7 @@ public class Settings extends AppCompatActivity implements PreferenceFragmentCom
         setTitle(R.string.settings);
         Log.d(TAG, "onCreate: AFTER");
         //set account icon instead of three dots
-        Drawable drawable = ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_account_circle);
+        Drawable drawable = ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_login_person);
         mToolbar.setOverflowIcon(drawable);
     }
 
