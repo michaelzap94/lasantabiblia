@@ -42,9 +42,9 @@ public class RecyclerItemClickListener extends RecyclerView.SimpleOnItemTouchLis
                 if(childView != null  && rcListener != null){
                     TextView textViewTitle = (TextView) ((ViewGroup)childView).getChildAt(0);//this will be the verse textview
 
-                    Log.d(TAG, "rlc onSingleTapUp: getMovementMethod " + textViewTitle.getMovementMethod());
-                    Log.d(TAG, "rlc onSingleTapUp: textView.getSelectionStart() " + textViewTitle.getSelectionStart());
-                    Log.d(TAG, "rlc onSingleTapUp: textView.getSelectionEnd()  " + textViewTitle.getSelectionEnd());
+//                    Log.d(TAG, "rlc onSingleTapUp: getMovementMethod " + textViewTitle.getMovementMethod());
+//                    Log.d(TAG, "rlc onSingleTapUp: textView.getSelectionStart() " + textViewTitle.getSelectionStart());
+//                    Log.d(TAG, "rlc onSingleTapUp: textView.getSelectionEnd()  " + textViewTitle.getSelectionEnd());
 
                     if (textViewTitle.getSelectionStart() != -1 && textViewTitle.getSelectionEnd() != -1) {
                         // do your code here this will only call if its a hyperlink
@@ -53,9 +53,9 @@ public class RecyclerItemClickListener extends RecyclerView.SimpleOnItemTouchLis
 
                     TextView textView = (TextView) ((ViewGroup)childView).getChildAt(1);//this will be the verse textview
 
-                Log.d(TAG, "rlc onSingleTapUp: getMovementMethod " + textView.getMovementMethod());
-                Log.d(TAG, "rlc onSingleTapUp: textView.getSelectionStart() " + textView.getSelectionStart());
-                Log.d(TAG, "rlc onSingleTapUp: textView.getSelectionEnd()  " + textView.getSelectionEnd());
+//                Log.d(TAG, "rlc onSingleTapUp: getMovementMethod " + textView.getMovementMethod());
+//                Log.d(TAG, "rlc onSingleTapUp: textView.getSelectionStart() " + textView.getSelectionStart());
+//                Log.d(TAG, "rlc onSingleTapUp: textView.getSelectionEnd()  " + textView.getSelectionEnd());
 
                     if (textView.getSelectionStart() == -1 && textView.getSelectionEnd() == -1) {
                         // do your code here this will only call if its not a hyperlink
