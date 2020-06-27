@@ -455,7 +455,13 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         return true;
     }
     //==============================================================================================
-    public POJOSyncUp getSyncUp(String email){
+    public POJOSyncUp getSyncUp(String userEmail){
+        String email;
+        if(userEmail != null){
+            email = userEmail;
+        } else {
+            email = (user == null) ? "offline" : user.getEmail();
+        }
         POJOSyncUp result = null;
         String query = "SELECT * FROM syncup WHERE email='" + email +"'";
         Cursor cursor = null;
@@ -500,8 +506,9 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         }
         return success;
     }
-    public void insertSyncUpIfNotExist(@NonNull String email){
+    public void insertInitDataIfNotExist(@NonNull String email){
         db.execSQL("INSERT OR IGNORE INTO syncup(email) VALUES('"+ email +"')");
+        initPutData(db);
     }
     public boolean updateSyncUp(String email, Integer version, Integer state, String updated){
         try {
@@ -723,19 +730,13 @@ public class ContentDBHelper extends SQLiteOpenHelper {
                 " label_name VARCHAR NOT NULL, label_color VARCHAR NOT NULL, label_permanent INTEGER DEFAULT 0, note VARCHAR, date_created datetime DEFAULT current_timestamp, date_updated datetime DEFAULT current_timestamp, UUID VARCHAR NOT NULL, state INTEGER DEFAULT 0," +
                 " FOREIGN KEY (label_id) REFERENCES labels (_id) ON DELETE CASCADE)");
         db.execSQL("CREATE TABLE verses_learned (_id INTEGER PRIMARY KEY, user_id INTEGER DEFAULT 0, UUID VARCHAR NOT NULL, label_id INTEGER NOT NULL, learned INTEGER DEFAULT 0, priority INTEGER DEFAULT 0, state INTEGER DEFAULT 0)");
-
-        initPutData(db);
     }
 
     private void initPutData(SQLiteDatabase db){
         Log.d(TAG, "initPutData: " + user);
-        if(user == null){
-            db.execSQL("INSERT INTO labels (name,color,permanent) VALUES( \"Memorize\", \"#00ff00\", 1)");
-            db.execSQL("INSERT INTO labels (name,color,permanent) VALUES( \"Favourites\", \"#ffd700\", 1)");
-        } else {
-            db.execSQL("INSERT INTO labels (user_id, name,color,permanent) VALUES( "+user.getUserId()+", \"Memorize\", \"#00ff00\", 1)");
-            db.execSQL("INSERT INTO labels (user_id, name,color,permanent) VALUES( "+user.getUserId()+", \"Favourites\", \"#ffd700\", 1)");
-        }
+        int userId = (user == null) ? 0 : user.getUserId();
+        db.execSQL("INSERT OR IGNORE INTO labels (user_id, name,color,permanent) VALUES( "+userId+", \"Memorize\", \"#00ff00\", 1)");
+        db.execSQL("INSERT OR IGNORE INTO labels (user_id, name,color,permanent) VALUES( "+userId+", \"Favourites\", \"#ffd700\", 1)");
     }
 
     @Override

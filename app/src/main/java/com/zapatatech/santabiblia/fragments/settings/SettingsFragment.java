@@ -15,7 +15,9 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceScreen;
 
+import com.zapatatech.santabiblia.DatabaseHelper.ContentDBHelper;
 import com.zapatatech.santabiblia.R;
+import com.zapatatech.santabiblia.retrofit.Pojos.POJOSyncUp;
 import com.zapatatech.santabiblia.utilities.CommonMethods;
 
 import java.util.ArrayList;
@@ -75,11 +77,16 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private void addPreferencesForLoggedInUsers(){
+        POJOSyncUp syncUpObj = ContentDBHelper.getInstance(mActivity).getSyncUp(null);
+        String summary = "Not available";
+        if(syncUpObj != null && syncUpObj.getEmail() != "offline") {
+            summary = "Last synced: " + syncUpObj.getUpdated();
+        }
         final PreferenceCategory thirdCategory = (PreferenceCategory) findPreference("pref_section_third");
         Preference backUp = new Preference(screen.getContext());
         backUp.setKey("pref_back_up");
         backUp.setTitle("Back up and Sync Up");
-        backUp.setSummary("Last synced: 28/10/20 13:34");
+        backUp.setSummary(summary);
         backUp.setIcon(R.drawable.ic_sync);
         backUp.setOrder(0);
         thirdCategory.addPreference(backUp);

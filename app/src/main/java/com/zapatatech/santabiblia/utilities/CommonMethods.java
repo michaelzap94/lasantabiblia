@@ -330,7 +330,7 @@ public class CommonMethods {
             ContentDBHelper.getInstance(activity).addUserToSingleton(activity);
             //CREATE FIRST RECORD FOR SYNC UP for this user IF NOT PRESENT ALREADY
             String email = CommonMethods.decodeJWTAndCreateUser(accessToken).getEmail();
-            ContentDBHelper.getInstance(activity).insertSyncUpIfNotExist(email);
+            ContentDBHelper.getInstance(activity).insertInitDataIfNotExist(email);
             //--------------------------------------------------------
             int newStatus = updateUserStatus(activity, USER_ONLINE);
             if(newStatus == USER_ONLINE){
