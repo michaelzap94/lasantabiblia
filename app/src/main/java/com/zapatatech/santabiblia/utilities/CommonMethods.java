@@ -639,7 +639,6 @@ public class CommonMethods {
                         if(sameVersion){
                             if(syncUp.getState() == 0) {
                                 //NEEDS TO SYNC: OVERRIDE(upload)
-                                Toast.makeText(mActivity, "Sync in process...", Toast.LENGTH_SHORT).show();
                                 CommonMethods.startWorkManagerSyncUpData(mActivity, syncUp, DATA_OVERRIDE_FLAG);
                             } else {
                                 //UP TO DATE: update sync data
@@ -705,11 +704,9 @@ public class CommonMethods {
                 })
                 .setNegativeButton(resources.getString(R.string.override), (dialog, which) -> {
                     CommonMethods.startWorkManagerSyncUpData(mActivity, syncUp, DATA_OVERRIDE_FLAG);
-                    Toast.makeText(mActivity, "Sync in process...", Toast.LENGTH_SHORT).show();
                 })
                 .setPositiveButton(resources.getString(R.string.sync_up), (dialog, which) -> {
                     CommonMethods.startWorkManagerSyncUpData(mActivity, syncUp, DATA_SYNCUP_FLAG);
-                    Toast.makeText(mActivity, "Sync in process...", Toast.LENGTH_SHORT).show();
                 })
                 .show();
     }
@@ -742,6 +739,7 @@ public class CommonMethods {
                     .build();
 
             mWorkManager.enqueueUniqueWork(DATA_SYNCUP_UNIQUE, ExistingWorkPolicy.KEEP, syncupWorkRequest);
+            Toast.makeText(mActivity, "Sync in process...", Toast.LENGTH_SHORT).show();
         }
     }
 

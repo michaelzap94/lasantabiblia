@@ -211,7 +211,21 @@ public class ResourcesAvailableBiblesFragment extends Fragment {
                                     }
                                     //You can call the method pruneWork() on your WorkManager to clear the List<WorkStatus> && List<WorkInfo>
                                     WorkManager.getInstance(mActivity).pruneWork();//kill all finished tasks
-                                } else if (workInfo != null && workInfo.getState().isFinished()) {
+                                }  else if (workInfo != null && workInfo.getState()  == WorkInfo.State.FAILED) {
+                                    Log.d(TAG, "startWorkManagerDownloadResource: FAILED " + workInfo.toString());
+                                    Log.d(TAG, "startWorkManagerDownloadResource: FAILED isFinished " + workInfo.getState().isFinished());
+                                    boolean myResult = workInfo.getOutputData().getBoolean("downloadComplete", false);
+                                    String fileName = workInfo.getOutputData().getString("fileName");
+                                    //Log.d(TAG, "startWorkManagerDownloadResource: cancelled myResult: "+myResult);
+                                    Log.d(TAG, "startWorkManagerDownloadResource: FAILED fileName: "+fileName);
+                                    if(fileName != null){
+                                        //FAILED
+                                        adapter.updateResourceStateByName(fileName, "failed");
+                                    } else {
+                                        //kill the workmanager we started before this
+                                        WorkManager.getInstance(mActivity).pruneWork();
+                                    }
+                                }  else if (workInfo != null && workInfo.getState().isFinished()) {
                                     Log.d(TAG, "startWorkManagerDownloadResource: completed " + workInfo.toString());
                                     boolean myResult = workInfo.getOutputData().getBoolean("downloadComplete", false);
                                     String fileName = workInfo.getOutputData().getString("fileName");
