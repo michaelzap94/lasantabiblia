@@ -25,7 +25,7 @@ public class VersesMarkedViewModel extends AndroidViewModel {
     private MutableLiveData<ArrayList<VersesMarked>> versesMarkedListLearned;
     private MutableLiveData<ArrayList<VersesMarked>> versesMarkedListNotLearned;
     private MutableLiveData<ArrayList<Label>> allLabels;
-    private int label_id;
+    private String label_id;
 
     public VersesMarkedViewModel(@NonNull Application application) {
         super(application);
@@ -48,18 +48,18 @@ public class VersesMarkedViewModel extends AndroidViewModel {
         return allLabels;
     }
     //PUBLIC SO we can refresh the list for some reason from the OUTSIDE
-    public void refreshVersesMarkedList(int label_id){
+    public void refreshVersesMarkedList(String label_id){
         fetchData(label_id);
     }
 
-    public void fetchData(int label_id){
+    public void fetchData(String label_id){
         this.label_id = label_id;
         loadVerses(label_id);
     }
-    public void loadVerses(int label_id){new VersesMarkedViewModel.GetVersesMarked().execute(label_id);}
-    private class GetVersesMarked extends AsyncTask<Integer, Void, Void> {
+    public void loadVerses(String label_id){new VersesMarkedViewModel.GetVersesMarked().execute(label_id);}
+    private class GetVersesMarked extends AsyncTask<String, Void, Void> {
         //get data and populate the list
-        protected Void doInBackground(Integer... args) {
+        protected Void doInBackground(String... args) {
             Log.d(TAG, "GetVersesMarked doInBackground: " + args[0]);
             ArrayList<VersesMarked> result = ContentDBHelper.getInstance(getApplication()).getVersesMarked(args[0], null, -1);
             Log.d(TAG, "GetVersesMarked doInBackground: result " + result.size());
@@ -153,15 +153,15 @@ public class VersesMarkedViewModel extends AndroidViewModel {
         }
     }
     //===============================================================================================
-    public void updateOrCreateLabel(String nameValue, String colorValue, int idValue){
+    public void updateOrCreateLabel(String nameValue, String colorValue, String idValue){
         new VersesMarkedViewModel.UpdateOrCreateLabelAsync().execute(nameValue, colorValue, idValue);
     }
     private class UpdateOrCreateLabelAsync extends AsyncTask<Object, Void, Void> {
         //get data and populate the list
         protected Void doInBackground(Object... args) {
-            int idValue = (int) args[2];
+            String idValue = (String) args[2];
             boolean insertSuccess;
-            if(idValue != -1){
+            if(idValue != null){
                 insertSuccess = ContentDBHelper.getInstance(getApplication()).editLabel((String) args[0], (String) args[1], idValue);
             } else {
                 insertSuccess = ContentDBHelper.getInstance(getApplication()).createLabel((String) args[0], (String) args[1]);
@@ -173,13 +173,13 @@ public class VersesMarkedViewModel extends AndroidViewModel {
         }
     }
     //===============================================================================================
-    public void deleteLabel(int label_id){
+    public void deleteLabel(String label_id){
         new VersesMarkedViewModel.DeleteLabelAsync().execute(label_id);
     }
-    private class DeleteLabelAsync extends AsyncTask<Integer, Void, Void> {
+    private class DeleteLabelAsync extends AsyncTask<String, Void, Void> {
         //get data and populate the list
-        protected Void doInBackground(Integer... args) {
-            int idValue = args[0];
+        protected Void doInBackground(String... args) {
+            String idValue = args[0];
             boolean deleteSuccess = ContentDBHelper.getInstance(getApplication()).deleteOneLabel(idValue);
             if(deleteSuccess){
                 getAllLabels();

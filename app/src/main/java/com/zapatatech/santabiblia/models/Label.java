@@ -6,11 +6,11 @@ import android.os.Parcelable;
 public class Label  implements Parcelable {
     private String name;
     private String color;
-    private int id;
+    private String id;
     private int permanent;
     private String uuid;
 
-    public Label(int id, String name, String color, int permanent) {
+    public Label(String id, String name, String color, int permanent) {
         this.id = id;
         this.uuid = null;
         this.name = name;
@@ -18,7 +18,7 @@ public class Label  implements Parcelable {
         this.permanent = permanent;
     }
 
-    public Label(int id, String name, String color, int permanent, String uuid) {
+    public Label(String id, String name, String color, int permanent, String uuid) {
         this.id = id;
         this.uuid = uuid;
         this.name = name;
@@ -41,10 +41,10 @@ public class Label  implements Parcelable {
     public void setColor(String color) {
         this.color = color;
     }
-    public int getId() {
+    public String getId() {
         return id;
     }
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
     public int getPermanent() {
@@ -69,14 +69,14 @@ public class Label  implements Parcelable {
     }
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.id);
+        dest.writeString(this.id);
         dest.writeString(this.uuid);
         dest.writeString(this.name);
         dest.writeString(this.color);
         dest.writeInt(this.permanent);
     }
     private Label(Parcel in) {
-        this.id = in.readInt();
+        this.id = in.readString();
         this.uuid = in.readString();
         this.name = in.readString();
         this.color = in.readString();

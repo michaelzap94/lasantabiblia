@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.zapatatech.santabiblia.DatabaseHelper.ContentDBHelper;
 import com.zapatatech.santabiblia.utilities.CommonMethods;
 
 import java.util.Locale;
@@ -84,6 +85,7 @@ public class MainActivity extends AppCompatActivity{
                 //user is offline because he does not have credentials and chose 'offline'
                 Intent intent = new Intent(MainActivity.this, Home.class);
                 startActivity(intent);
+                ContentDBHelper.getInstance(this).insertInitDataIfNotExist(null);
                 finish();
             }
         } else { //CommonMethods.USER_ONLINE

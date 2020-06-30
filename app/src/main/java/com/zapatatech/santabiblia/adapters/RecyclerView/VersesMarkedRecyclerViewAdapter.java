@@ -178,7 +178,7 @@ public class VersesMarkedRecyclerViewAdapter extends RecyclerView.Adapter<Verses
                 .addToBackStack(null).commit();
     }
 
-    public void deleteOneFromVersesMarked(int label_id, String uuid, int position){new VersesMarkedRecyclerViewAdapter.RemoveVersesMarked(position).execute(String.valueOf(label_id), uuid);}
+    public void deleteOneFromVersesMarked(String label_id, String uuid, int position){new VersesMarkedRecyclerViewAdapter.RemoveVersesMarked(position).execute(label_id, uuid);}
     private class RemoveVersesMarked extends AsyncTask<String, Void, Boolean> {
         private int position;
         private RemoveVersesMarked(int position) {
@@ -186,7 +186,7 @@ public class VersesMarkedRecyclerViewAdapter extends RecyclerView.Adapter<Verses
         }
         protected Boolean doInBackground(String... args) {
             Log.d(TAG, "doInBackground: " + args[0]);
-            return ContentDBHelper.getInstance(VersesMarkedRecyclerViewAdapter.this.ctx).deleteVersesMarkedGroup(Integer.parseInt(args[0]), args[1]);
+            return ContentDBHelper.getInstance(VersesMarkedRecyclerViewAdapter.this.ctx).deleteVersesMarkedGroup(args[0], args[1]);
         }
         @Override
         protected void onPostExecute(Boolean success) {

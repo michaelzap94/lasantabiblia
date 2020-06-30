@@ -65,9 +65,8 @@ public class ContentDBHelper extends SQLiteOpenHelper {
     }
     //-----------------------------------------------------------------------
 
-    public ArrayList<VersesMarked> getVersesMarked(int label_id, String _uuid, int learned) {
+    public ArrayList<VersesMarked> getVersesMarked(String label_id, String _uuid, int learned) {
         int userId = (user == null) ? 0 : user.getUserId();
-
         int labelSpecificRowsCount;
         int i;
         HashMap<String,Integer> history = new HashMap<>();
@@ -75,11 +74,13 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         try {
             String query;
             if(learned > -1){
+                //querying for Memorize VERSES
                 query ="SELECT verses_marked.UUID, verses_marked.label_name,verses_marked.label_color,verses_marked.label_permanent,verses_marked.book_number,verses_marked.chapter,verses_marked.verseFrom,verses_marked.verseTo,verses_marked.note " +
-                        " FROM verses_marked LEFT JOIN verses_learned ON verses_marked.UUID = verses_learned.UUID WHERE verses_marked.user_id = " + userId + " AND verses_marked.label_id = " + CommonMethods.LABEL_ID_MEMORIZE + " AND verses_learned.learned=" + learned + " ORDER BY verses_learned.priority, verses_marked.date_updated";
+                        " FROM verses_marked LEFT JOIN verses_learned ON verses_marked.UUID = verses_learned.UUID WHERE verses_marked.user_id = " + userId + " AND verses_marked.label_id = '" + label_id + "' AND verses_learned.learned=" + learned + " ORDER BY verses_learned.priority, verses_marked.date_updated";
             } else {
-                query = (_uuid == null) ? "SELECT * FROM verses_marked WHERE user_id = " +userId+ " AND label_id=" + label_id : "SELECT * FROM verses_marked WHERE user_id = " +userId+ " AND label_id=" + label_id + " AND UUID ='" + _uuid + "'";
+                query = (_uuid == null) ? "SELECT * FROM verses_marked WHERE user_id = " +userId+ " AND label_id='" + label_id +"'" : "SELECT * FROM verses_marked WHERE user_id = " +userId+ " AND label_id='" + label_id + "' AND UUID ='" + _uuid + "'";
             }
+            Log.d(TAG, "getVersesMarked: " + query);
             Cursor labelSpecificRows = this.db.rawQuery(query, null);
             if (labelSpecificRows.moveToFirst()) {
                 labelSpecificRowsCount = labelSpecificRows.getCount();
@@ -157,7 +158,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         return finalArray;
     }
     public ArrayList<VersesMarked> getVersesMarkedLearned(int learned){
-        return getVersesMarked(CommonMethods.LABEL_ID_MEMORIZE, null, learned);
+        return getVersesMarked(getMemorizeId(), null, learned);
     }
     public ArrayList<Label> getAllLabels(){
         int userId = (user == null) ? 0 : user.getUserId();
@@ -174,7 +175,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
 
                     String name = innerCursor.getString(innerCursor.getColumnIndex("name"));
                     String color = innerCursor.getString(innerCursor.getColumnIndex("color"));
-                    int id = innerCursor.getInt(innerCursor.getColumnIndex("_id"));
+                    String id = innerCursor.getString(innerCursor.getColumnIndex("_id"));
                     int permanent = innerCursor.getInt(innerCursor.getColumnIndex("permanent"));
                     int state = innerCursor.getInt(innerCursor.getColumnIndex("state"));
 
@@ -194,6 +195,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         try{
             int userId = (user == null) ? 0 : user.getUserId();
             ContentValues cv = new ContentValues();
+            cv.put("_id", createId());
             cv.put("user_id", userId);
             cv.put("name", name);
             cv.put("color", color);
@@ -211,7 +213,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
     public boolean insertSelectedItemsBulkTransaction(String uuid, Label label, int book_number, int chapter_number, String note, List<Integer> selectedItems) {
         boolean success = true;
         int userId = (user == null) ? 0 : user.getUserId();
-        int label_id = label.getId();
+        String label_id = label.getId();
         String label_name = label.getName();
         String label_color = label.getColor();
         List<List<Integer>> versesGroups = BookHelper.getVersesSelectedResults(selectedItems);//[[1,2,3],[6,7],[9]]
@@ -220,6 +222,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         String uniqueID = (uuid != null) ? uuid : UUID.randomUUID().toString();
         try{
             ContentValues cv = new ContentValues();
+            cv.put("_id", createId());
             cv.put("user_id", userId);
             cv.put("label_id", label_id);
             cv.put("label_name", label_name);
@@ -242,7 +245,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
             }
 
             //insert uuid in verses_learned
-            if(success && label_id == CommonMethods.LABEL_ID_MEMORIZE){
+            if(label_id.equals(getMemorizeId())){
                 insertVersesLearned(uniqueID, 0);
             }
 
@@ -258,13 +261,14 @@ public class ContentDBHelper extends SQLiteOpenHelper {
 
         return success;
     }
-    public boolean insertVersesMarked(int label_id, String label_name, String label_color, int book_number, int chapter_number, int verseFrom, int verseTo, String note) {
+    public boolean insertVersesMarked(String label_id, String label_name, String label_color, int book_number, int chapter_number, int verseFrom, int verseTo, String note) {
         boolean success = true;
         db.beginTransaction();
         try{
 
             int userId = (user == null) ? 0 : user.getUserId();
             ContentValues cv = new ContentValues();
+            cv.put("_id", createId());
             cv.put("user_id", userId);
             cv.put("label_id", label_id);
             cv.put("label_name", label_name);
@@ -290,21 +294,21 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         boolean success = false;
         int userId = (user == null) ? 0 : user.getUserId();
         ContentValues cv = new ContentValues();
-        cv.put("user_id", userId);
         cv.put("UUID", uuid);
         cv.put("learned", learned);
-        cv.put("label_id", CommonMethods.LABEL_ID_MEMORIZE);
-        SQLiteDatabase db = this.db;
-        int rowsUpdated = db.update("verses_learned", cv, "UUID=?", new String[]{uuid});
+        cv.put("label_id", getMemorizeId());
+        int rowsUpdated = this.db.update("verses_learned", cv, "UUID=? AND user_id=?", new String[]{uuid, String.valueOf(userId)});
         if(rowsUpdated <= 0) {
-            success = db.insert("verses_learned",null, cv) > 0;
+            cv.put("user_id", userId);
+            cv.put("_id", createId());
+            success = this.db.insert("verses_learned",null, cv) > 0;
         } else {
             success = updateSyncUp(null, null, 0, null);
         }
         return success;
     }
 
-    public boolean editLabel(String name, String color, int id){
+    public boolean editLabel(String name, String color, String id){
         int userId = (user == null) ? 0 : user.getUserId();
         boolean success = true;
         db.beginTransaction();
@@ -314,7 +318,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
             cv.put("name", name);
             cv.put("color", color);
             cv.put("state", 0);
-            this.db.update("labels", cv, "_id = ? AND user_id = ?", new String[]{String.valueOf(id), String.valueOf(userId)});
+            this.db.update("labels", cv, "_id = ? AND user_id = ?", new String[]{id, String.valueOf(userId)});
 
             updateSyncUp(null, null, 0, null);
             db.setTransactionSuccessful();
@@ -347,10 +351,9 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         try{
 
             ContentValues cv = new ContentValues();
-            cv.put("user_id", userId);
             cv.put("learned", learned);
             cv.put("state", 0);
-            this.db.update("verses_learned", cv, "UUID=?", new String[]{uuid});
+            this.db.update("verses_learned", cv, "UUID=? AND user_id=?", new String[]{uuid, String.valueOf(userId)});
 
             updateSyncUp(null, null, 0, null);
             db.setTransactionSuccessful();
@@ -364,13 +367,13 @@ public class ContentDBHelper extends SQLiteOpenHelper {
 
     }
 
-    public boolean deleteOneLabel(int id){
+    public boolean deleteOneLabel(String label_id){
         int userId = (user == null) ? 0 : user.getUserId();
         boolean success = true;
         db.beginTransaction();
         try{
 
-            this.db.delete("labels", "_id = ? AND user_id = ?", new String[]{String.valueOf(id), String.valueOf(userId)});
+            this.db.delete("labels", "_id = ? AND user_id = ?", new String[]{label_id, String.valueOf(userId)});
 
             updateSyncUp(null, null, 0, null);
             db.setTransactionSuccessful();
@@ -382,12 +385,12 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         }
         return success;
     }
-    public boolean deleteVersesMarkedGroup(int label_id, String uuid){
+    public boolean deleteVersesMarkedGroup(String label_id, String uuid){
         int userId = (user == null) ? 0 : user.getUserId();
         boolean success = false;
         SQLiteDatabase db = this.db;
-        int rowsDeletedVersesMarked = db.delete("verses_marked", "label_id = ? AND UUID = ? AND user_id = ?", new String[]{String.valueOf(label_id), uuid, String.valueOf(userId)});
-        if(rowsDeletedVersesMarked > 0 && label_id == CommonMethods.LABEL_ID_MEMORIZE) {
+        int rowsDeletedVersesMarked = db.delete("verses_marked", "label_id = ? AND UUID = ? AND user_id = ?", new String[]{label_id, uuid, String.valueOf(userId)});
+        if(rowsDeletedVersesMarked > 0 && label_id.equals(getMemorizeId())) {
             success = deleteVersesLearned(db, uuid);
         } else {
             success = updateSyncUp(null, null, 0, null);
@@ -420,9 +423,9 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         return this.db.rawQuery(query, new String[] {String.valueOf(book_number), String.valueOf(chapter), String.valueOf(userId)});
     }
     //-----------------------------------------------------------------------
-    public int getVersesMarkedNumber(int label_id) {
+    public int getVersesMarkedNumber(String label_id) {
         try {
-            String query = "SELECT * FROM verses_marked WHERE label_id=" + label_id;
+            String query = "SELECT * FROM verses_marked WHERE label_id='" + label_id + "'";
             Cursor labelSpecificRows = this.db.rawQuery(query, null);
             return labelSpecificRows.getCount();
         } catch (Exception e) {
@@ -439,7 +442,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         return -1;
     }
     public boolean insertSelectedItems(Label label, int book_number, int chapter_number, String note, List<Integer> selectedItems) {
-        int label_id = label.getId();
+        String label_id = label.getId();
         String label_name = label.getName();
         String label_color = label.getColor();
         List<List<Integer>> versesGroups = BookHelper.getVersesSelectedResults(selectedItems);//[[1,2,3],[6,7],[9]]
@@ -506,8 +509,14 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         }
         return success;
     }
-    public void insertInitDataIfNotExist(@NonNull String email){
-        db.execSQL("INSERT OR IGNORE INTO syncup(email) VALUES('"+ email +"')");
+    public void insertInitDataIfNotExist(String email){
+        String userEmail;
+        if(email != null){
+            userEmail = email;
+        } else {
+            userEmail = (user == null) ? "offline" : user.getEmail();
+        }
+        db.execSQL("INSERT OR IGNORE INTO syncup(email) VALUES('"+ userEmail +"')");
         initPutData(db);
     }
     public boolean updateSyncUp(String email, Integer version, Integer state, String updated){
@@ -546,7 +555,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
                 for (i = 0; i < rowCount; i++) {
 
                     int user_id = innerCursor.getInt(innerCursor.getColumnIndex("user_id"));
-                    int _id = innerCursor.getInt(innerCursor.getColumnIndex("_id"));
+                    String _id = innerCursor.getString(innerCursor.getColumnIndex("_id"));
                     String name = innerCursor.getString(innerCursor.getColumnIndex("name"));
                     String color = innerCursor.getString(innerCursor.getColumnIndex("color"));
                     int permanent = innerCursor.getInt(innerCursor.getColumnIndex("permanent"));
@@ -579,8 +588,8 @@ public class ContentDBHelper extends SQLiteOpenHelper {
                 for (i = 0; i < rowCount; i++) {
 
                     int user_id = innerCursor.getInt(innerCursor.getColumnIndex("user_id"));
-                    int _id = innerCursor.getInt(innerCursor.getColumnIndex("_id"));
-                    int label_id = innerCursor.getInt(innerCursor.getColumnIndex("label_id"));
+                    String _id = innerCursor.getString(innerCursor.getColumnIndex("_id"));
+                    String label_id = innerCursor.getString(innerCursor.getColumnIndex("label_id"));
                     String uuid = innerCursor.getString(innerCursor.getColumnIndex("UUID"));
                     String label_name = innerCursor.getString(innerCursor.getColumnIndex("label_name"));
                     String label_color = innerCursor.getString(innerCursor.getColumnIndex("label_color"));
@@ -622,8 +631,8 @@ public class ContentDBHelper extends SQLiteOpenHelper {
                 for (i = 0; i < rowCount; i++) {
 
                     int user_id = innerCursor.getInt(innerCursor.getColumnIndex("user_id"));
-                    int _id = innerCursor.getInt(innerCursor.getColumnIndex("_id"));
-                    int label_id = innerCursor.getInt(innerCursor.getColumnIndex("label_id"));
+                    String _id = innerCursor.getString(innerCursor.getColumnIndex("_id"));
+                    String label_id = innerCursor.getString(innerCursor.getColumnIndex("label_id"));
                     String uuid = innerCursor.getString(innerCursor.getColumnIndex("UUID"));
                     int learned = innerCursor.getInt(innerCursor.getColumnIndex("learned"));
                     int priority = innerCursor.getInt(innerCursor.getColumnIndex("priority"));
@@ -725,18 +734,38 @@ public class ContentDBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE syncup (email VARCHAR PRIMARY KEY, version INTEGER DEFAULT 0, updated datetime DEFAULT current_timestamp, state INTEGER DEFAULT 0)");
-        db.execSQL("CREATE TABLE labels (_id INTEGER PRIMARY KEY, user_id INTEGER DEFAULT 0, name VARCHAR NOT NULL, color VARCHAR NOT NULL, permanent INTEGER DEFAULT 0, state INTEGER DEFAULT 0)");
-        db.execSQL("CREATE TABLE verses_marked (_id INTEGER PRIMARY KEY, user_id INTEGER DEFAULT 0, label_id INTEGER NOT NULL, book_number INTEGER NOT NULL, chapter INTEGER NOT NULL, verseFrom INTEGER NOT NULL, verseTo INTEGER NOT NULL, " +
+        db.execSQL("CREATE TABLE labels (_id VARCHAR PRIMARY KEY, user_id INTEGER DEFAULT 0, name VARCHAR NOT NULL, color VARCHAR NOT NULL, permanent INTEGER DEFAULT 0, state INTEGER DEFAULT 0)");
+        db.execSQL("CREATE TABLE verses_marked (_id VARCHAR NOT NULL, user_id INTEGER DEFAULT 0, label_id VARCHAR NOT NULL, book_number INTEGER NOT NULL, chapter INTEGER NOT NULL, verseFrom INTEGER NOT NULL, verseTo INTEGER NOT NULL, " +
                 " label_name VARCHAR NOT NULL, label_color VARCHAR NOT NULL, label_permanent INTEGER DEFAULT 0, note VARCHAR, date_created datetime DEFAULT current_timestamp, date_updated datetime DEFAULT current_timestamp, UUID VARCHAR NOT NULL, state INTEGER DEFAULT 0," +
                 " FOREIGN KEY (label_id) REFERENCES labels (_id) ON DELETE CASCADE)");
-        db.execSQL("CREATE TABLE verses_learned (_id INTEGER PRIMARY KEY, user_id INTEGER DEFAULT 0, UUID VARCHAR NOT NULL, label_id INTEGER NOT NULL, learned INTEGER DEFAULT 0, priority INTEGER DEFAULT 0, state INTEGER DEFAULT 0)");
+        db.execSQL("CREATE TABLE verses_learned (_id VARCHAR NOT NULL, user_id INTEGER DEFAULT 0, UUID VARCHAR NOT NULL, label_id VARCHAR NOT NULL, learned INTEGER DEFAULT 0, priority INTEGER DEFAULT 0, state INTEGER DEFAULT 0)");
     }
 
     private void initPutData(SQLiteDatabase db){
         Log.d(TAG, "initPutData: " + user);
         int userId = (user == null) ? 0 : user.getUserId();
-        db.execSQL("INSERT OR IGNORE INTO labels (user_id, name,color,permanent) VALUES( "+userId+", \"Memorize\", \"#00ff00\", 1)");
-        db.execSQL("INSERT OR IGNORE INTO labels (user_id, name,color,permanent) VALUES( "+userId+", \"Favourites\", \"#ffd700\", 1)");
+        String idMemorize = getMemorizeId();
+        String idFav = userId + "." + 2;
+        db.execSQL("INSERT OR IGNORE INTO labels (_id, user_id, name,color,permanent) VALUES(\"" + idMemorize + "\","+userId+", \"Memorize\", \"#00ff00\", 1)");
+        db.execSQL("INSERT OR IGNORE INTO labels (_id, user_id, name,color,permanent) VALUES(\"" + idFav + "\","+userId+", \"Favourites\", \"#ffd700\", 1)");
+    }
+
+    private String createId(){
+        int userId = (user == null) ? 0 : user.getUserId();
+        long millis = System.currentTimeMillis();
+        String uniqueID = UUID.randomUUID().toString();
+        return new StringBuilder()
+                    .append(userId)
+                    .append(".")
+                    .append(millis)
+                    .append(".")
+                    .append(uniqueID)
+                    .toString();
+    }
+
+    private String getMemorizeId(){
+        int userId = (user == null) ? 0 : user.getUserId();
+        return userId + "." + CommonMethods.LABEL_ID_MEMORIZE;
     }
 
     @Override

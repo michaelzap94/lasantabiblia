@@ -79,7 +79,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     private void addPreferencesForLoggedInUsers(){
         POJOSyncUp syncUpObj = ContentDBHelper.getInstance(mActivity).getSyncUp(null);
         String summary = "Not available";
-        if(syncUpObj != null && syncUpObj.getEmail() != "offline") {
+        if(syncUpObj != null && !syncUpObj.getEmail().equals("offline")) {
             summary = "Last synced: " + syncUpObj.getUpdated();
         }
         final PreferenceCategory thirdCategory = (PreferenceCategory) findPreference("pref_section_third");

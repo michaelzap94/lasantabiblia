@@ -118,7 +118,7 @@ public class DashboardCreatorFragment extends Fragment implements LabelColorCrea
     private Button createButton;
     private String nameVal = null;
     private String colorVal = null;
-    private int idValue = -1;
+    private String idValue = null;
     private boolean editMode = false;
     private RecyclerView recyclerView;
     private VersesMarkedViewModel viewModel;
@@ -127,7 +127,7 @@ public class DashboardCreatorFragment extends Fragment implements LabelColorCrea
         // Required empty public constructor
     }
 
-    public DashboardCreatorFragment(String name, String color, int idValue) {
+    public DashboardCreatorFragment(String name, String color, String idValue) {
         this.nameVal = name;
         this.colorVal = color;
         this.idValue = idValue;
@@ -191,10 +191,10 @@ public class DashboardCreatorFragment extends Fragment implements LabelColorCrea
                 if(!error){
                     String nameValue = name.getEditText().getText().toString();
                     String colorValue = color_txtview_info.getText().toString().trim();
-                    if(editMode && idValue > 0){
+                    if(editMode && idValue != null){
                         viewModel.updateOrCreateLabel(nameValue, colorValue, idValue);
                     } else {
-                        viewModel.updateOrCreateLabel(nameValue, colorValue, -1);
+                        viewModel.updateOrCreateLabel(nameValue, colorValue, null);
                     }
                     //go back to Label fragment
 //                    getActivity().getSupportFragmentManager().popBackStack();
