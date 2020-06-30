@@ -80,7 +80,6 @@ public class ContentDBHelper extends SQLiteOpenHelper {
             } else {
                 query = (_uuid == null) ? "SELECT * FROM verses_marked WHERE user_id = " +userId+ " AND label_id='" + label_id +"'" : "SELECT * FROM verses_marked WHERE user_id = " +userId+ " AND label_id='" + label_id + "' AND UUID ='" + _uuid + "'";
             }
-            Log.d(TAG, "getVersesMarked: " + query);
             Cursor labelSpecificRows = this.db.rawQuery(query, null);
             if (labelSpecificRows.moveToFirst()) {
                 labelSpecificRowsCount = labelSpecificRows.getCount();
