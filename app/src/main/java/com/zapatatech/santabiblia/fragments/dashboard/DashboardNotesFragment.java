@@ -1,6 +1,5 @@
 package com.zapatatech.santabiblia.fragments.dashboard;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -19,20 +18,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.zapatatech.santabiblia.AddNote;
 import com.zapatatech.santabiblia.Dashboard;
 import com.zapatatech.santabiblia.R;
 import com.zapatatech.santabiblia.adapters.RecyclerView.DashboardNotesRVA;
 import com.zapatatech.santabiblia.fragments.dialogs.NoteDialog;
-import com.zapatatech.santabiblia.fragments.dialogs.VersesMarkedEdit;
 import com.zapatatech.santabiblia.models.Label;
-import com.zapatatech.santabiblia.models.VersesMarked;
 import com.zapatatech.santabiblia.retrofit.Pojos.POJONote;
 import com.zapatatech.santabiblia.viewmodel.NotesViewModel;
-import com.zapatatech.santabiblia.viewmodel.VersesMarkedViewModel;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.

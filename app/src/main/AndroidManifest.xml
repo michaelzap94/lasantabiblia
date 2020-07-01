@@ -14,11 +14,6 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".AddNote"
-            android:configChanges="locale|layoutDirection"
-            android:theme="@style/AppTheme.NoActionBar"
-            ></activity>
-        <activity
             android:name=".SignUp"
             android:configChanges="locale|layoutDirection"
             android:parentActivityName=".Login">
@@ -72,7 +67,8 @@
             android:name=".Dashboard"
             android:configChanges="locale|layoutDirection"
             android:label="@string/dashboard"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan"/>
         <activity
             android:name=".Bible"
             android:configChanges="locale|layoutDirection"
