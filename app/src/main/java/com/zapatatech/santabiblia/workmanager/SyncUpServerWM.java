@@ -151,6 +151,7 @@ public class SyncUpServerWM extends Worker {
                     ContentDBHelper.getInstance(context).getAllLabelsRaw(),
                     ContentDBHelper.getInstance(context).getAllVersesMarkedRaw(),
                     ContentDBHelper.getInstance(context).getAllVersesLearnedRaw(),
+                    ContentDBHelper.getInstance(context).getAllNotes(),
                     client_state,
                     client_version
             ));

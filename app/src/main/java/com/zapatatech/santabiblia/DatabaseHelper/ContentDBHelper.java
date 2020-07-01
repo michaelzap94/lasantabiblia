@@ -12,8 +12,10 @@ import androidx.annotation.NonNull;
 import com.zapatatech.santabiblia.fragments.dialogs.VersesLearned;
 import com.zapatatech.santabiblia.models.Book;
 import com.zapatatech.santabiblia.models.Label;
+import com.zapatatech.santabiblia.models.Note;
 import com.zapatatech.santabiblia.models.User;
 import com.zapatatech.santabiblia.retrofit.Pojos.POJOLabel;
+import com.zapatatech.santabiblia.retrofit.Pojos.POJONote;
 import com.zapatatech.santabiblia.retrofit.Pojos.POJOSyncUp;
 import com.zapatatech.santabiblia.models.VersesMarked;
 import com.zapatatech.santabiblia.retrofit.Pojos.POJOSyncUpHelper;
@@ -306,6 +308,28 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         }
         return success;
     }
+    public boolean insertNote(String label_id, String title, String content){
+        boolean success = true;
+        db.beginTransaction();
+        try{
+            int userId = (user == null) ? 0 : user.getUserId();
+            ContentValues cv = new ContentValues();
+            cv.put("_id", createId());
+            cv.put("user_id", userId);
+            cv.put("label_id", label_id);
+            cv.put("title", title);
+            cv.put("content", content);
+            this.db.insert("notes",null, cv);
+            updateSyncUp(null, null, 0, null);
+            db.setTransactionSuccessful();
+        } catch (Exception e){
+            e.printStackTrace();
+            success = false;
+        } finally {
+            db.endTransaction();
+        }
+        return success;
+    }
 
     public boolean editLabel(String name, String color, String id){
         int userId = (user == null) ? 0 : user.getUserId();
@@ -364,6 +388,28 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         }
         return success;
 
+    }
+    public boolean editNote(Note note){
+        int userId = (user == null) ? 0 : user.getUserId();
+        boolean success = true;
+        db.beginTransaction();
+        try{
+
+            ContentValues cv = new ContentValues();
+            cv.put("title", note.getTitle());
+            cv.put("content", note.getContent());
+            cv.put("state", 0);
+            this.db.update("labels", cv, "_id = ? AND user_id = ?", new String[]{note.getId(), String.valueOf(userId)});
+
+            updateSyncUp(null, null, 0, null);
+            db.setTransactionSuccessful();
+        } catch (Exception e){
+            e.printStackTrace();
+            success = false;
+        } finally {
+            db.endTransaction();
+        }
+        return success;
     }
 
     public boolean deleteOneLabel(String label_id){
@@ -647,6 +693,41 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         }
         return list;
     }
+    public ArrayList<POJONote> getAllNotes(){
+        int userId = 0;
+        if(user != null ){
+            userId = user.getUserId();
+        }
+        Cursor innerCursor;
+        int rowCount;
+        int i;
+        ArrayList<POJONote> list = new ArrayList();
+        try {
+            String query = "SELECT * FROM notes WHERE user_id = " + userId;
+            innerCursor = this.db.rawQuery(query, null);
+            if (innerCursor.moveToFirst()) {
+                rowCount = innerCursor.getCount();
+                for (i = 0; i < rowCount; i++) {
+
+                    int user_id = innerCursor.getInt(innerCursor.getColumnIndex("user_id"));
+                    String _id = innerCursor.getString(innerCursor.getColumnIndex("_id"));
+                    String label_id = innerCursor.getString(innerCursor.getColumnIndex("label_id"));
+                    String title = innerCursor.getString(innerCursor.getColumnIndex("UUID"));
+                    String content = innerCursor.getString(innerCursor.getColumnIndex("label_name"));
+                    String date_created = innerCursor.getString(innerCursor.getColumnIndex("date_created"));
+                    String date_updated = innerCursor.getString(innerCursor.getColumnIndex("date_updated"));
+                    int state = innerCursor.getInt(innerCursor.getColumnIndex("state"));
+
+                    list.add(new POJONote(user_id, _id, label_id, title, content, date_created, date_updated, state));
+                    innerCursor.moveToNext();
+                }
+            }
+            innerCursor.close();
+        } catch (Exception e) {
+            return null;
+        }
+        return list;
+    }
 
     public boolean overrideLocalData(POJOSyncUpHelper data){
         if(user == null){
@@ -655,6 +736,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         List<POJOLabel> labels = data.getLabels();
         List<POJOVersesMarked> versesMarked = data.getVerses_marked();
         List<POJOVersesLearned> versesLearned = data.getVerses_learned();
+        List<POJONote> notes = data.getNotes();
         boolean success = true;
         SQLiteDatabase db = this.db;
         db.beginTransaction();
@@ -666,6 +748,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
             db.execSQL("DELETE FROM labels");
             db.execSQL("DELETE FROM verses_marked");
             db.execSQL("DELETE FROM verses_learned");
+            db.execSQL("DELETE FROM notes");
 
             if(labels != null && labels.size() > 0){
                 ContentValues cv = new ContentValues();
@@ -716,6 +799,21 @@ public class ContentDBHelper extends SQLiteOpenHelper {
                 }
             }
 
+            if(notes != null && notes.size() > 0){
+                ContentValues cv = new ContentValues();
+                for (int i = 0; i < notes.size(); i++) {
+                    cv.put("user_id", notes.get(i).getUserId());
+                    cv.put("_id", notes.get(i).get_id());
+                    cv.put("label_id", notes.get(i).getLabel_id());
+                    cv.put("title", notes.get(i).getTitle());
+                    cv.put("content", notes.get(i).getContent());
+                    cv.put("date_created", notes.get(i).getDate_created());
+                    cv.put("date_updated", notes.get(i).getDate_updated());
+                    cv.put("state", notes.get(i).getState());
+                    db.insert("notes", null, cv);
+                }
+            }
+
             //finally update the SyncUp version
             updateSyncUp(null, data.getVersion(), 1, null);
 
@@ -738,6 +836,8 @@ public class ContentDBHelper extends SQLiteOpenHelper {
                 " label_name VARCHAR NOT NULL, label_color VARCHAR NOT NULL, label_permanent INTEGER DEFAULT 0, note VARCHAR, date_created datetime DEFAULT current_timestamp, date_updated datetime DEFAULT current_timestamp, UUID VARCHAR NOT NULL, state INTEGER DEFAULT 0," +
                 " FOREIGN KEY (label_id) REFERENCES labels (_id) ON DELETE CASCADE)");
         db.execSQL("CREATE TABLE verses_learned (_id VARCHAR NOT NULL, user_id INTEGER DEFAULT 0, UUID VARCHAR NOT NULL, label_id VARCHAR NOT NULL, learned INTEGER DEFAULT 0, priority INTEGER DEFAULT 0, state INTEGER DEFAULT 0)");
+        db.execSQL("CREATE TABLE notes (_id VARCHAR NOT NULL, user_id INTEGER DEFAULT 0, label_id VARCHAR NOT NULL, title VARCHAR NOT NULL, content TEXT NOT NULL, " +
+                " date_created datetime DEFAULT current_timestamp, date_updated datetime DEFAULT current_timestamp, state INTEGER DEFAULT 0, FOREIGN KEY (label_id) REFERENCES labels (_id) ON DELETE CASCADE)");
     }
 
     private void initPutData(SQLiteDatabase db){
@@ -772,6 +872,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS [" + ContentDBContracts.LABELS.NAME + "];");
         db.execSQL("DROP TABLE IF EXISTS [" + ContentDBContracts.VERSES_MARKED.NAME + "];");
         db.execSQL("DROP TABLE IF EXISTS [" + ContentDBContracts.VERSES_LEARNED.NAME + "];");
+        db.execSQL("DROP TABLE IF EXISTS [" + ContentDBContracts.NOTES.NAME + "];");
         onCreate(db);
     }
 
