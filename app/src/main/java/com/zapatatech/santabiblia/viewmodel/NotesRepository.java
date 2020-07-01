@@ -116,7 +116,7 @@ public class NotesRepository {
             this.position = position;
         }
         protected Boolean doInBackground(String... args) {
-            Log.d(TAG, "DeleteNoteLocal doInBackground: " + args[0]);
+            Log.d(TAG, "DeleteNoteLocal doInBackground: " + args[0] + " at " + this.position);
             return ContentDBHelper.getInstance(context).deleteOneNote(args[0], args[1]);
         }
 

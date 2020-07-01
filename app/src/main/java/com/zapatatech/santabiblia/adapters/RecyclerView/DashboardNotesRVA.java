@@ -73,6 +73,11 @@ public class DashboardNotesRVA extends RecyclerView.Adapter<DashboardNotesRVA.Vi
     }
 
     @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
+
+    @Override
     public int getItemCount() {
         return notes.size();
     }
