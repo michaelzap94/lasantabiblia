@@ -41,12 +41,15 @@
             app:counterMaxLength="400"
             app:helperTextEnabled="true"
             app:helperText="Letters left"
-            android:hint="Title">
+            android:hint="Title"
+            >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textCapWords"
+                android:imeOptions="actionNext"
+                android:nextFocusDown="@+id/addNoteContent"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -68,6 +71,7 @@
                 android:ems="10"
                 android:textColor="#000000"
                 android:inputType="text|textAutoComplete|textMultiLine|textLongMessage"
+                android:minLines="10"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
