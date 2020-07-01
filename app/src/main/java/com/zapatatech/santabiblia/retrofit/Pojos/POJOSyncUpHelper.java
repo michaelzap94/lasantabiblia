@@ -15,6 +15,7 @@ public class POJOSyncUpHelper {
         this.labels = labels;
         this.verses_marked = verses_marked;
         this.verses_learned = verses_learned;
+        this.notes = notes;
         this.state = state;
         this.version = version;
     }
