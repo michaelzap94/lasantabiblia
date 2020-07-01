@@ -112,7 +112,6 @@ public class DashboardLabelFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         setupViewPager(viewPager);
-        tabLayout.setupWithViewPager(viewPager);
     }
 
     @Override
@@ -174,6 +173,7 @@ public class DashboardLabelFragment extends Fragment {
         viewPagerAdapter.addFragment(DashboardBibleFragment.newInstance(mLabel), "BIBLE");
         viewPagerAdapter.addFragment(DashboardNotesFragment.newInstance(mLabel), "NOTES");
         viewPager.setAdapter(viewPagerAdapter);
+        tabLayout.setupWithViewPager(viewPager);
     }
 
     class ViewPagerAdapter extends FragmentPagerAdapter {
