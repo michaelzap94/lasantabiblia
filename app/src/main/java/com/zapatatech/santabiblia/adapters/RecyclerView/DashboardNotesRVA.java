@@ -2,6 +2,9 @@ package com.zapatatech.santabiblia.adapters.RecyclerView;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Build;
+import android.text.Html;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -101,9 +104,17 @@ public class DashboardNotesRVA extends RecyclerView.Adapter<DashboardNotesRVA.Vi
             int position = getAdapterPosition();
             POJONote mNote = notes.get(position);
             noteTitle.setText(mNote.getTitle());
-            noteContent.setText(mNote.getContent());
-            String color = getRandomColor();
-            mCardView.setCardBackgroundColor(Color.parseColor(color));
+
+            Spanned textSpanned;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                textSpanned = Html.fromHtml(mNote.getContent(), Html.FROM_HTML_MODE_COMPACT);
+            } else {
+                textSpanned = Html.fromHtml(mNote.getContent());
+            }
+            noteContent.setText(textSpanned);
+
+            //String color = getRandomColor();
+            mCardView.setCardBackgroundColor(Color.parseColor(getRandomColor()));
 
             options.setOnClickListener(new View.OnClickListener() {
                 @Override
