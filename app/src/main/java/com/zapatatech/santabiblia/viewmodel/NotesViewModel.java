@@ -1,6 +1,7 @@
 package com.zapatatech.santabiblia.viewmodel;
 
 import android.app.Application;
+import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -36,7 +37,16 @@ public class NotesViewModel extends AndroidViewModel {
         repository.getNotes(getApplication(), getIsLoading(), label_id);
     }
     //------------------------------------------------------------------------
-
+    public void insertNotes(String label_id, String title, String content){
+//        getIsLoading().setValue(true);//start loading - will stop when we finish getting the results
+        repository.insertNote(getApplication(), label_id, title, content);
+    }
+    //------------------------------------------------------------------------
+    public void editNotes(POJONote mNote){
+//        getIsLoading().setValue(true);//start loading - will stop when we finish getting the results
+        repository.editNote(getApplication(), mNote);
+    }
+    //------------------------------------------------------------------------
     @Override
     protected void onCleared() {
         super.onCleared();

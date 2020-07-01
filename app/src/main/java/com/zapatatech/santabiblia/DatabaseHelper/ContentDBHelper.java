@@ -195,8 +195,8 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         int i;
         ArrayList<POJONote> list = new ArrayList();
         try {
-            String query = "SELECT * FROM notes WHERE user_id = " +userId+ " AND label_id='" + label_id +"'";
-            innerCursor = this.db.rawQuery(query, new String[]{String.valueOf(userId)});
+            String query = "SELECT * FROM notes WHERE user_id = ? AND label_id= ?";
+            innerCursor = this.db.rawQuery(query, new String[]{String.valueOf(userId), label_id});
             if (innerCursor.moveToFirst()) {
                 rowCount = innerCursor.getCount();
                 for (i = 0; i < rowCount; i++) {
@@ -429,7 +429,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
             cv.put("title", note.getTitle());
             cv.put("content", note.getContent());
             cv.put("state", 0);
-            this.db.update("labels", cv, "_id = ? AND user_id = ?", new String[]{note.get_id(), String.valueOf(userId)});
+            this.db.update("notes", cv, "_id = ? AND user_id = ?", new String[]{note.get_id(), String.valueOf(userId)});
 
             updateSyncUp(null, null, 0, null);
             db.setTransactionSuccessful();

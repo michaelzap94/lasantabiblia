@@ -10,6 +10,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.zapatatech.santabiblia.DatabaseHelper.BibleDBHelper;
 import com.zapatatech.santabiblia.DatabaseHelper.ContentDBHelper;
+import com.zapatatech.santabiblia.adapters.RecyclerView.DashboardNotesRVA;
 import com.zapatatech.santabiblia.models.Label;
 import com.zapatatech.santabiblia.models.Verse;
 import com.zapatatech.santabiblia.retrofit.Pojos.POJONote;
@@ -48,8 +49,10 @@ public class NotesRepository {
             this.isLoading = isLoading;
         }
         protected Void doInBackground(String... args) {
-            Log.d(TAG, "doInBackground: " + args[0]);
-            getMutableNotesLiveData().postValue(ContentDBHelper.getInstance(context).getNotes(args[0]));
+            Log.d(TAG, "GetNotesLocal doInBackground: " + args[0]);
+            ArrayList<POJONote> result = ContentDBHelper.getInstance(context).getNotes(args[0]);
+            Log.d(TAG, "GetNotesLocal doInBackground: result " + result.size());
+            getMutableNotesLiveData().postValue(result);
             if(isLoading != null) {
                 isLoading.postValue(false);
             }
@@ -99,24 +102,31 @@ public class NotesRepository {
         }
     }
 
-    public void deleteNote(Context context, String label_id, String note_id){
+    public void deleteNote(Context context, DashboardNotesRVA adapter, int position, String label_id, String note_id){
         //insert it to local db
-        new NotesRepository.DeleteNoteLocal(context).execute(label_id, note_id);
+        new NotesRepository.DeleteNoteLocal(context, adapter, position).execute(label_id, note_id);
     }
-    private class DeleteNoteLocal extends AsyncTask<String, Void, Void> {
+    private class DeleteNoteLocal extends AsyncTask<String, Void, Boolean> {
         private Context context;
-        private DeleteNoteLocal(Context context) {
+        private DashboardNotesRVA adapter;
+        private int position;
+        private DeleteNoteLocal(Context context, DashboardNotesRVA adapter, int position) {
             this.context = context;
+            this.adapter = adapter;
+            this.position = position;
         }
-        protected Void doInBackground(String... args) {
+        protected Boolean doInBackground(String... args) {
             Log.d(TAG, "DeleteNoteLocal doInBackground: " + args[0]);
-            boolean success = ContentDBHelper.getInstance(context).deleteOneNote(args[0], args[1]);
+            return ContentDBHelper.getInstance(context).deleteOneNote(args[0], args[1]);
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
             if(success) {
-                getNotes(context, null, args[0]);
+                adapter.removeItem(position);
             } else {
                 Toast.makeText(context, "Note could not be deleted.", Toast.LENGTH_SHORT).show();
             }
-            return null;
         }
     }
 

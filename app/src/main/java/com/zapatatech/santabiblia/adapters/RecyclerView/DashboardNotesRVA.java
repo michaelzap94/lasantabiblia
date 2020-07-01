@@ -13,12 +13,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zapatatech.santabiblia.R;
+import com.zapatatech.santabiblia.fragments.dialogs.NoteDialog;
+import com.zapatatech.santabiblia.models.Label;
 import com.zapatatech.santabiblia.retrofit.Pojos.POJONote;
 import com.zapatatech.santabiblia.utilities.CommonFields;
+import com.zapatatech.santabiblia.utilities.CommonMethods;
+import com.zapatatech.santabiblia.viewmodel.NotesRepository;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -26,10 +33,12 @@ import java.util.Random;
 public class DashboardNotesRVA extends RecyclerView.Adapter<DashboardNotesRVA.ViewHolder> {
     private static final String TAG = "DashboardNotesRVA";
     private ArrayList<POJONote> notes;
+    private Label mLabel;
     private Context context;
 
-    public DashboardNotesRVA(ArrayList<POJONote> notes){
+    public DashboardNotesRVA(Label mLabel, ArrayList<POJONote> notes){
         this.notes = notes;
+        this.mLabel = mLabel;
     }
 
     public void refreshData(ArrayList<POJONote> _results){
@@ -37,6 +46,11 @@ public class DashboardNotesRVA extends RecyclerView.Adapter<DashboardNotesRVA.Vi
         notes.clear();
         notes.addAll(_results);
         notifyDataSetChanged();
+    }
+
+    public void removeItem(int position) {
+        notes.remove(position);
+        notifyItemRemoved(position);
     }
 
     @NonNull
@@ -80,8 +94,9 @@ public class DashboardNotesRVA extends RecyclerView.Adapter<DashboardNotesRVA.Vi
 
         public void bind(){
             int position = getAdapterPosition();
-            noteTitle.setText(notes.get(position).getTitle());
-            noteContent.setText(notes.get(position).getContent());
+            POJONote mNote = notes.get(position);
+            noteTitle.setText(mNote.getTitle());
+            noteContent.setText(mNote.getContent());
             String color = getRandomColor();
             mCardView.setCardBackgroundColor(Color.parseColor(color));
 
@@ -96,16 +111,16 @@ public class DashboardNotesRVA extends RecyclerView.Adapter<DashboardNotesRVA.Vi
                         public boolean onMenuItemClick(MenuItem item) {
                             switch (item.getItemId()) {
                                 case R.id.menu_edit:
-                                    Toast.makeText(context, "edit", Toast.LENGTH_SHORT).show();
+                                    goToViewOrEditNotes(mNote, "edit");
                                     return true;
                                 case R.id.menu_copy:
-                                    Toast.makeText(context, "copy", Toast.LENGTH_SHORT).show();
+                                    CommonMethods.copyText(context, mNote.getTitle(), mNote.getContent());
                                     return true;
                                 case R.id.menu_share:
-                                    Toast.makeText(context, "share", Toast.LENGTH_SHORT).show();
+                                    CommonMethods.share(context, mNote.getTitle(), mNote.getContent());
                                     return true;
                                 case R.id.menu_delete:
-                                    Toast.makeText(context, "delete", Toast.LENGTH_SHORT).show();
+                                    NotesRepository.getInstance().deleteNote(context, DashboardNotesRVA.this, position, mNote.getLabel_id(), mNote.get_id());
                                     return true;
                                 default: return false;
                             }
@@ -117,13 +132,22 @@ public class DashboardNotesRVA extends RecyclerView.Adapter<DashboardNotesRVA.Vi
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(context, "Clicked pos: " + position, Toast.LENGTH_SHORT).show();
-//                Intent i = new Intent(v.getContext(), NoteDetails.class);
-//                i.putExtra("note_id",notes.get(position).getId());
-////                i.putExtra("code", color);
-//                v.getContext().startActivity(i);
+                    goToViewOrEditNotes(mNote, "view");
                 }
             });
         }
+    }
+
+    public void goToViewOrEditNotes(POJONote mNote, String actionType){
+
+        FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
+        NoteDialog newFragment = NoteDialog.newInstance(mLabel, mNote, actionType);
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        // For a little polish, specify a transition animation
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        // To make it fullscreen, use the 'content' root view as the container
+        // for the fragment, which is always the root view for the activity
+        transaction.add(R.id.dashboard_fragment, newFragment, "modifyNoteFragmentTag")
+                .addToBackStack(null).commit();
     }
 }

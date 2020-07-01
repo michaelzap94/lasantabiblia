@@ -5,7 +5,10 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
@@ -20,7 +23,10 @@ import com.zapatatech.santabiblia.AddNote;
 import com.zapatatech.santabiblia.Dashboard;
 import com.zapatatech.santabiblia.R;
 import com.zapatatech.santabiblia.adapters.RecyclerView.DashboardNotesRVA;
+import com.zapatatech.santabiblia.fragments.dialogs.NoteDialog;
+import com.zapatatech.santabiblia.fragments.dialogs.VersesMarkedEdit;
 import com.zapatatech.santabiblia.models.Label;
+import com.zapatatech.santabiblia.models.VersesMarked;
 import com.zapatatech.santabiblia.retrofit.Pojos.POJONote;
 import com.zapatatech.santabiblia.viewmodel.NotesViewModel;
 import com.zapatatech.santabiblia.viewmodel.VersesMarkedViewModel;
@@ -60,13 +66,21 @@ public class DashboardNotesFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate: ");
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mLabel = getArguments().getParcelable(M_LABEL);
         }
 
-        noteAdapter = new DashboardNotesRVA(notes);
+        noteAdapter = new DashboardNotesRVA(mLabel, notes);
         viewModel = new ViewModelProvider(getActivity()).get(NotesViewModel.class);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        Log.d(TAG, "onActivityCreated: ");
+        super.onActivityCreated(savedInstanceState);
+        observerViewModel();
     }
 
     @Override
@@ -84,9 +98,7 @@ public class DashboardNotesFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if(mLabel != null) {
-                    Intent i = new Intent(getActivity(), AddNote.class);
-                    i.putExtra(M_LABEL, mLabel);
-                    getActivity().startActivity(i);
+                    goToInsertNotes();
                 }
             }
         });
@@ -97,12 +109,25 @@ public class DashboardNotesFragment extends Fragment {
         notesRV.setAdapter(noteAdapter);
 
         //--------------------------------------------------------------------------
-        observerViewModel();
+//        observerViewModel();
+    }
+
+    public void goToInsertNotes(){
+
+        FragmentManager fragmentManager = ((AppCompatActivity) getActivity()).getSupportFragmentManager();
+        NoteDialog newFragment = NoteDialog.newInstance(mLabel, null, "new");
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        // For a little polish, specify a transition animation
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        // To make it fullscreen, use the 'content' root view as the container
+        // for the fragment, which is always the root view for the activity
+        transaction.add(R.id.dashboard_fragment, newFragment, "modifyNoteFragmentTag")
+                .addToBackStack(null).commit();
     }
 
 
     private void observerViewModel() {
-        viewModel.getIsLoading().observe(getActivity(), isLoading -> {
+        viewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
             if(isLoading != null) {
 //                loadingView.setVisibility(isLoading ? View.VISIBLE : View.GONE);
                 Log.d(TAG, "observerViewModel: " + isLoading);

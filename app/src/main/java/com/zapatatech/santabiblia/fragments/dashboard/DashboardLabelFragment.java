@@ -115,15 +115,16 @@ public class DashboardLabelFragment extends Fragment {
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.dash_label_menu, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(CAN_GO_BACK, canGoBack);
+    }
+
+    //============================================================================================
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.dash_label_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
@@ -141,6 +142,7 @@ public class DashboardLabelFragment extends Fragment {
                 return super.onOptionsItemSelected(item);
         }
     }
+    //============================================================================================
 
 
     public void deleteConfimation() {

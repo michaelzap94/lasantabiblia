@@ -1,6 +1,9 @@
 package com.zapatatech.santabiblia.retrofit.Pojos;
 
-public class POJONote {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class POJONote implements Parcelable {
     private int user;
     private String _id;
     private String label_id;
@@ -33,6 +36,14 @@ public class POJONote {
         return content;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
     public String get_id() {
         return _id;
     }
@@ -51,5 +62,40 @@ public class POJONote {
 
     public int getState() {
         return state;
+    }
+
+    //PARCELABLE===========================================================================
+    public static final Parcelable.Creator<POJONote> CREATOR = new Parcelable.Creator<POJONote>() {
+        public POJONote createFromParcel(Parcel in) {
+            return new POJONote(in);
+        }
+        public POJONote[] newArray(int size) {
+            return new POJONote[size];
+        }
+    };
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.user);
+        dest.writeString(this._id);
+        dest.writeString(this.label_id);
+        dest.writeString(this.title);
+        dest.writeString(this.content);
+        dest.writeString(this.date_created);
+        dest.writeString(this.date_updated);
+        dest.writeInt(this.state);
+    }
+    private POJONote(Parcel in) {
+        this.user = in.readInt();
+        this._id = in.readString();
+        this.label_id = in.readString();
+        this.title = in.readString();
+        this.content = in.readString();
+        this.date_created = in.readString();
+        this.date_updated = in.readString();
+        this.state = in.readInt();
     }
 }
