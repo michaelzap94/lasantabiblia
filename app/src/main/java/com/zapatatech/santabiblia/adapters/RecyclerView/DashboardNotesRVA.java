@@ -6,8 +6,11 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,23 +53,7 @@ public class DashboardNotesRVA extends RecyclerView.Adapter<DashboardNotesRVA.Vi
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
-        holder.noteTitle.setText(notes.get(position).getTitle());
-        holder.noteContent.setText(notes.get(position).getContent());
-        String color = getRandomColor();
-        holder.mCardView.setCardBackgroundColor(Color.parseColor(color));
-
-
-        holder.view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(context, "Clicked pos: " + position, Toast.LENGTH_SHORT).show();
-
-//                Intent i = new Intent(v.getContext(), NoteDetails.class);
-//                i.putExtra("note_id",notes.get(position).getId());
-//                i.putExtra("code", color);
-//                v.getContext().startActivity(i);
-            }
-        });
+        holder.bind();
     }
 
     private String getRandomColor() {
@@ -82,6 +69,7 @@ public class DashboardNotesRVA extends RecyclerView.Adapter<DashboardNotesRVA.Vi
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView noteTitle,noteContent;
+        ImageView options;
         View view;
         CardView mCardView;
 
@@ -90,7 +78,57 @@ public class DashboardNotesRVA extends RecyclerView.Adapter<DashboardNotesRVA.Vi
             noteTitle = itemView.findViewById(R.id.titles);
             noteContent = itemView.findViewById(R.id.content);
             mCardView = itemView.findViewById(R.id.noteCard);
+            options = itemView.findViewById(R.id.menuIcon);
             view = itemView;
+        }
+
+        public void bind(){
+            int position = getAdapterPosition();
+            noteTitle.setText(notes.get(position).getTitle());
+            noteContent.setText(notes.get(position).getContent());
+            String color = getRandomColor();
+            mCardView.setCardBackgroundColor(Color.parseColor(color));
+
+            options.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    PopupMenu popupMenu = new PopupMenu(context, options);
+                    popupMenu.inflate(R.menu.dash_item_menu);
+                    popupMenu.show();
+                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            switch (item.getItemId()) {
+                                case R.id.menu_edit:
+                                    Toast.makeText(context, "edit", Toast.LENGTH_SHORT).show();
+                                    return true;
+                                case R.id.menu_copy:
+                                    Toast.makeText(context, "copy", Toast.LENGTH_SHORT).show();
+                                    return true;
+                                case R.id.menu_share:
+                                    Toast.makeText(context, "share", Toast.LENGTH_SHORT).show();
+                                    return true;
+                                case R.id.menu_delete:
+                                    Toast.makeText(context, "delete", Toast.LENGTH_SHORT).show();
+                                    return true;
+                                default: return false;
+                            }
+                        }
+                    });
+                }
+            });
+
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(context, "Clicked pos: " + position, Toast.LENGTH_SHORT).show();
+
+//                Intent i = new Intent(v.getContext(), NoteDetails.class);
+//                i.putExtra("note_id",notes.get(position).getId());
+//                i.putExtra("code", color);
+//                v.getContext().startActivity(i);
+                }
+            });
         }
     }
 }

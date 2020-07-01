@@ -53,7 +53,6 @@
                         android:id="@+id/titles"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:padding="2dp"
                         android:text="TextView"
                         android:textAlignment="viewStart"
                         android:gravity="start"
@@ -65,8 +64,11 @@
                         android:id="@+id/menuIcon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:padding="2dp"
                         android:gravity="end"
+                        android:background="?attr/selectableItemBackgroundBorderless"
                         app:srcCompat="@drawable/ic_vertical_dots" />
+<!--                    android:foreground="?android:attr/selectableItemBackground"-->
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>
