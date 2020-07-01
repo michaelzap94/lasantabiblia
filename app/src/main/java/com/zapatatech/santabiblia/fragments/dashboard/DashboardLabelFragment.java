@@ -172,7 +172,7 @@ public class DashboardLabelFragment extends Fragment {
     private void setupViewPager(ViewPager viewPager) {
         viewPagerAdapter = new DashboardLabelFragment.ViewPagerAdapter(getChildFragmentManager());
         viewPagerAdapter.addFragment(DashboardBibleFragment.newInstance(mLabel), "BIBLE");
-        viewPagerAdapter.addFragment(new DashboardNotesFragment(), "NOTES");
+        viewPagerAdapter.addFragment(DashboardNotesFragment.newInstance(mLabel), "NOTES");
         viewPager.setAdapter(viewPagerAdapter);
     }
 

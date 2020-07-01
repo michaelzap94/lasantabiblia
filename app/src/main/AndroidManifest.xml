@@ -4,13 +4,6 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <!--    CONTENT PROVIDER PERMISSIONS-->
-<!--    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>-->
-<!--    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>-->
-<!--    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>-->
-<!--    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>-->
-<!--    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />-->
-<!--    <uses-permission android:name="android.permission.READ_SYNC_STATS"/>-->
 
     <application
         android:allowBackup="true"
@@ -20,69 +13,76 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name="com.zapatatech.santabiblia.SignUp"
+        <activity
+            android:name=".AddNote"
             android:configChanges="locale|layoutDirection"
-            android:parentActivityName="com.zapatatech.santabiblia.Login">
+            android:theme="@style/AppTheme.NoActionBar"
+            ></activity>
+        <activity
+            android:name=".SignUp"
+            android:configChanges="locale|layoutDirection"
+            android:parentActivityName=".Login">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.zapatatech.santabiblia.Login" />
         </activity>
-        <activity android:name="com.zapatatech.santabiblia.Login"
-            android:configChanges="locale|layoutDirection"/>
         <activity
-            android:name="com.zapatatech.santabiblia.Home"
+            android:name=".Login"
+            android:configChanges="locale|layoutDirection" />
+        <activity
+            android:name=".Home"
             android:configChanges="locale|layoutDirection"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.zapatatech.santabiblia.Maps"
+            android:name=".Maps"
             android:configChanges="locale|layoutDirection"
             android:label="Maps"
-            android:parentActivityName="com.zapatatech.santabiblia.Search">
+            android:parentActivityName=".Search">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.zapatatech.santabiblia.Search" />
         </activity>
         <activity
-            android:name="com.zapatatech.santabiblia.BibleCompare"
+            android:name=".BibleCompare"
             android:configChanges="locale|layoutDirection"
-            android:parentActivityName="com.zapatatech.santabiblia.Bible"
+            android:parentActivityName=".Bible"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.zapatatech.santabiblia.Bible" />
         </activity>
         <activity
-            android:name="com.zapatatech.santabiblia.SearchSpecific"
+            android:name=".SearchSpecific"
             android:configChanges="locale|layoutDirection"
-            android:parentActivityName="com.zapatatech.santabiblia.Search">
+            android:parentActivityName=".Search">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.zapatatech.santabiblia.Search" />
         </activity>
         <activity
-            android:name="com.zapatatech.santabiblia.Settings"
+            android:name=".Settings"
             android:configChanges="locale|layoutDirection"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.zapatatech.santabiblia.LanguageChangeLoader"
+            android:name=".LanguageChangeLoader"
             android:configChanges="locale|layoutDirection"
             android:label="@string/title_activity_language_change_loader"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.zapatatech.santabiblia.Dashboard"
+            android:name=".Dashboard"
             android:configChanges="locale|layoutDirection"
             android:label="@string/dashboard"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.zapatatech.santabiblia.Bible"
+            android:name=".Bible"
             android:configChanges="locale|layoutDirection"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.zapatatech.santabiblia.Search"
+            android:name=".Search"
             android:configChanges="locale|layoutDirection"
             android:label="@string/search" />
         <activity
-            android:name="com.zapatatech.santabiblia.MainActivity"
+            android:name=".MainActivity"
             android:configChanges="locale|layoutDirection">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -90,15 +90,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <!--    In order to use our ContentProvider, we need to declare it in the manifest.xml file. It is important to note that:-->
-        <!--    android:authorities must match our ContentProvider's authority exactly, and-->
-        <!--    android:syncable must be true.-->
-<!--        <provider-->
-<!--            android:name="com.zapatatech.santabiblia.DatabaseHelper.ContentDBContentProvider"-->
-<!--            android:authorities="com.zapatatech.santabiblia"-->
-<!--            android:exported="false"-->
-<!--            android:syncable="true"/>-->
     </application>
 
 </manifest>

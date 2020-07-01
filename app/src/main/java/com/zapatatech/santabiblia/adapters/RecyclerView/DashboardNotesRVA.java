@@ -122,10 +122,9 @@ public class DashboardNotesRVA extends RecyclerView.Adapter<DashboardNotesRVA.Vi
                 @Override
                 public void onClick(View v) {
                     Toast.makeText(context, "Clicked pos: " + position, Toast.LENGTH_SHORT).show();
-
 //                Intent i = new Intent(v.getContext(), NoteDetails.class);
 //                i.putExtra("note_id",notes.get(position).getId());
-//                i.putExtra("code", color);
+////                i.putExtra("code", color);
 //                v.getContext().startActivity(i);
                 }
             });

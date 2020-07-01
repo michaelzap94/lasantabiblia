@@ -1,5 +1,6 @@
 package com.zapatatech.santabiblia.fragments.dashboard;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,8 +13,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.zapatatech.santabiblia.AddNote;
 import com.zapatatech.santabiblia.R;
 import com.zapatatech.santabiblia.adapters.RecyclerView.DashboardNotesRVA;
+import com.zapatatech.santabiblia.models.Label;
 import com.zapatatech.santabiblia.models.Note;
 
 import java.util.ArrayList;
@@ -30,33 +34,19 @@ public class DashboardNotesFragment extends Fragment {
     private RecyclerView notesRV;
     private ArrayList<Note> notes = new ArrayList<>();
     private DashboardNotesRVA noteAdapter;
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private FloatingActionButton addNote;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private static final String M_LABEL = "mLabel";
+    private Label mLabel;
 
     public DashboardNotesFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment DashboardNotesFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static DashboardNotesFragment newInstance(String param1, String param2) {
+    public static DashboardNotesFragment newInstance(Label mLabel) {
         DashboardNotesFragment fragment = new DashboardNotesFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putParcelable(M_LABEL, mLabel);
         fragment.setArguments(args);
         return fragment;
     }
@@ -65,8 +55,7 @@ public class DashboardNotesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            mLabel = getArguments().getParcelable(M_LABEL);
         }
 
         noteAdapter = new DashboardNotesRVA(notes);
@@ -82,6 +71,19 @@ public class DashboardNotesFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         //super.onViewCreated(view, savedInstanceState);
+        addNote = view.findViewById(R.id.notes_add_button);
+        addNote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mLabel != null) {
+                    Intent i = new Intent(getActivity(), AddNote.class);
+                    i.putExtra(M_LABEL, mLabel);
+                    getActivity().startActivity(i);
+                }
+            }
+        });
+        //--------------------------------------------------------------------------
+
         notesRV = view.findViewById(R.id.notes_recycler_view);
         notesRV.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
         notesRV.setAdapter(noteAdapter);
@@ -102,4 +104,5 @@ public class DashboardNotesFragment extends Fragment {
 
         noteAdapter.refreshData(notes);
     }
+    
 }
