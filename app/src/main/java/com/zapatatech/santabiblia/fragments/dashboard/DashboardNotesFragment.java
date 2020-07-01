@@ -2,13 +2,22 @@ package com.zapatatech.santabiblia.fragments.dashboard;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.zapatatech.santabiblia.R;
+import com.zapatatech.santabiblia.adapters.RecyclerView.DashboardNotesRVA;
+import com.zapatatech.santabiblia.models.Note;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -17,6 +26,10 @@ import com.zapatatech.santabiblia.R;
  */
 public class DashboardNotesFragment extends Fragment {
 
+    private static final String TAG = "DashboardNotesFragment";
+    private RecyclerView notesRV;
+    private ArrayList<Note> notes = new ArrayList<>();
+    private DashboardNotesRVA noteAdapter;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -55,6 +68,8 @@ public class DashboardNotesFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        noteAdapter = new DashboardNotesRVA(notes);
     }
 
     @Override
@@ -62,5 +77,29 @@ public class DashboardNotesFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_dashboard_notes, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        //super.onViewCreated(view, savedInstanceState);
+        notesRV = view.findViewById(R.id.notes_recycler_view);
+        notesRV.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
+        notesRV.setAdapter(noteAdapter);
+
+        //--------------------------------------------------------------------------
+        observerViewModel();
+    }
+
+    private void observerViewModel() {
+        ArrayList<Note> notes = new ArrayList<>();
+        notes.add(new Note("id", "test title 0", "This is the content"));
+        notes.add(new Note("id", "test title 1", "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."));
+        notes.add(new Note("id", "test title 2", "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries"));
+        notes.add(new Note("id", "test title 3", "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries"));
+        notes.add(new Note("id", "test title 4", "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries"));
+        notes.add(new Note("id", "test title 5", "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries"));
+        notes.add(new Note("id", "test title 6", "This is the content"));
+
+        noteAdapter.refreshData(notes);
     }
 }

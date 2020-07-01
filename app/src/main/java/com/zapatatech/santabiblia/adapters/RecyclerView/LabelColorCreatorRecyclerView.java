@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.zapatatech.santabiblia.R;
+import com.zapatatech.santabiblia.utilities.CommonFields;
 
 public class LabelColorCreatorRecyclerView extends RecyclerView.Adapter<LabelColorCreatorRecyclerView.ViewHolder> {
     private static final String TAG = "LabelColorCreatorRecycl";
@@ -30,8 +31,8 @@ public class LabelColorCreatorRecyclerView extends RecyclerView.Adapter<LabelCol
     private View selectedView = null;
     private ViewGroup parent;
 
-    public LabelColorCreatorRecyclerView(Context context, String[] colors, boolean eMode, ItemListener itemListener) {
-        mColors = colors;
+    public LabelColorCreatorRecyclerView(Context context, boolean eMode, ItemListener itemListener) {
+        mColors = CommonFields.colors;
         mContext = context;
         mListener = itemListener;
         editMode = eMode;
