@@ -6,19 +6,24 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.zapatatech.santabiblia.AddNote;
+import com.zapatatech.santabiblia.Dashboard;
 import com.zapatatech.santabiblia.R;
 import com.zapatatech.santabiblia.adapters.RecyclerView.DashboardNotesRVA;
 import com.zapatatech.santabiblia.models.Label;
-import com.zapatatech.santabiblia.models.Note;
+import com.zapatatech.santabiblia.retrofit.Pojos.POJONote;
+import com.zapatatech.santabiblia.viewmodel.NotesViewModel;
+import com.zapatatech.santabiblia.viewmodel.VersesMarkedViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,9 +37,11 @@ public class DashboardNotesFragment extends Fragment {
 
     private static final String TAG = "DashboardNotesFragment";
     private RecyclerView notesRV;
-    private ArrayList<Note> notes = new ArrayList<>();
+    private ArrayList<POJONote> notes = new ArrayList<>();
     private DashboardNotesRVA noteAdapter;
     private FloatingActionButton addNote;
+    private NotesViewModel viewModel;
+
 
     private static final String M_LABEL = "mLabel";
     private Label mLabel;
@@ -59,6 +66,7 @@ public class DashboardNotesFragment extends Fragment {
         }
 
         noteAdapter = new DashboardNotesRVA(notes);
+        viewModel = new ViewModelProvider(getActivity()).get(NotesViewModel.class);
     }
 
     @Override
@@ -92,17 +100,30 @@ public class DashboardNotesFragment extends Fragment {
         observerViewModel();
     }
 
-    private void observerViewModel() {
-        ArrayList<Note> notes = new ArrayList<>();
-        notes.add(new Note("id", "test title 0", "This is the content"));
-        notes.add(new Note("id", "test title 1", "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."));
-        notes.add(new Note("id", "test title 2", "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries"));
-        notes.add(new Note("id", "test title 3", "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries"));
-        notes.add(new Note("id", "test title 4", "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries"));
-        notes.add(new Note("id", "test title 5", "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries"));
-        notes.add(new Note("id", "test title 6", "This is the content"));
 
-        noteAdapter.refreshData(notes);
+    private void observerViewModel() {
+        viewModel.getIsLoading().observe(getActivity(), isLoading -> {
+            if(isLoading != null) {
+//                loadingView.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+                Log.d(TAG, "observerViewModel: " + isLoading);
+                if(isLoading) {
+                } else {
+                }
+            }
+        });
+        viewModel.getNotesLiveData().observe(getViewLifecycleOwner(), (_notes) -> {
+            Log.d(TAG, "observerViewModel: NOTES GOT DATA" + _notes.size() + "in label: " + this.mLabel.getName());
+            noteAdapter.refreshData(_notes);
+        });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (getActivity() instanceof Dashboard) {
+            ((Dashboard) getActivity()).getSupportActionBar().setTitle(this.mLabel.getName());
+            viewModel.fetchNotes(this.mLabel.getId());
+        }
     }
     
 }

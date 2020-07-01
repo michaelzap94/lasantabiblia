@@ -1,8 +1,6 @@
 package com.zapatatech.santabiblia.adapters.RecyclerView;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,25 +16,23 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.zapatatech.santabiblia.Login;
 import com.zapatatech.santabiblia.R;
-import com.zapatatech.santabiblia.models.Note;
+import com.zapatatech.santabiblia.retrofit.Pojos.POJONote;
 import com.zapatatech.santabiblia.utilities.CommonFields;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 public class DashboardNotesRVA extends RecyclerView.Adapter<DashboardNotesRVA.ViewHolder> {
     private static final String TAG = "DashboardNotesRVA";
-    private ArrayList<Note> notes;
+    private ArrayList<POJONote> notes;
     private Context context;
 
-    public DashboardNotesRVA(ArrayList<Note> notes){
+    public DashboardNotesRVA(ArrayList<POJONote> notes){
         this.notes = notes;
     }
 
-    public void refreshData(ArrayList<Note> _results){
+    public void refreshData(ArrayList<POJONote> _results){
         Log.d(TAG, "refreshData: " + _results.size());
         notes.clear();
         notes.addAll(_results);

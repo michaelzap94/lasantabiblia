@@ -12,7 +12,6 @@ import androidx.annotation.NonNull;
 import com.zapatatech.santabiblia.fragments.dialogs.VersesLearned;
 import com.zapatatech.santabiblia.models.Book;
 import com.zapatatech.santabiblia.models.Label;
-import com.zapatatech.santabiblia.models.Note;
 import com.zapatatech.santabiblia.models.User;
 import com.zapatatech.santabiblia.retrofit.Pojos.POJOLabel;
 import com.zapatatech.santabiblia.retrofit.Pojos.POJONote;
@@ -420,7 +419,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         return success;
 
     }
-    public boolean editNote(Note note){
+    public boolean editNote(POJONote note){
         int userId = (user == null) ? 0 : user.getUserId();
         boolean success = true;
         db.beginTransaction();
@@ -430,7 +429,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
             cv.put("title", note.getTitle());
             cv.put("content", note.getContent());
             cv.put("state", 0);
-            this.db.update("labels", cv, "_id = ? AND user_id = ?", new String[]{note.getId(), String.valueOf(userId)});
+            this.db.update("labels", cv, "_id = ? AND user_id = ?", new String[]{note.get_id(), String.valueOf(userId)});
 
             updateSyncUp(null, null, 0, null);
             db.setTransactionSuccessful();
@@ -492,13 +491,13 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         }
         return success;
     }
-    public boolean deleteOneNote(String note_id){
+    public boolean deleteOneNote(String label_id, String note_id){
         int userId = (user == null) ? 0 : user.getUserId();
         boolean success = true;
         db.beginTransaction();
         try{
 
-            this.db.delete("notes", "_id = ? AND user_id = ?", new String[]{note_id, String.valueOf(userId)});
+            this.db.delete("notes", "label_id = ? AND _id = ? AND user_id = ?", new String[]{label_id, note_id, String.valueOf(userId)});
 
             updateSyncUp(null, null, 0, null);
             db.setTransactionSuccessful();
