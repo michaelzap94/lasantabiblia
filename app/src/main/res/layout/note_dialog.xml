@@ -62,7 +62,10 @@
             android:layout_margin="8dp"
             android:hint="Write Your Note Here"
             android:backgroundTint="@android:color/transparent"
-            app:errorEnabled="true">
+            app:errorEnabled="true"
+            android:overScrollMode="always"
+            android:scrollbarStyle="insideInset"
+            android:scrollbars="vertical">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
@@ -72,6 +75,7 @@
                 android:textColor="#000000"
                 android:inputType="text|textAutoComplete|textMultiLine|textLongMessage"
                 android:minLines="10"
+
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
