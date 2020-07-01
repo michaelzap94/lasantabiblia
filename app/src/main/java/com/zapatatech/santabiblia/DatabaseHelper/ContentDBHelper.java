@@ -189,6 +189,37 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         }
         return list;
     }
+    public ArrayList<POJONote> getNotes(String label_id){
+        int userId = (user == null) ? 0 : user.getUserId();
+        Cursor innerCursor;
+        int rowCount;
+        int i;
+        ArrayList<POJONote> list = new ArrayList();
+        try {
+            String query = "SELECT * FROM notes WHERE user_id = " +userId+ " AND label_id='" + label_id +"'";
+            innerCursor = this.db.rawQuery(query, new String[]{String.valueOf(userId)});
+            if (innerCursor.moveToFirst()) {
+                rowCount = innerCursor.getCount();
+                for (i = 0; i < rowCount; i++) {
+
+                    int user_id = innerCursor.getInt(innerCursor.getColumnIndex("user_id"));
+                    String _id = innerCursor.getString(innerCursor.getColumnIndex("_id"));
+                    String title = innerCursor.getString(innerCursor.getColumnIndex("title"));
+                    String content = innerCursor.getString(innerCursor.getColumnIndex("content"));
+                    String date_created = innerCursor.getString(innerCursor.getColumnIndex("date_created"));
+                    String date_updated = innerCursor.getString(innerCursor.getColumnIndex("date_updated"));
+                    int state = innerCursor.getInt(innerCursor.getColumnIndex("state"));
+
+                    list.add(new POJONote(user_id, _id, label_id, title, content, date_created, date_updated, state));
+                    innerCursor.moveToNext();
+                }
+            }
+            innerCursor.close();
+        } catch (Exception e) {
+        }
+        return list;
+    }
+
 
     public boolean createLabel(String name, String color){
         boolean success = true;
@@ -461,6 +492,25 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         }
         return success;
     }
+    public boolean deleteOneNote(String note_id){
+        int userId = (user == null) ? 0 : user.getUserId();
+        boolean success = true;
+        db.beginTransaction();
+        try{
+
+            this.db.delete("notes", "_id = ? AND user_id = ?", new String[]{note_id, String.valueOf(userId)});
+
+            updateSyncUp(null, null, 0, null);
+            db.setTransactionSuccessful();
+        } catch (Exception e){
+            e.printStackTrace();
+            success = false;
+        } finally {
+            db.endTransaction();
+        }
+        return success;
+    }
+
     //-----------------------------------------------------------------------
     public Cursor getVersesMarkedCursor(int book_number, int chapter){
         int userId = (user == null) ? 0 : user.getUserId();
@@ -712,8 +762,8 @@ public class ContentDBHelper extends SQLiteOpenHelper {
                     int user_id = innerCursor.getInt(innerCursor.getColumnIndex("user_id"));
                     String _id = innerCursor.getString(innerCursor.getColumnIndex("_id"));
                     String label_id = innerCursor.getString(innerCursor.getColumnIndex("label_id"));
-                    String title = innerCursor.getString(innerCursor.getColumnIndex("UUID"));
-                    String content = innerCursor.getString(innerCursor.getColumnIndex("label_name"));
+                    String title = innerCursor.getString(innerCursor.getColumnIndex("title"));
+                    String content = innerCursor.getString(innerCursor.getColumnIndex("content"));
                     String date_created = innerCursor.getString(innerCursor.getColumnIndex("date_created"));
                     String date_updated = innerCursor.getString(innerCursor.getColumnIndex("date_updated"));
                     int state = innerCursor.getInt(innerCursor.getColumnIndex("state"));
