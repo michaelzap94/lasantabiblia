@@ -716,7 +716,7 @@ public class CommonMethods {
         if(syncUp != null){
             //CONSTRAINTS
             Constraints constraints = new Constraints.Builder()
-                    .setRequiresBatteryNotLow(true)
+                    //.setRequiresBatteryNotLow(true)
                     .setRequiredNetworkType(NetworkType.CONNECTED)
                     .build();
 

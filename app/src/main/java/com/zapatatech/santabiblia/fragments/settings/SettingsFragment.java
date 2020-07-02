@@ -169,11 +169,12 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         }
     }
 
-    public void registerWorkManagerListener(Activity mActivity){
-        WorkManager.getInstance(mActivity).getWorkInfosForUniqueWorkLiveData(CommonMethods.DATA_SYNCUP_UNIQUE)
-                .observe((LifecycleOwner) mActivity, (workInfoList) -> {
+    public void registerWorkManagerListener(Activity _mActivity){
+        WorkManager.getInstance(_mActivity).getWorkInfosForUniqueWorkLiveData(CommonMethods.DATA_SYNCUP_UNIQUE)
+                .observe((LifecycleOwner) _mActivity, (workInfoList) -> {
                     if(workInfoList != null && workInfoList.size() > 0) {
                         WorkInfo workInfo = workInfoList.get(0);
+                        Log.d(TAG, "startWorkManagerDownloadResource: workInfo: " + workInfo);
                         Log.d(TAG, "startWorkManagerDownloadResource: workInfo.getState(): " + workInfo.getState());
                         if (workInfo != null && workInfo.getState()  == WorkInfo.State.SUCCEEDED) {
                             updateSyncUpDate();
@@ -184,7 +185,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                         }
 
                         if (workInfo != null && workInfo.getState().isFinished()) {
-                            WorkManager.getInstance(mActivity).pruneWork();//kill the workmanager we started before this
+                            Log.d(TAG, "registerWorkManagerListener: pruning " + workInfo);
+                            WorkManager.getInstance(_mActivity).pruneWork();//kill the workmanager we started before this
                         }
                     }
                 });
