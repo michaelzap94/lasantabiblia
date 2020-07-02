@@ -247,6 +247,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
         String label_id = label.getId();
         String label_name = label.getName();
         String label_color = label.getColor();
+        int label_permanent = label.getPermanent();
         List<List<Integer>> versesGroups = BookHelper.getVersesSelectedResults(selectedItems);//[[1,2,3],[6,7],[9]]
         SQLiteDatabase db = this.db;
         db.beginTransaction();
@@ -258,6 +259,7 @@ public class ContentDBHelper extends SQLiteOpenHelper {
             cv.put("label_id", label_id);
             cv.put("label_name", label_name);
             cv.put("label_color", label_color);
+            cv.put("label_permanent", label_permanent);
             cv.put("book_number", book_number);
             cv.put("chapter", chapter_number);
             if(note == null || note.equals("")){
