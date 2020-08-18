@@ -8,6 +8,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 import androidx.preference.ListPreference;
@@ -19,6 +20,7 @@ import androidx.preference.PreferenceScreen;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.zapatatech.santabiblia.DatabaseHelper.ContentDBHelper;
 import com.zapatatech.santabiblia.R;
 import com.zapatatech.santabiblia.retrofit.Pojos.POJOSyncUp;
@@ -81,7 +83,42 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         if(CommonMethods.checkUserStatus(mActivity) == CommonMethods.USER_ONLINE){
             addPreferencesForLoggedInUsers();
         }
+        //COMING SOON PREFERENCES HERE:===============================================================
+        comingSoonPreferences();
+        //============================================================================================
     }
+
+    //============================================================================================
+    Preference.OnPreferenceClickListener comingSoonListener = new Preference.OnPreferenceClickListener() {
+        public boolean onPreferenceClick(Preference preference) {
+            //open browser or intent here
+            comingSoonDialog();
+            return true;
+        }
+    };
+    private void comingSoonPreferences(){
+        ((Preference) findPreference("pref_notifications")).setOnPreferenceClickListener(comingSoonListener);
+        ((Preference) findPreference("pref_language")).setOnPreferenceClickListener(comingSoonListener);
+        ((Preference) findPreference("pref_font")).setOnPreferenceClickListener(comingSoonListener);
+        ((Preference) findPreference("pref_night_mode")).setOnPreferenceClickListener(comingSoonListener);
+        ((Preference) findPreference("pref_active_screen")).setOnPreferenceClickListener(comingSoonListener);
+        ((Preference) findPreference("pref_feedback")).setOnPreferenceClickListener(comingSoonListener);
+        ((Preference) findPreference("pref_clear_local_data")).setOnPreferenceClickListener(comingSoonListener);
+        ((Preference) findPreference("pref_share")).setOnPreferenceClickListener(comingSoonListener);
+        ((Preference) findPreference("pref_about")).setOnPreferenceClickListener(comingSoonListener);
+        ((Preference) findPreference("pref_help")).setOnPreferenceClickListener(comingSoonListener);
+    }
+
+    public void comingSoonDialog() {
+        new MaterialAlertDialogBuilder(mActivity)
+                .setTitle("COMING SOON!")
+                .setMessage("This feature is under development. Please check later!!!")
+                .setPositiveButton("Ok", (dialog, which) -> {
+                    dialog.dismiss();
+                })
+                .show();
+    }
+    //============================================================================================
 
     private void addPreferencesForLoggedInUsers(){
         addSyncUpFunctionality();

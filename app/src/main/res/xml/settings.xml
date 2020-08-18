@@ -54,13 +54,15 @@
             app:icon="@drawable/ic_moon"
             app:title="Modo Nocturno"
             app:summary="Reduce los colores claros, permitiendo una lectura cómoda en la noche."
-            app:defaultValue="false" />
+            app:defaultValue="false"
+            app:enabled="false"/>
         <CheckBoxPreference
             app:key="pref_active_screen"
             app:icon="@drawable/ic_eye"
             app:title="Pantalla Activa"
             app:summary="Evita que la pantalla se apague durante la lectura."
-            app:defaultValue="false" />
+            app:defaultValue="false"
+            app:enabled="false"/>
     </PreferenceCategory>
 
     <PreferenceCategory
