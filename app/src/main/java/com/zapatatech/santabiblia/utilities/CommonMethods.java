@@ -330,7 +330,7 @@ public class CommonMethods {
             ContentDBHelper.getInstance(activity).addUserToSingleton(activity);
             //CREATE FIRST RECORD FOR SYNC UP for this user IF NOT PRESENT ALREADY
             String email = CommonMethods.decodeJWTAndCreateUser(accessToken).getEmail();
-            ContentDBHelper.getInstance(activity).insertSyncUpIfNotExist(email);
+            ContentDBHelper.getInstance(activity).insertInitDataIfNotExist(email);
             //--------------------------------------------------------
             int newStatus = updateUserStatus(activity, USER_ONLINE);
             if(newStatus == USER_ONLINE){
@@ -639,7 +639,6 @@ public class CommonMethods {
                         if(sameVersion){
                             if(syncUp.getState() == 0) {
                                 //NEEDS TO SYNC: OVERRIDE(upload)
-                                Toast.makeText(mActivity, "Sync in process...", Toast.LENGTH_SHORT).show();
                                 CommonMethods.startWorkManagerSyncUpData(mActivity, syncUp, DATA_OVERRIDE_FLAG);
                             } else {
                                 //UP TO DATE: update sync data
@@ -705,11 +704,9 @@ public class CommonMethods {
                 })
                 .setNegativeButton(resources.getString(R.string.override), (dialog, which) -> {
                     CommonMethods.startWorkManagerSyncUpData(mActivity, syncUp, DATA_OVERRIDE_FLAG);
-                    Toast.makeText(mActivity, "Sync in process...", Toast.LENGTH_SHORT).show();
                 })
                 .setPositiveButton(resources.getString(R.string.sync_up), (dialog, which) -> {
                     CommonMethods.startWorkManagerSyncUpData(mActivity, syncUp, DATA_SYNCUP_FLAG);
-                    Toast.makeText(mActivity, "Sync in process...", Toast.LENGTH_SHORT).show();
                 })
                 .show();
     }
@@ -719,7 +716,7 @@ public class CommonMethods {
         if(syncUp != null){
             //CONSTRAINTS
             Constraints constraints = new Constraints.Builder()
-                    .setRequiresBatteryNotLow(true)
+                    //.setRequiresBatteryNotLow(true)
                     .setRequiredNetworkType(NetworkType.CONNECTED)
                     .build();
 
@@ -742,6 +739,7 @@ public class CommonMethods {
                     .build();
 
             mWorkManager.enqueueUniqueWork(DATA_SYNCUP_UNIQUE, ExistingWorkPolicy.KEEP, syncupWorkRequest);
+            Toast.makeText(mActivity, "Sync in process...", Toast.LENGTH_SHORT).show();
         }
     }
 

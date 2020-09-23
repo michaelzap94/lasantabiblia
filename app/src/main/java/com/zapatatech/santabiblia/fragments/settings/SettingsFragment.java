@@ -8,24 +8,35 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.Observer;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceScreen;
+import androidx.work.WorkInfo;
+import androidx.work.WorkManager;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.zapatatech.santabiblia.DatabaseHelper.ContentDBHelper;
 import com.zapatatech.santabiblia.R;
+import com.zapatatech.santabiblia.retrofit.Pojos.POJOSyncUp;
 import com.zapatatech.santabiblia.utilities.CommonMethods;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import io.reactivex.disposables.CompositeDisposable;
 
+import static com.zapatatech.santabiblia.utilities.CommonMethods.DEFAULT_BIBLE_EXIST;
 import static com.zapatatech.santabiblia.utilities.CommonMethods.MAIN_BIBLE_SELECTED;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
     private static final String TAG = "SettingsFragment";
+    private static final String PREF_BACK_UP = "pref_back_up";
     private Activity mActivity;
     private PreferenceScreen screen;
     private CompositeDisposable disposable = new CompositeDisposable();
@@ -72,28 +83,45 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         if(CommonMethods.checkUserStatus(mActivity) == CommonMethods.USER_ONLINE){
             addPreferencesForLoggedInUsers();
         }
+        //COMING SOON PREFERENCES HERE:===============================================================
+        comingSoonPreferences();
+        //============================================================================================
     }
 
+    //============================================================================================
+    Preference.OnPreferenceClickListener comingSoonListener = new Preference.OnPreferenceClickListener() {
+        public boolean onPreferenceClick(Preference preference) {
+            //open browser or intent here
+            comingSoonDialog();
+            return true;
+        }
+    };
+    private void comingSoonPreferences(){
+        ((Preference) findPreference("pref_notifications")).setOnPreferenceClickListener(comingSoonListener);
+        ((Preference) findPreference("pref_language")).setOnPreferenceClickListener(comingSoonListener);
+        ((Preference) findPreference("pref_font")).setOnPreferenceClickListener(comingSoonListener);
+        ((Preference) findPreference("pref_night_mode")).setOnPreferenceClickListener(comingSoonListener);
+        ((Preference) findPreference("pref_active_screen")).setOnPreferenceClickListener(comingSoonListener);
+        ((Preference) findPreference("pref_feedback")).setOnPreferenceClickListener(comingSoonListener);
+        ((Preference) findPreference("pref_clear_local_data")).setOnPreferenceClickListener(comingSoonListener);
+        ((Preference) findPreference("pref_share")).setOnPreferenceClickListener(comingSoonListener);
+        ((Preference) findPreference("pref_about")).setOnPreferenceClickListener(comingSoonListener);
+        ((Preference) findPreference("pref_help")).setOnPreferenceClickListener(comingSoonListener);
+    }
+
+    public void comingSoonDialog() {
+        new MaterialAlertDialogBuilder(mActivity)
+                .setTitle("COMING SOON!")
+                .setMessage("This feature is under development. Please check later!!!")
+                .setPositiveButton("Ok", (dialog, which) -> {
+                    dialog.dismiss();
+                })
+                .show();
+    }
+    //============================================================================================
+
     private void addPreferencesForLoggedInUsers(){
-        final PreferenceCategory thirdCategory = (PreferenceCategory) findPreference("pref_section_third");
-        Preference backUp = new Preference(screen.getContext());
-        backUp.setKey("pref_back_up");
-        backUp.setTitle("Back up and Sync Up");
-        backUp.setSummary("Last synced: 28/10/20 13:34");
-        backUp.setIcon(R.drawable.ic_sync);
-        backUp.setOrder(0);
-        thirdCategory.addPreference(backUp);
-        backUp.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                try{
-                    CommonMethods.retrofitStartSyncUp(mActivity, disposable);
-                } catch (Exception e) {
-                    Toast.makeText(mActivity, e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-                return true;
-            }
-        });
+        addSyncUpFunctionality();
         //================================================================================================
         //add Sign out button programatically
         final PreferenceCategory lastCategory = (PreferenceCategory) findPreference("pref_section_last");
@@ -118,6 +146,43 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 //        screen.addPreference(category);
     }
 
+    private void addSyncUpFunctionality(){
+//        POJOSyncUp syncUpObj = ContentDBHelper.getInstance(mActivity).getSyncUp(null);
+//        String summary = "Not available";
+//        if(syncUpObj != null && !syncUpObj.getEmail().equals("offline")) {
+//            summary = "Last synced: " + syncUpObj.getUpdated();
+//        }
+        final PreferenceCategory thirdCategory = (PreferenceCategory) findPreference("pref_section_third");
+        Preference backUp = new Preference(screen.getContext());
+        backUp.setKey(PREF_BACK_UP);
+        backUp.setTitle("Back up and Sync Up");
+        //backUp.setSummary(summary);
+        backUp.setIcon(R.drawable.ic_sync);
+        backUp.setOrder(0);
+        thirdCategory.addPreference(backUp);
+        backUp.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                try{
+                    CommonMethods.retrofitStartSyncUp(mActivity, disposable);
+                } catch (Exception e) {
+                    Toast.makeText(mActivity, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            }
+        });
+    }
+
+    private void updateSyncUpDate(){
+        POJOSyncUp syncUpObj = ContentDBHelper.getInstance(mActivity).getSyncUp(null);
+        String summary = "Not available";
+        if(syncUpObj != null && !syncUpObj.getEmail().equals("offline")) {
+            summary = "Last synced: " + syncUpObj.getUpdated();
+        }
+        Preference backUp = (Preference) getPreferenceManager().findPreference(PREF_BACK_UP);
+        backUp.setSummary(summary);
+    }
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         Log.d(TAG, "onActivityCreated: ");
@@ -134,5 +199,33 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     public void onResume() {
         Log.d(TAG, "onResume: ");
         super.onResume();
+        //ONLINE PREFERENCES ONLY================================================================================================
+        if(CommonMethods.checkUserStatus(mActivity) == CommonMethods.USER_ONLINE){
+            updateSyncUpDate();
+            registerWorkManagerListener(mActivity);
+        }
+    }
+
+    public void registerWorkManagerListener(Activity _mActivity){
+        WorkManager.getInstance(_mActivity).getWorkInfosForUniqueWorkLiveData(CommonMethods.DATA_SYNCUP_UNIQUE)
+                .observe((LifecycleOwner) _mActivity, (workInfoList) -> {
+                    if(workInfoList != null && workInfoList.size() > 0) {
+                        WorkInfo workInfo = workInfoList.get(0);
+                        Log.d(TAG, "startWorkManagerDownloadResource: workInfo: " + workInfo);
+                        Log.d(TAG, "startWorkManagerDownloadResource: workInfo.getState(): " + workInfo.getState());
+                        if (workInfo != null && workInfo.getState()  == WorkInfo.State.SUCCEEDED) {
+                            updateSyncUpDate();
+                        } else if (workInfo != null && workInfo.getState()  == WorkInfo.State.CANCELLED) {
+
+                        } else if (workInfo != null && workInfo.getState()  == WorkInfo.State.FAILED) {
+
+                        }
+
+                        if (workInfo != null && workInfo.getState().isFinished()) {
+                            Log.d(TAG, "registerWorkManagerListener: pruning " + workInfo);
+                            WorkManager.getInstance(_mActivity).pruneWork();//kill the workmanager we started before this
+                        }
+                    }
+                });
     }
 }

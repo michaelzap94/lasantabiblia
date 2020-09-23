@@ -16,35 +16,45 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.material.tabs.TabLayout;
 import com.zapatatech.santabiblia.Dashboard;
 import com.zapatatech.santabiblia.R;
+import com.zapatatech.santabiblia.Settings;
 import com.zapatatech.santabiblia.adapters.RecyclerView.VersesMarkedRecyclerViewAdapter;
+import com.zapatatech.santabiblia.fragments.settings.ResourcesAvailableBiblesFragment;
+import com.zapatatech.santabiblia.fragments.settings.ResourcesAvailableExtrasFragment;
 import com.zapatatech.santabiblia.models.Label;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.zapatatech.santabiblia.models.VersesMarked;
+import com.zapatatech.santabiblia.utilities.CommonMethods;
 import com.zapatatech.santabiblia.viewmodel.VersesMarkedViewModel;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class DashboardLabelFragment extends Fragment {
     private static final String TAG = "DashboardLabelFragment";
     private Label mLabel;
     private Context ctx;
-
-    ///////////////////////////////////////////////////////////
-    private ArrayList<VersesMarked> list = new ArrayList();
-    private RecyclerView rvView;
+    private static final String CAN_GO_BACK = "CAN_GO_BACK";
+    private static final String TITLE = "Resources Available";
+    boolean canGoBack;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
+    private DashboardLabelFragment.ViewPagerAdapter viewPagerAdapter;
     private VersesMarkedViewModel viewModel;
-    //Instantiate the RecyclerViewAdapter, passing an empty list initially.
-    // this data will not be shown until you setAdapter to the RecyclerView view in the Layout
-    private VersesMarkedRecyclerViewAdapter rvAdapter;
-    //==========================================================
+
+    public DashboardLabelFragment() {
+        // Required empty public constructor
+    }
 
     public static DashboardLabelFragment newInstance(Label mLabel) {
         Bundle args = new Bundle();
@@ -54,66 +64,63 @@ public class DashboardLabelFragment extends Fragment {
         return fragment;
     }
 
+//    @Override
+//    public void onPrepareOptionsMenu(Menu menu) {
+//        if(CommonMethods.checkUserStatus(getActivity()) == CommonMethods.USER_ONLINE){
+//            MenuItem item2= menu.findItem(2);
+//            MenuItem item3= menu.findItem(3);
+//            item2.setVisible(false);
+//            item3.setVisible(false);
+//        } else {
+//            MenuItem item= menu.findItem(1);
+//            item.setVisible(false);
+//        }
+//
+//        super.onPrepareOptionsMenu(menu);
+//    }
+
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.ctx = getActivity();
         this.mLabel = (Label) getArguments().getParcelable("mLabel");
-        if(this.mLabel.getPermanent() != 1){
+        if (this.mLabel.getPermanent() != 1) {
             setHasOptionsMenu(true);
         }
-        rvAdapter = new VersesMarkedRecyclerViewAdapter(this.ctx, new ArrayList<>());
-        //get viewmodel class and properties, pass this context so LifeCycles are handled by ViewModel,
-        // in case the Activity is destroyed and recreated(screen roation)
-        //ViewModel will help us show the exact same data, and resume the application from when the user left last time.
+        if (savedInstanceState != null) {
+            canGoBack = savedInstanceState.getBoolean(CAN_GO_BACK, false);
+        } else {
+            canGoBack = getActivity().getSupportFragmentManager().getBackStackEntryCount()>0;
+        }
+
         viewModel = new ViewModelProvider(getActivity()).get(VersesMarkedViewModel.class);
-        //viewModel.getUserMutableLiveData().observe(context, verseListUpdateObserver);
-        //observerViewModel();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView: DashboardLabelFragment");
+        View view =  inflater.inflate(R.layout.settings_resources_available, container, false);
+        viewPager = (ViewPager) view.findViewById(R.id.viewpager);
+        tabLayout = (TabLayout) view.findViewById(R.id.tabs);
 
-        View view =  inflater.inflate(R.layout.dashboard_label_fragment, container, false);
         //============================================================================================
-        boolean canGoBack = ((AppCompatActivity) this.ctx).getSupportFragmentManager().getBackStackEntryCount()>0;
-        Dashboard.updateCanGoBack(canGoBack, (AppCompatActivity) this.ctx);
+        Dashboard.updateCanGoBack(canGoBack, (Dashboard)getActivity());
         //============================================================================================
-//        rvAdapter = new VersesMarkedRecyclerViewAdapter(getActivity(), arrReturned);
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        ////////////////////////////////////////////
-        this.rvView = (RecyclerView) view.findViewById(R.id.verses_marked_recycler_view);
-        rvView.setLayoutManager(new LinearLayoutManager(this.getContext()));
-//        rvView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), rvView, VersesFragment.this));
-        rvView.setAdapter(rvAdapter);//attach the RecyclerView adapter to the RecyclerView View
-        ///////////////////////////////////////
-        observerViewModel();
-    }
-
-    private void observerViewModel() {
-        viewModel.getUserMutableLiveData().observe(getViewLifecycleOwner(), (versesMarkedArrayList) -> {
-            Log.d(TAG, "observerViewModel: LABEL GOT DATA" + versesMarkedArrayList.size() + "in label: " + this.mLabel.getName());
-            //WHEN data is created  pass data and set it in the recyclerview VIEW
-            rvAdapter.updateVersesMarkedRecyclerView(versesMarkedArrayList);
-        });
+        setupViewPager(viewPager);
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        if (getActivity() instanceof Dashboard) {
-            ((Dashboard) getActivity()).getSupportActionBar().setTitle(this.mLabel.getName());
-            //Use when we need to reload data
-            viewModel.fetchData(this.mLabel.getId());//refresh -> load data
-        }
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(CAN_GO_BACK, canGoBack);
     }
 
+    //============================================================================================
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.dash_label_menu, menu);
@@ -135,8 +142,10 @@ public class DashboardLabelFragment extends Fragment {
                 return super.onOptionsItemSelected(item);
         }
     }
+    //============================================================================================
 
-    public void deleteConfimation(){
+
+    public void deleteConfimation() {
         new MaterialAlertDialogBuilder(ctx)
                 .setTitle("Do you want to delete this label?")
                 .setMessage("You will not be able to recover this label or its contents.")
@@ -150,12 +159,51 @@ public class DashboardLabelFragment extends Fragment {
                 .show();
     }
 
-    public void goToEdit(){
+    public void goToEdit() {
         DashboardCreatorFragment dashboardCreatorFragment = new DashboardCreatorFragment(mLabel.getName(), mLabel.getColor(), mLabel.getId());
         FragmentManager fragmentManager = ((AppCompatActivity) ctx).getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.dashboard_fragment, dashboardCreatorFragment, "mainFragmentTagEdit");
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
+    }
+
+    //============================================================================================
+
+    private void setupViewPager(ViewPager viewPager) {
+        viewPagerAdapter = new DashboardLabelFragment.ViewPagerAdapter(getChildFragmentManager());
+        viewPagerAdapter.addFragment(DashboardBibleFragment.newInstance(mLabel), "BIBLE");
+        viewPagerAdapter.addFragment(DashboardNotesFragment.newInstance(mLabel), "NOTES");
+        viewPager.setAdapter(viewPagerAdapter);
+        tabLayout.setupWithViewPager(viewPager);
+    }
+
+    class ViewPagerAdapter extends FragmentPagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
+
+        public ViewPagerAdapter(FragmentManager manager) {
+            super(manager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return mFragmentList.size();
+        }
+
+        public void addFragment(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitleList.get(position);
+        }
     }
 }

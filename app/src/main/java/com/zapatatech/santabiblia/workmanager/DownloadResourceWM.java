@@ -67,7 +67,7 @@ public class DownloadResourceWM  extends Worker {
         String resourceUrl = getInputData().getString("RESOURCE_URL");
         fileName = getInputData().getString("RESOURCE_FILENAME");
         if (fileName == null || resourceUrl == null) {
-            return Result.failure();
+            return Result.failure(makeDataForFailure());
         }
         Log.d(TAG, "doWork: isStopped " + isStopped());
         if(!isStopped()) {
@@ -84,7 +84,7 @@ public class DownloadResourceWM  extends Worker {
             if (getRunAttemptCount() > 2) {
                 Log.d(TAG, "too many failed attemp, give up");
                 notificationManager.cancel(DOWNLOAD_RESOURCE_NOTIFICATION_ID);
-                return Result.failure();
+                return Result.failure(makeDataForFailure());
             }
             // Do the work here--in this case, upload the images.
             boolean result = initRetrofit(resourceUrl, fileName);
@@ -95,14 +95,14 @@ public class DownloadResourceWM  extends Worker {
                         .build();
                 return Result.success(output);
             } else {
-                //Log.d(TAG, "doWork: isStopped inner " + isStopped());
+                Log.d(TAG, "initRetrofit failure");
                 notificationManager.cancel(DOWNLOAD_RESOURCE_NOTIFICATION_ID);
-                return Result.failure();
+                return Result.failure(makeDataForFailure());
             }
         } else {
             Log.d(TAG, "doWork: isStopped ELSE");
             notificationManager.cancel(DOWNLOAD_RESOURCE_NOTIFICATION_ID);
-            return Result.failure();
+            return Result.failure(makeDataForFailure());
         }
     }
 
@@ -317,6 +317,14 @@ public class DownloadResourceWM  extends Worker {
 
     private String getTempFileName(String fileName){
         return fileName + "-temp";
+    }
+
+    //-------------------------------------------------------------------------------------------
+    private Data makeDataForFailure(){
+        return new Data.Builder()
+                .putBoolean("downloadComplete", false)
+                .putString("fileName", fileName)
+                .build();
     }
 
 }

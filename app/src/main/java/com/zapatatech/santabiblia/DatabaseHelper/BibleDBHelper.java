@@ -121,7 +121,7 @@ public class BibleDBHelper {
                     int noteCol= labelSpecificRows.getColumnIndex("note");
                     //int _id = labelSpecificRows.getInt(_idCol);
                     String uuid = labelSpecificRows.getString(uuidCol);
-                    int label_id = labelSpecificRows.getInt(label_idCol);
+                    String label_id = labelSpecificRows.getString(label_idCol);
                     String label_name = labelSpecificRows.getString(label_nameCol);
                     String label_color = labelSpecificRows.getString(label_colorCol);
                     int label_permanent = labelSpecificRows.getInt(label_perCol);

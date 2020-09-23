@@ -2,14 +2,14 @@ package com.zapatatech.santabiblia.retrofit.Pojos;
 
 public class POJOVersesLearned {
     private int user;
-    private int _id;
-    private int label_id;
+    private String _id;
+    private String label_id;
     private String UUID;
     private int learned;
     private int priority;
     private int state;
 
-    public POJOVersesLearned(int user, int _id, int label_id, String UUID, int learned, int priority, int state) {
+    public POJOVersesLearned(int user, String _id, String label_id, String UUID, int learned, int priority, int state) {
         this.user = user;
         this._id = _id;
         this.label_id = label_id;
@@ -23,11 +23,11 @@ public class POJOVersesLearned {
         return user;
     }
 
-    public int get_id() {
+    public String get_id() {
         return _id;
     }
 
-    public int getLabel_id() {
+    public String getLabel_id() {
         return label_id;
     }
 

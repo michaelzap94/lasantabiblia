@@ -29,6 +29,8 @@ import com.zapatatech.santabiblia.retrofit.RetrofitServiceGenerator;
 import com.zapatatech.santabiblia.utilities.CommonMethods;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -151,6 +153,7 @@ public class SyncUpServerWM extends Worker {
                     ContentDBHelper.getInstance(context).getAllLabelsRaw(),
                     ContentDBHelper.getInstance(context).getAllVersesMarkedRaw(),
                     ContentDBHelper.getInstance(context).getAllVersesLearnedRaw(),
+                    ContentDBHelper.getInstance(context).getAllNotes(),
                     client_state,
                     client_version
             ));
@@ -164,7 +167,8 @@ public class SyncUpServerWM extends Worker {
                     return true;
                 } else {
                     Log.d(TAG, "initOverride: not equals");
-                    return ContentDBHelper.getInstance(context).updateSyncUp(user.getEmail(), response.getVersion(), 1, null);
+                    String ts_updated = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+                    return ContentDBHelper.getInstance(context).updateSyncUp(user.getEmail(), response.getVersion(), 1, ts_updated);
                 }
             } else {
                 Log.d(TAG, "initOverride: out " + response.getStatus());
